@@ -1,0 +1,114 @@
+
+<x-layout>
+    <x-slot:title>{{ $title }}</x-slot:title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    @if(session()->has('success'))
+            <div 
+                x-data="{ show: true }" 
+                x-show="show" 
+                class="mb-4 bg-green-600 text-white px-4 py-3 rounded flex justify-between items-center"
+            >
+                <span>{{ session()->pull('success') }}</span>
+
+                <button 
+                    @click="show = false" 
+                    class="text-white font-bold px-2"
+                >
+                    ×
+                </button>
+            </div>
+    @endif
+
+    <section class="bg-white dark:bg-gray-900">
+        <div class="py-8 px-4 mx-auto max-w-screen-7xl sm:py-16 lg:px-6">
+            
+            <div class="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
+
+                <!-- Usulan terkirim -->
+                <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 
+                               lg:h-12 lg:w-12 dark:bg-primary-900">
+                        
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white"
+                             xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                             viewBox="0 0 24 24">
+                            <path fill-rule="evenodd"
+                                  d="M12 2a1 1 0 0 1 .932.638l7 18a1 1 0 0 1-1.326 1.281L13 19.517V13a1 1 0 1 0-2 0v6.517l-5.606 2.402a1 1 0 0 1-1.326-1.281l7-18A1 1 0 0 1 12 2Z"
+                                  clip-rule="evenodd" />
+                        </svg>
+                    </div>
+
+                    <a href="/posts/"
+                       class="mb-2 text-xl font-bold dark:text-white hover:underline">
+                        Usulan Terkirim
+                    </a>
+
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Hasil karya ilmiah yang telah dikirim
+                    </p>
+                </div>
+
+                <!-- Usulan Disetujui -->
+                <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 
+                               lg:h-12 lg:w-12 dark:bg-primary-900">
+
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white"
+                             xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round"
+                                  stroke-linejoin="round" stroke-width="2"
+                                  d="M5 11.917 9.724 16.5 19 7.5" />
+                        </svg>
+                    </div>
+
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Usulan disetujui</h3>
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Hasil karya ilmiah yang telah disetujui reviewer
+                    </p>
+                </div>
+
+                <!-- Usulan Ditolak -->
+                <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 
+                               lg:h-12 lg:w-12 dark:bg-primary-900">
+
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white"
+                             xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round"
+                                  stroke-width="2"
+                                  d="m6 6 12 12m3-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Revisi usulan</h3>
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Hasil karya ilmiah tidak memenuhi kriteria
+                    </p>
+                </div>
+
+                <!-- Hasil Review -->
+                <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 
+                               lg:h-12 lg:w-12 dark:bg-primary-900">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M18.458 3.11A1 1 0 0 1 19 4v16a1 1 0 0 1-1.581.814L12 16.944V7.056l5.419-3.87a1 1 0 0 1 1.039-.076ZM22 12c0 1.48-.804 2.773-2 3.465v-6.93c1.196.692 2 1.984 2 3.465ZM10 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6V8Zm0 9H5v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3Z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Pengumuman hasil akhir</h3>
+                    <p class="text-gray-500 dark:text-gray-400">
+                        hasil karya ilmiah
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</x-layout>
