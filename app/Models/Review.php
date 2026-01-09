@@ -13,7 +13,13 @@ class Review extends Model
         'proposal_id',
         'reviewer_id',
         'comment',
+        'scores',
+        'total_score',
         'recommendation',
+    ];
+
+     protected $casts = [
+        'scores' => 'array',
     ];
 
     public function proposal()

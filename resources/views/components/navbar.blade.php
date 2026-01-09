@@ -19,16 +19,30 @@
                 <div class="ml-4 flex items-center md:ml-6">
                     <!-- Profile dropdown -->
                     <el-dropdown class="relative ml-3">
-                        <button class="relative flex max-w-xs items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                            <span class="absolute -inset-1.5"></span>
+                        <button class="relative flex max-w-xs items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                            
                             <span class="sr-only">Open user menu</span>
-                            <img src="image/DSC_7243.JPG" alt="" class="size-8 rounded-full outline -outline-offset-1 outline-white/10" />
+                            
+                            
+                            {{-- Nama User (BARU!) --}}
+                            <span class="hidden md:block text-sm font-medium text-white">
+                                {{ Auth::user()->name }}
+                            </span>
+                            
+                            {{-- Dropdown Icon --}}
+                            <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
                         </button>
 
                         <el-menu anchor="bottom end" popover class="w-48 origin-top-right rounded-md bg-gray-800 py-1 outline-1 -outline-offset-1 outline-white/10 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
                             <a href="/profile" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Your profile</a>
-                            <a href="/upload" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Settings</a>
-                            <a href="/signin" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Sign out</a>
+                            <form method="POST" action="{{ route('signout') }}" class="block">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 focus:outline-hidden">
+                                    Sign out
+                                </button>
+                            </form>
                         </el-menu>
                     </el-dropdown>
                 </div>
@@ -62,11 +76,26 @@
                     <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">ManajemenLaporanPKM</x-nav-link>
             </div>
             <div class="border-t border-white/10 pt-4 pb-3">
+                <div class="border-t border-white/10 pt-4 pb-3">
+                {{-- User Info Header (BARU!) --}}
+                    <div class="ml-3">
+                        <div class="text-base/5 font-medium text-white">{{ Auth::user()->name }}</div>
+                        <div class="text-sm font-medium text-gray-400">{{ Auth::user()->email }}</div>
+                    </div>
+                </div>
+
+                {{-- Menu Items --}}
                 <div class="mt-3 space-y-1 px-2">
                     <a href="/profile" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Your profile</a>
-                    <a href="/upload" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Settings</a>
-                    <a href="/signin" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Sign out</a>
+                    {{-- Fix: Sign out di mobile pakai form POST juga! --}}
+                    <form method="POST" action="{{ route('signout') }}" class="block">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 focus:outline-hidden">
+                            Sign out
+                        </button>
+                    </form>
                 </div>
+
             </div>
         </el-disclosure>
     </nav>

@@ -1,3 +1,5 @@
+{{-- TAMPILAN DAFTAR USULAN UNTUK PUBLISHER --}}
+
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot>
 

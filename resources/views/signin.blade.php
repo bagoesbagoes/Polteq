@@ -31,9 +31,9 @@
 
                 <!-- Title -->
                 <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-                    <h2 class="mt-10 text-center text-2xl font-bold tracking-tight text-white">
+                    <h1 class="mt-10 text-center text-2xl font-bold tracking-tight text-white">
                         Sign in to your account
-                    </h2>
+                    </h1>
                 </div>
 
                 <!-- Form Container -->
@@ -93,8 +93,8 @@
                     </form>
 
                     <small class="text-white">
-                        Don't have an account?
-                        <a href="/signup" class="text-indigo-500 hover:text-indigo-400">Sign up here</a>
+                        Tidak punya akun ?
+                        <a href="/signup" class="text-indigo-500 hover:text-indigo-400">Daftar disini</a>
                     </small>
                 </div>
 

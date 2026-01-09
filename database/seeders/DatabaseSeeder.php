@@ -2,12 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use App\Models\Post;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,21 +11,80 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $this->command->info('');
+        $this->command->info('🌱 Starting Database Seeding...');
+        $this->command->info('================================');
+        $this->command->info('');
 
-        $this->call([
-            UserSeeder::class,
-            CategorySeeder::class,
+        // ===================================
+        // 1. USERS (Publishers, Reviewers, Admin)
+        // ===================================
+        $this->command->info('👥 Seeding Users...');
+        
+        // Create Admin
+        \App\Models\User::factory()->create([
+            'name' => 'Admin User',
+            'username' => 'admin',
+            'email' => 'admin@politeq.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
         ]);
 
-        Post::factory(100)->recycle([
-            Category::all(),
-            User::all(),    
-        ])
-        ->create();
+        // Create Publishers (10 users)
+        \App\Models\User::factory()->count(10)->create([
+            'role' => 'publisher',
+        ]);
 
+        // Create Reviewers (5 users)
+        \App\Models\User::factory()->count(5)->create([
+            'role' => 'reviewer',
+        ]);
+
+        $this->command->info('✅ Users seeded: ' . \App\Models\User::count() . ' users');
+        $this->command->info('   - Publishers: ' . \App\Models\User::where('role', 'publisher')->count());
+        $this->command->info('   - Reviewers: ' . \App\Models\User::where('role', 'reviewer')->count());
+        $this->command->info('   - Admin: ' . \App\Models\User::where('role', 'admin')->count());
+        $this->command->info('');
+
+        // ===================================
+        // 2. PROPOSALS & REVIEWS
+        // ===================================
+        $this->call(ProposalSeeder::class);
+        
+        // ===================================
+        // 3. POSTS (Optional - if you still use it)
+        // ===================================
+        // Uncomment if you still want to seed posts
+        // $this->command->info('📝 Seeding Posts...');
+        // $this->call(PostSeeder::class);
+
+        // ===================================
+        // FINAL SUMMARY
+        // ===================================
+        $this->command->info('');
+        $this->command->info('================================');
+        $this->command->info('✨ All Seeding Completed!');
+        $this->command->info('================================');
+        $this->command->info('');
+        $this->command->info('📊 Database Overview:');
+        $this->command->table(
+            ['Table', 'Records'],
+            [
+                ['Users', \App\Models\User::count()],
+                ['Proposals', \App\Models\Proposal::count()],
+                ['Reviews', \App\Models\Review::count()],
+                // ['Posts', \App\Models\Post::count()], // Uncomment if using posts
+            ]
+        );
+        $this->command->info('');
+        $this->command->info('🔑 Default Login Credentials:');
+        $this->command->info('   Admin:');
+        $this->command->info('   - Email: admin@politeq.com');
+        $this->command->info('   - Password: password');
+        $this->command->info('');
+        $this->command->info('   Publishers & Reviewers:');
+        $this->command->info('   - Check database for generated emails');
+        $this->command->info('   - Password: password (default for all)');
+        $this->command->info('');
     }
-} 
+}

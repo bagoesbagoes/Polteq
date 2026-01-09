@@ -9,7 +9,8 @@ class ProposalHelper
         return match($status) {
             'draft' => 'bg-gray-700 text-gray-200',
             'submitted' => 'bg-blue-700 text-blue-200',
-            'under_review' => 'bg-yellow-700 text-yellow-200',
+            // 'under_review' => 'bg-yellow-700 text-yellow-200',
+            'need_revision' => 'bg-orange-700 text-orange-200',
             'accepted' => 'bg-green-700 text-green-200',
             default => 'bg-red-700 text-red-200',
         };

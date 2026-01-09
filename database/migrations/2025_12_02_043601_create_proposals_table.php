@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->string('file_usulan');
             $table->string('file_revisi')->nullable();
-            $table->enum('status', ['draft', 'submitted', 'under_review', 'accepted', 'rejected'])->default('draft');
+            $table->enum('status', ['draft', 'submitted','accepted'])->default('draft');
             $table->timestamps();
         });
     }

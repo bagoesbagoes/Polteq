@@ -25,7 +25,7 @@ class ReviewerController extends Controller
     public function dashboard()
     {
         $proposals = Proposal::where('status', 'submitted')
-            ->orWhere('status', 'under_review')
+            // ->orWhere('status', 'under_review')
             ->latest()
             ->paginate(10);
             
@@ -50,30 +50,98 @@ class ReviewerController extends Controller
     {
         $this->authorize('review', $proposal);
 
-        $validated = $request->validate([
-            'nilai' => 'required|integer|min:0|max:100',
-            'catatan' => 'nullable|string',
-            'recommendation' => 'required|in:accept,minor_revision,major_revision,reject',
-        ]);
+        if (!in_array($proposal->status, ['submitted', 'under_review'])) {
+        return back()->with('error', 'Proposal ini tidak bisa direview karena statusnya: ' . $proposal->status);
+    }
 
-        // Save atau update review
+        $validated = $request->validate([
+        'pendahuluan' => [
+            'required',
+            'integer',
+            'min:0',
+            'max:100'
+        ],
+        'tinjauan_pustaka' => [
+            'required',
+            'integer',
+            'min:0',
+            'max:100'
+        ],
+        'metodologi' => [
+            'required',
+            'integer',
+            'min:0',
+            'max:100'
+        ],
+        'kelayakan' => [
+            'required',
+            'integer',
+            'min:0',
+            'max:100'
+        ],
+        'recommendation' => 'required|in:setuju,tidak_setuju',
+        'comment' => 'nullable|string|max:5000|min:10',
+    ], [
+        // Custom error messages
+        'pendahuluan.max' => 'Skor Pendahuluan maksimal 100',
+        'pendahuluan.min' => 'Skor Pendahuluan minimal 0',
+        'tinjauan_pustaka.max' => 'Skor Tinjauan Pustaka maksimal 100',
+        'tinjauan_pustaka.min' => 'Skor Tinjauan Pustaka minimal 0',
+        'metodologi.max' => 'Skor Metodologi maksimal 100',
+        'metodologi.min' => 'Skor Metodologi minimal 0',
+        'kelayakan.max' => 'Skor Kelayakan maksimal 100',
+        'kelayakan.min' => 'Skor Kelayakan minimal 0',
+    ]);
+
+        // Hitung total score (weighted average)
+        $scores = [
+            'pendahuluan' => $validated['pendahuluan'],
+            'tinjauan_pustaka' => $validated['tinjauan_pustaka'],
+            'metodologi' => $validated['metodologi'],
+            'kelayakan' => $validated['kelayakan'],
+        ];
+
+        // Bobot masing-masing 25%
+        $totalScore = (
+            ($scores['pendahuluan'] * 0.25) +
+            ($scores['tinjauan_pustaka'] * 0.25) +
+            ($scores['metodologi'] * 0.25) +
+            ($scores['kelayakan'] * 0.25)
+        );
+
+         $recommendation = $validated['recommendation']; // 'setuju' atau 'tidak_setuju'
+
+        $statusMapping = [
+        'setuju' => 'accepted',
+        'tidak_setuju' => 'need_revision',
+        ];
+
+        // Mapping recommendation ke status
+        $recommendationMapping = [
+            'setuju' => 'accepted',
+            'tidak_setuju' => 'need_revision',
+        ];
+
+        // Save review
         $review = Review::updateOrCreate(
             [
                 'proposal_id' => $proposal->id,
                 'reviewer_id' => Auth::id()
             ],
             [
-                'comment' => $validated['catatan'],
+                'scores' => $scores,
+                'total_score' => $totalScore,
+                'comment' => $validated['comment'],
                 'recommendation' => $validated['recommendation'],
             ]
         );
 
-        // Update proposal status menjadi under_review
-        if ($proposal->status === 'submitted') {
-            $proposal->update(['status' => 'under_review']);
-        }
+        // Update proposal status
+        $newStatus = $recommendationMapping[$validated['recommendation']];
+        $proposal->update(['status' => $newStatus]);
 
-        return redirect()->route('reviewer.dashboard')->with('success', 'Hasil review tersimpan.');
+        return redirect()->route('proposals.browse')
+            ->with('success', 'Review berhasil disimpan. Status proposal diupdate ke: ' . $newStatus);
     }
 
     // List reviews dari reviewer ini

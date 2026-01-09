@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 
 class Proposal extends Model
@@ -25,21 +26,29 @@ class Proposal extends Model
         'journal_id',
     ];
 
-    public function getSlugAttribute()
+     public function getSlugAttribute()
     {
-        return Str::slug($this->judul); 
+        return $this->id . '-' . Str::slug($this->judul);
     }
 
-    public function author(): BelongsTo
+     public function getTitleAttribute()
     {
-        // posts.blade.php memanggil $post->author->...
-        return $this->belongsTo(User::class, 'user_id'); 
+        return $this->judul;
     }
 
-    public function getCategoryAttribute()
+     public function getBodyAttribute()
     {
-        // Ini akan mengembalikan objek dengan property 'name' dan 'slug' agar tidak error
-        return (object) ['name' => 'Proposal', 'slug' => 'proposal']; 
+        return $this->deskripsi;
+    }
+
+     public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+     public function getCategoryAttribute()
+    {
+        return (object) ['name' => 'Proposal', 'slug' => 'proposal'];
     }
 
     public function publisher(): BelongsTo

@@ -1,9 +1,9 @@
 <?php
-
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Proposal;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
@@ -13,38 +13,6 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublisherController;
-
-// ==========================
-// PUBLIC POST ROUTES (dibiarkan publik atau nanti bisa dipindah ke auth)
-// ==========================
-
-Route::get('/posts', function () {
-    return view('posts', [
-        'title' => 'Karya Usulan',
-        'posts' => Post::filter(request(['search', 'category', 'author']))->latest()->get()
-    ]);
-});
-
-Route::get('/posts/{post:slug}', function(Post $post) {
-    return view('post', [
-        'title' => 'Karya Usulan',
-        'post' => $post
-    ]);
-});
-
-Route::get('/authors/{user:username}', function(User $user){
-    return view('posts', [
-        'title' => count($user->posts).' Karya Usulan Oleh '. $user->name,
-        'posts' => $user->posts
-    ]);
-});
-
-Route::get('/categories/{category:slug}', function(Category $category){
-    return view('posts', [
-        'title' => 'Articles in: ' . $category->name,
-        'posts' => $category->posts
-    ]);
-});
 
 // ==========================
 // PUBLIC ROUTES (TANPA LOGIN)
@@ -57,18 +25,17 @@ Route::get('/', function () {
 
 // Login & Signup hanya bisa diakses oleh pengguna yang BELUM login
 Route::middleware('guest')->group(function () {
-
     Route::get('/signin', [LoginController::class, 'index'])->name('signin');
     Route::post('/signin', [LoginController::class, 'authenticate'])->name('login');
 
     Route::get('/signup', [RegisterController::class, 'index'])->name('signup');
-    Route::post('/signup', [RegisterController::class, 'register'])->name('signup.process');
+    Route::post('/signup', [RegisterController::class, 'store'])->name('signup.process');
 });
-
 
 // ==========================
 // LOGOUT
 // ==========================
+
 Route::post('/signout', function () {
     Auth::logout();
     session()->invalidate();
@@ -76,25 +43,60 @@ Route::post('/signout', function () {
     return redirect('/signin');
 })->name('signout');
 
-
 // ==========================
 // ROUTES YANG WAJIB LOGIN
 // ==========================
 Route::middleware('auth')->group(function () {
 
-    // Dashboard utama setelah login
+    // ==========================
+    // DASHBOARD
+    // ==========================
     Route::get('/ManajemenProposalPenelitian', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    // Halaman biasa
+    // ==========================
+    // PROFILE
+    // ==========================
     Route::get('/profile', function () {
-        return view('profile', ['title' => 'Profile']);
+        return view('profile', [
+            'title' => 'Profile',
+            'user' => Auth::user()
+        ]);
     });
 
     Route::get('/upload', function () {
-        return view('upload', ['title' => 'Upload']);
-    });
+        return view('upload', [
+            'title' => 'Edit Profile',
+            'user' => Auth::user()
+        ]);
+    })->name('profile.edit');
 
+    Route::post('/profile/update', function (Request $request) {
+        $user = Auth::user();
+        
+        $validated = $request->validate([
+            'name' => 'required|string|min:2|max:255',
+            'username' => 'required|min:3|max:255|unique:users,username,' . $user->id,
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:5|max:255',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->username = $validated['username'];
+        $user->email = $validated['email'];
+        
+        if (!empty($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
+        }
+        
+        $user->save();
+        
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
+    })->name('profile.update');
+
+    // ==========================
+    // OTHER PAGES
+    // ==========================
     Route::get('/ManajemenLaporanPKM', function () {
         return view('ManajemenLaporanPKM', ['title' => 'Manajemen Laporan PKM']);
     });
@@ -103,9 +105,102 @@ Route::middleware('auth')->group(function () {
         return view('ManajemenProposalPKM', ['title' => 'Manajemen Proposal PKM']);
     });
 
+    Route::get('/ManajemenLaporanPenelitian', function () {
+        return view('ManajemenLaporanPenelitian', ['title' => 'Manajemen Laporan Penelitian']);
+    });
 
     // ==========================
-    // PUBLISHER
+    // PROPOSALS ROUTES
+    // PENTING: Route khusus HARUS di atas Route::resource!
+    // ==========================
+    
+    Route::middleware(['auth', 'role:reviewer'])->group(function () {
+    Route::get('/reviewer/proposals', [ProposalController::class, 'browseForReviewer'])
+        ->name('reviewer.proposals');
+    });
+
+
+    // Browse proposals (untuk reviewer & admin)
+    Route::get('/proposals/browse', function (Request $request) {
+    $user = Auth::user();
+    
+    if (in_array($user->role, ['admin', 'reviewer'])) {
+        // Query Builder untuk Search & Filter
+        $query = Proposal::with('author')
+            ->whereNotIn('status', ['draft']);
+        
+        // SEARCH: Judul atau Nama Author
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('judul', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('author', function($q) use ($searchTerm) {
+                      $q->where('name', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+        
+        // FILTER: Status (optional)
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // SORT: Terbaru/Terlama
+        $sortBy = $request->get('sort', 'latest'); // default: latest
+        if ($sortBy === 'oldest') {
+            $query->oldest('created_at');
+        } else {
+            $query->latest('created_at');
+        }
+        
+        // Pagination dengan query string
+        $proposals = $query->paginate(12)->withQueryString();
+        
+    } else {
+        // Publisher hanya lihat proposal miliknya sendiri (tidak ada search untuk publisher)
+        $proposals = Proposal::with('author')
+            ->where('user_id', $user->id)
+            ->latest('created_at')
+            ->paginate(12);
+    }
+    
+    return view('posts', [
+        'title' => 'Daftar pengajuan usulan',
+        'posts' => $proposals
+    ]);
+    })->name('proposals.browse');
+
+    //Usulan Disetujui - HANYA PUBLISHER
+    Route::get('/proposals/accepted', [ProposalController::class, 'accepted'])
+        ->middleware('role:publisher')
+        ->name('proposals.accepted');
+
+    //Revisi Usulan - HANYA PUBLISHER
+    Route::get('/proposals/revisions', [ProposalController::class, 'revisions'])
+    ->middleware('role:publisher')
+    ->name('proposals.revisions');
+
+    // View proposal detail
+    Route::get('/proposals/view/{proposal}', [ProposalController::class, 'show'])
+        ->name('proposals.view');
+
+    // Filter by author
+    Route::get('/proposals/author/{user:username}', function(User $user) {
+        $currentUser = Auth::user();
+        
+        if (!in_array($currentUser->role, ['admin', 'reviewer'])) {
+            abort(403);
+        }
+        
+        return view('posts', [
+            'title' => count($user->proposals) . ' Usulan oleh ' . $user->name,
+            'posts' => $user->proposals
+        ]);
+
+    })->name('proposals.by-author');
+
+    // ==========================
+    // PUBLISHER ROUTES
     // ==========================
     Route::middleware('role:publisher')->group(function () {
         Route::get('/publisher/dashboard', [PublisherController::class, 'dashboard']);
@@ -115,9 +210,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/publisher/proposal/{proposal}/revisi', [PublisherController::class, 'submitRevision']);
     });
 
-
     // ==========================
-    // REVIEWER
+    // REVIEWER ROUTES
     // ==========================
     Route::middleware('role:reviewer')->group(function () {
         Route::get('reviewer/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
@@ -130,9 +224,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('reviewer/reviews/{review}', [ReviewerController::class, 'deleteReview'])->name('reviewer.delete-review');
     });
 
-
     // ==========================
-    // ADMIN
+    // ADMIN ROUTES
     // ==========================
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
@@ -140,14 +233,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer']);
     });
 
-
     // ==========================
-    // PROPOSAL CRUD (SEMUA ROLE YANG LOGIN)
+    // PROPOSAL RESOURCE ROUTES
+    // HARUS DI PALING BAWAH!
     // ==========================
     Route::resource('proposals', ProposalController::class);
     Route::post('proposals/{proposal}/submit', [ProposalController::class, 'submit'])
         ->name('proposals.submit');
 });
-
-
-
