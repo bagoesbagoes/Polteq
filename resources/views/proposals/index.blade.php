@@ -1,10 +1,11 @@
+{{-- resources/views/proposals/index.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
         
     @if ($proposals->count() > 0)
         <div class="flex justify-between items-center mb-6">
             <a href="{{ route('proposals.create') }}" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                Buat Proposal Usulan Baru
+                Buat pengajuan Usulan Baru
             </a>
         </div>
     @endif
@@ -73,14 +74,14 @@
                     </a>
                 </div>
             @else
-                <h3 class="mt-2 text-lg font-medium text-white">Belum Ada Proposal</h3>
-                <p class="mt-1 text-gray-400">Mulai buat proposal usulan penelitian Anda.</p>
+                <h3 class="mt-2 text-lg font-medium text-white">Belum Ada usulan</h3>
+                <p class="mt-1 text-gray-400">Mulai buat pengajuan usulan penelitian Anda.</p>
                 <div class="mt-6">
                     <a href="{{ route('proposals.create') }}" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
                         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
-                        Buat Proposal Baru
+                        Buat usulan Baru
                     </a>
                 </div>
             @endif

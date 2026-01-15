@@ -49,16 +49,7 @@ class ProposalSeeder extends Seeder
             ->create();
 
         // ===================================
-        // 3. UNDER REVIEW PROPOSALS (15 proposals)
-        // ===================================
-        $this->command->info('🔍 Creating under review proposals...');
-        Proposal::factory()
-            ->count(15)
-            ->underReview()
-            ->create();
-
-        // ===================================
-        // 4. ACCEPTED PROPOSALS with REVIEWS (25 proposals)
+        // 3. ACCEPTED PROPOSALS with REVIEWS (25 proposals)
         // ===================================
         $this->command->info('✅ Creating accepted proposals with reviews...');
         Proposal::factory()
@@ -116,35 +107,6 @@ class ProposalSeeder extends Seeder
             });
 
         // ===================================
-        // 6. REJECTED PROPOSALS with REVIEWS (10 proposals)
-        // ===================================
-        $this->command->info('❌ Creating rejected proposals with reviews...');
-        Proposal::factory()
-            ->count(10)
-            ->rejected()
-            ->create()
-            ->each(function ($proposal) use ($reviewers) {
-                // Create 1 review per rejected proposal
-                $reviewer = $reviewers->random();
-                
-                Review::create([
-                    'proposal_id' => $proposal->id,
-                    'reviewer_id' => $reviewer->id,
-                    'scores' => [
-                        'pendahuluan' => rand(0, 50),
-                        'tinjauan_pustaka' => rand(0, 50),
-                        'metodologi' => rand(0, 50),
-                        'kelayakan' => rand(0, 50),
-                    ],
-                    'total_score' => rand(0, 50),
-                    'recommendation' => 'tidak_setuju',
-                    'comment' => 'Proposal tidak memenuhi standar minimum untuk dilanjutkan. Diperlukan perubahan fundamental pada konsep penelitian.',
-                    'created_at' => $proposal->created_at,
-                    'updated_at' => now(),
-                ]);
-            });
-
-        // ===================================
         // SUMMARY
         // ===================================
         $totalProposals = Proposal::count();
@@ -158,10 +120,8 @@ class ProposalSeeder extends Seeder
             [
                 ['Draft', Proposal::where('status', 'draft')->count()],
                 ['Submitted', Proposal::where('status', 'submitted')->count()],
-                ['Under Review', Proposal::where('status', 'under_review')->count()],
                 ['Accepted', Proposal::where('status', 'accepted')->count()],
                 ['Need Revision', Proposal::where('status', 'need_revision')->count()],
-                ['Rejected', Proposal::where('status', 'rejected')->count()],
                 ['---', '---'],
                 ['TOTAL PROPOSALS', $totalProposals],
                 ['TOTAL REVIEWS', $totalReviews],

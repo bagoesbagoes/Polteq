@@ -12,8 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        
-        //tabel temporary
+        // Tabel temporary dengan VARCHAR recommendation
         Schema::create('reviews_temp', function (Blueprint $table) {
             $table->id();
             $table->foreignId('proposal_id')->constrained('proposals')->onDelete('cascade');
@@ -21,17 +20,17 @@ return new class extends Migration
             $table->json('scores')->nullable();
             $table->integer('total_score')->nullable();
             $table->text('comment')->nullable();
-            $table->string('recommendation')->default('minor_revision');
+            $table->string('recommendation', 50)->default('minor_revision'); // VARCHAR
             $table->timestamps();
         });
 
-        //Copy data dari tabel lama ke tabel baru
+        // Copy data dari tabel lama ke tabel baru
         DB::statement('INSERT INTO reviews_temp SELECT * FROM reviews');
 
-        //Drop tabel lama
+        // Drop tabel lama
         Schema::dropIfExists('reviews');
 
-        //Rename tabel temp jadi reviews
+        // Rename tabel temp jadi reviews
         Schema::rename('reviews_temp', 'reviews');
     }
 
@@ -40,18 +39,38 @@ return new class extends Migration
      */
     public function down(): void
     {
-          Schema::create('reviews_temp', function (Blueprint $table) {
+        // Tabel temporary dengan ENUM recommendation (rollback)
+        Schema::create('reviews_temp', function (Blueprint $table) {
             $table->id();
             $table->foreignId('proposal_id')->constrained('proposals')->onDelete('cascade');
             $table->foreignId('reviewer_id')->constrained('users')->onDelete('cascade');
             $table->json('scores')->nullable();
             $table->integer('total_score')->nullable();
             $table->text('comment')->nullable();
-            $table->enum('recommendation', ['accept', 'minor_revision', 'major_revision'])->default('minor_revision');
+            $table->enum('recommendation', ['accept', 'minor_revision', 'major_revision'])->default('minor_revision'); // ENUM
             $table->timestamps();
         });
 
-        DB::statement('INSERT INTO reviews_temp SELECT * FROM reviews');
+        // Copy data (need to map values first)
+        DB::statement("
+            INSERT INTO reviews_temp 
+            SELECT 
+                id, 
+                proposal_id, 
+                reviewer_id, 
+                scores, 
+                total_score, 
+                comment, 
+                CASE 
+                    WHEN recommendation = 'setuju' THEN 'accept'
+                    WHEN recommendation = 'tidak_setuju' THEN 'minor_revision'
+                    ELSE recommendation
+                END as recommendation,
+                created_at,
+                updated_at
+            FROM reviews
+        ");
+
         Schema::dropIfExists('reviews');
         Schema::rename('reviews_temp', 'reviews');
     }

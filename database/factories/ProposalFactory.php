@@ -104,10 +104,8 @@ class ProposalFactory extends Factory
                 'submitted',
                 'submitted',
                 'submitted', // More submitted for testing
-                'under_review',
                 'accepted',
                 'need_revision',
-                'rejected',
             ]),
             'created_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
             'updated_at' => now(),
@@ -134,15 +132,6 @@ class ProposalFactory extends Factory
         ]);
     }
 
-    /**
-     * Indicate that the proposal is under review.
-     */
-    public function underReview(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'under_review',
-        ]);
-    }
 
     /**
      * Indicate that the proposal is accepted.
@@ -162,17 +151,6 @@ class ProposalFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'need_revision',
-        ]);
-    }
-
-    /**
-     * Indicate that the proposal is rejected.
-     */
-    public function rejected(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'rejected',
-            'created_at' => $this->faker->dateTimeBetween('-4 months', '-2 months'),
         ]);
     }
 }

@@ -1,3 +1,4 @@
+{{-- resources/views/profile.blade.php --}}
 <x-layout>
   <x-slot:title>{{ $title }}</x-slot>
 

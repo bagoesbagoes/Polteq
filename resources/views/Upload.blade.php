@@ -1,3 +1,4 @@
+{{-- resources/views/Upload.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
     

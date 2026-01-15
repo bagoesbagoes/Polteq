@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('proposal_id')->constrained('proposals')->onDelete('cascade');
             $table->foreignId('reviewer_id')->constrained('users')->onDelete('cascade');
             $table->text('comment')->nullable();
-            $table->enum('recommendation', ['accept', 'minor_revision', 'major_revision'])->default('minor_revision');
+            $table->enum('recommendation', ['setuju', 'minor_revision', 'tidak_setuju'])->default('minor_revision');
             $table->timestamps();
         });
     }

@@ -127,7 +127,7 @@ Route::middleware('auth')->group(function () {
     if (in_array($user->role, ['admin', 'reviewer'])) {
         // Query Builder untuk Search & Filter
         $query = Proposal::with('author')
-            ->whereNotIn('status', ['draft']);
+            ->whereNotIn('status', ['draft']); // Tampilkan semua kecuali draft
         
         // SEARCH: Judul atau Nama Author
         if ($request->filled('search')) {
@@ -140,24 +140,26 @@ Route::middleware('auth')->group(function () {
             });
         }
         
-        // FILTER: Status (optional)
+        // FILTER: Status (hanya 4 status yang valid)
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $validStatuses = ['submitted', 'accepted', 'need_revision'];
+            if (in_array($request->status, $validStatuses)) {
+                $query->where('status', $request->status);
+            }
         }
         
         // SORT: Terbaru/Terlama
-        $sortBy = $request->get('sort', 'latest'); // default: latest
+        $sortBy = $request->get('sort', 'latest');
         if ($sortBy === 'oldest') {
             $query->oldest('created_at');
         } else {
             $query->latest('created_at');
         }
         
-        // Pagination dengan query string
         $proposals = $query->paginate(12)->withQueryString();
         
     } else {
-        // Publisher hanya lihat proposal miliknya sendiri (tidak ada search untuk publisher)
+        // Publisher hanya lihat proposal miliknya sendiri
         $proposals = Proposal::with('author')
             ->where('user_id', $user->id)
             ->latest('created_at')

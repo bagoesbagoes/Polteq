@@ -47,10 +47,10 @@
         {{-- Header Info --}}
         <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                Informasi Proposal
+                Informasi usulan
             </h3>
             <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                Detail lengkap proposal yang diajukan.
+                Detail lengkap usulan yang diajukan.
             </p>
         </div>
 
@@ -93,7 +93,7 @@
 
                 {{-- File Proposal --}}
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">File Proposal</dt>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">File usulan</dt>
                     <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
                         <a href="{{ Storage::url($proposal->file_usulan) }}" 
                            target="_blank"
@@ -194,48 +194,44 @@
                             {{-- Tombol untuk Reviewer --}}
                             @if(Auth::user()->role === 'reviewer')
                                 @php
-                                    // ✅ LOGIKA BARU: Cek apakah proposal masih bisa direview
-                                    $canReview = in_array($proposal->status, ['submitted', 'under_review']);
+                                    // Apakah proposal bisa direview? (hanya status: submitted)
+                                    $canReview = $proposal->status === 'submitted';
                                     
-                                    // ✅ Cek apakah reviewer ini sudah pernah review
+                                    // Apakah reviewer ini sudah pernah review?
                                     $hasReviewed = $proposal->reviews()
                                         ->where('reviewer_id', Auth::id())
                                         ->exists();
-                                    
-                                    // ✅ Status untuk pesan
-                                    $isAccepted = $proposal->status === 'accepted';
-                                    $needsRevision = $proposal->status === 'need_revision';
                                 @endphp
 
-                                {{-- ✅ HANYA TAMPIL JIKA: status = submitted/under_review DAN belum direview --}}
+                                {{-- Jika bisa direview DAN belum pernah review --}}
                                 @if($canReview && !$hasReviewed)
                                     <a href="{{ route('reviewer.review-form', $proposal) }}" 
                                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
                                         📝 Beri Review
                                     </a>
                                 
-                                {{-- ✅ Jika sudah pernah review --}}
+                                {{-- Jika sudah pernah review --}}
                                 @elseif($hasReviewed)
                                     <div class="inline-flex items-center px-4 py-2 text-sm text-blue-400 bg-blue-900/20 rounded-md border border-blue-700">
                                         ✅ Anda sudah melakukan review
                                     </div>
 
-                                {{--Jika status accepted --}}
-                                @elseif($isAccepted)
+                                {{-- Jika status accepted --}}
+                                @elseif($proposal->status === 'accepted')
                                     <div class="inline-flex items-center px-4 py-2 text-sm text-green-400 bg-green-900/20 rounded-md border border-green-700">
                                         ✅ Proposal telah disetujui
                                     </div>
 
-                                {{--Jika perlu revisi --}}
-                                @elseif($needsRevision)
+                                {{-- Jika perlu revisi --}}
+                                @elseif($proposal->status === 'need_revision')
                                     <div class="inline-flex items-center px-4 py-2 text-sm text-orange-400 bg-orange-900/20 rounded-md border border-orange-700">
                                         ⏳ Menunggu revisi dari publisher
                                     </div>
 
-                                {{--Status lainnya (rejected, draft, dll) --}}
+                                {{-- Status draft --}}
                                 @else
                                     <div class="inline-flex items-center px-4 py-2 text-sm text-gray-400 bg-gray-900/20 rounded-md border border-gray-700">
-                                        ℹ️ Proposal tidak dapat direview (Status: {{ ucfirst(str_replace('_', ' ', $proposal->status)) }})
+                                        ℹ️ Proposal belum disubmit (Status: {{ ucfirst($proposal->status) }})
                                     </div>
                                 @endif
                             @endif
@@ -243,7 +239,7 @@
                             {{-- Tombol untuk Publisher (Owner) --}}
                             @if(Auth::user()->id === $proposal->user_id)
                                 @php
-                                    // ✅ Cek apakah proposal bisa diedit (hanya draft dan need_revision)
+                                    // Cek apakah proposal bisa diedit (hanya draft dan need_revision)
                                     $canEdit = in_array($proposal->status, ['draft', 'need_revision']);
                                 @endphp
 

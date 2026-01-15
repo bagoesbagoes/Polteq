@@ -1,3 +1,5 @@
+<!-- TIDAK DIGUNAKAN -->
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;

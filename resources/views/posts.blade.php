@@ -30,6 +30,25 @@
         }
     </style>
 
+    {{-- SUCCESS MESSAGE (DITAMBAHKAN) --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-green-400 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-sm font-medium text-green-400">{{ session('success') }}</p>
+                </div>
+                <button @click="show = false" class="text-green-400 hover:text-green-300">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    @endif
+
     {{-- SEARCH & FILTER SECTION --}}
     <div class="mb-6 bg-gray-800 rounded-lg p-6 shadow">
         <form method="GET" action="{{ route('proposals.browse') }}" class="space-y-4">
@@ -140,10 +159,10 @@
                 @forelse ($posts as $post)
                     <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 flex flex-col min-h-[350px]">
 
-                        <div class="flex justify-between items-center mb-5 text-gray-500">
+                        <div class="flex justify-between items-center mb-4 text-gray-500">
                             {{-- Category Badge --}}
                             <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-                                {{ $post->category->name }}
+                                Usulan
                             </span>
 
                             {{-- Status Badge --}}
@@ -156,7 +175,7 @@
                             </span>
                         </div>
 
-                        <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        <h2 class="mb-2 text-1xl font-bold tracking-tight text-gray-900 dark:text-white">
                             <a href="{{ route('proposals.view', $post->id) }}" 
                                class="hover:underline line-clamp-2"
                                title="{{ $post->title }}">
@@ -179,7 +198,7 @@
                             <div class="flex gap-2">
                                 {{-- Tombol Lihat Detail --}}
                                 <a href="{{ route('proposals.view', $post->id) }}" class="font-medium text-blue-500 hover:underline">
-                                    Lihat Detail &raquo;
+                                    Lihat Detail 
                                 </a>
 
                                 {{-- Tombol Review (Hanya untuk Reviewer) --}}

@@ -1,5 +1,5 @@
 <x-layout>
-    <x-slot:title>Form Review Proposal</x-slot:title>
+    <x-slot:title>Form Review Usulan</x-slot:title>
 
     <div class="bg-gray-800 shadow sm:rounded-lg p-6">
         
@@ -7,7 +7,7 @@
         @if($errors->any())
             <div class="mb-6 rounded-md bg-red-900/20 p-4 border border-red-700">
                 <div class="flex">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                         </svg>
@@ -28,7 +28,7 @@
         @if(session('success'))
             <div class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">
                 <div class="flex">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
@@ -50,7 +50,7 @@
             <a href="{{ Storage::url($proposal->file_usulan) }}" 
                target="_blank"
                class="mt-3 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                📄 Lihat File Proposal
+                📄 Lihat File usulan
             </a>
         </div>
 
@@ -272,8 +272,8 @@
 
             {{-- Submit Button --}}
             <div class="flex justify-end gap-3">
-                <a href="{{ route('reviewer.dashboard') }}" 
-                   class="px-6 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600">
+                <a href="{{ route('proposals.browse') }}" 
+                class="px-6 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600">
                     Batal
                 </a>
                 <button type="submit" 

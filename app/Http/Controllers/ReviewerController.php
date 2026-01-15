@@ -24,174 +24,194 @@ class ReviewerController extends Controller
     // Dashboard - list proposals untuk di-review
     public function dashboard()
     {
+        $reviewer = Auth::user();
+        
+        // Proposal yang bisa direview (status: submitted, belum direview oleh reviewer ini)
         $proposals = Proposal::where('status', 'submitted')
-            // ->orWhere('status', 'under_review')
+            ->whereDoesntHave('reviews', function($query) use ($reviewer) {
+                $query->where('reviewer_id', $reviewer->id);
+            })
+            ->with('author')
             ->latest()
             ->paginate(10);
-            
-        $myReviews = Auth::user()->reviews()->latest()->paginate(5);
         
-        return view('reviewer.dashboard', compact('proposals', 'myReviews'));
+        // Riwayat review yang sudah dibuat reviewer ini
+        $myReviews = Review::where('reviewer_id', $reviewer->id)
+            ->with('proposal')
+            ->latest()
+            ->paginate(10);
+        
+        return view('reviewer.dashboard', [
+            'proposals' => $proposals,
+            'myReviews' => $myReviews
+        ]);
     }
-
-    // Form review (create/edit)
+    
+    // Form review proposal
     public function reviewForm(Proposal $proposal)
     {
-        $this->authorize('review', $proposal);
+        $reviewer = Auth::user();
         
-        // Cek apakah sudah ada review dari reviewer ini
-        $review = $proposal->reviews()->where('reviewer_id', Auth::id())->first();
+        // Cek: Apakah proposal bisa direview?
+        if ($proposal->status !== 'submitted') {
+            return redirect()->back()->with('error', 'Proposal ini tidak dapat direview (status: ' . $proposal->status . ')');
+        }
         
-        return view('reviewer.review', compact('proposal', 'review'));
+        // Cek: Apakah reviewer ini sudah pernah review?
+        $existingReview = Review::where('proposal_id', $proposal->id)
+            ->where('reviewer_id', $reviewer->id)
+            ->first();
+        
+        if ($existingReview) {
+            return redirect()->back()->with('error', 'Anda sudah melakukan review untuk proposal ini');
+        }
+        
+        return view('reviewer.review', [
+            'proposal' => $proposal,
+            'review' => null // Untuk form baru
+        ]);
     }
-
-    // Store atau update review
+    
+    // Store review
     public function storeReview(Request $request, Proposal $proposal)
     {
-        $this->authorize('review', $proposal);
-
-        if (!in_array($proposal->status, ['submitted', 'under_review'])) {
-        return back()->with('error', 'Proposal ini tidak bisa direview karena statusnya: ' . $proposal->status);
-    }
-
+        $reviewer = Auth::user();
+        
+        // Validasi input
         $validated = $request->validate([
-        'pendahuluan' => [
-            'required',
-            'integer',
-            'min:0',
-            'max:100'
-        ],
-        'tinjauan_pustaka' => [
-            'required',
-            'integer',
-            'min:0',
-            'max:100'
-        ],
-        'metodologi' => [
-            'required',
-            'integer',
-            'min:0',
-            'max:100'
-        ],
-        'kelayakan' => [
-            'required',
-            'integer',
-            'min:0',
-            'max:100'
-        ],
-        'recommendation' => 'required|in:setuju,tidak_setuju',
-        'comment' => 'nullable|string|max:5000|min:10',
-    ], [
-        // Custom error messages
-        'pendahuluan.max' => 'Skor Pendahuluan maksimal 100',
-        'pendahuluan.min' => 'Skor Pendahuluan minimal 0',
-        'tinjauan_pustaka.max' => 'Skor Tinjauan Pustaka maksimal 100',
-        'tinjauan_pustaka.min' => 'Skor Tinjauan Pustaka minimal 0',
-        'metodologi.max' => 'Skor Metodologi maksimal 100',
-        'metodologi.min' => 'Skor Metodologi minimal 0',
-        'kelayakan.max' => 'Skor Kelayakan maksimal 100',
-        'kelayakan.min' => 'Skor Kelayakan minimal 0',
-    ]);
-
-        // Hitung total score (weighted average)
-        $scores = [
-            'pendahuluan' => $validated['pendahuluan'],
-            'tinjauan_pustaka' => $validated['tinjauan_pustaka'],
-            'metodologi' => $validated['metodologi'],
-            'kelayakan' => $validated['kelayakan'],
-        ];
-
-        // Bobot masing-masing 25%
+            'pendahuluan' => 'required|integer|min:0|max:100',
+            'tinjauan_pustaka' => 'required|integer|min:0|max:100',
+            'metodologi' => 'required|integer|min:0|max:100',
+            'kelayakan' => 'required|integer|min:0|max:100',
+            'recommendation' => 'required|in:setuju,tidak_setuju',
+            'comment' => 'nullable|string|max:5000',
+        ]);
+        
+        // Hitung total score (bobot 25% untuk setiap kriteria)
         $totalScore = (
-            ($scores['pendahuluan'] * 0.25) +
-            ($scores['tinjauan_pustaka'] * 0.25) +
-            ($scores['metodologi'] * 0.25) +
-            ($scores['kelayakan'] * 0.25)
+            ($validated['pendahuluan'] * 0.25) +
+            ($validated['tinjauan_pustaka'] * 0.25) +
+            ($validated['metodologi'] * 0.25) +
+            ($validated['kelayakan'] * 0.25)
         );
-
-         $recommendation = $validated['recommendation']; // 'setuju' atau 'tidak_setuju'
-
-        $statusMapping = [
-        'setuju' => 'accepted',
-        'tidak_setuju' => 'need_revision',
-        ];
-
-        // Mapping recommendation ke status
-        $recommendationMapping = [
-            'setuju' => 'accepted',
-            'tidak_setuju' => 'need_revision',
-        ];
-
-        // Save review
-        $review = Review::updateOrCreate(
-            [
-                'proposal_id' => $proposal->id,
-                'reviewer_id' => Auth::id()
+        
+        // Simpan review
+        $review = Review::create([
+            'proposal_id' => $proposal->id,
+            'reviewer_id' => $reviewer->id,
+            'scores' => [
+                'pendahuluan' => $validated['pendahuluan'],
+                'tinjauan_pustaka' => $validated['tinjauan_pustaka'],
+                'metodologi' => $validated['metodologi'],
+                'kelayakan' => $validated['kelayakan'],
             ],
-            [
-                'scores' => $scores,
-                'total_score' => $totalScore,
-                'comment' => $validated['comment'],
-                'recommendation' => $validated['recommendation'],
-            ]
-        );
-
-        // Update proposal status
-        $newStatus = $recommendationMapping[$validated['recommendation']];
-        $proposal->update(['status' => $newStatus]);
-
+            'total_score' => $totalScore,
+            'recommendation' => $validated['recommendation'],
+            'comment' => $validated['comment'],
+        ]);
+        
+        // Update status proposal berdasarkan rekomendasi
+        // HANYA 2 KEMUNGKINAN: accepted atau need_revision
+        if ($validated['recommendation'] === 'setuju') {
+            $proposal->update(['status' => 'accepted']);
+            $statusMessage = 'disetujui';
+        } else {
+            $proposal->update(['status' => 'need_revision']);
+            $statusMessage = 'memerlukan revisi';
+        }
+        
+        // 🎯 REDIRECT KE /proposals/browse dengan pesan yang lebih informatif
         return redirect()->route('proposals.browse')
-            ->with('success', 'Review berhasil disimpan. Status proposal diupdate ke: ' . $newStatus);
-    }
-
-    // List reviews dari reviewer ini
-    public function myReviews()
-    {
-        $reviews = Auth::user()->reviews()->with('proposal')->latest()->paginate(10);
-        return view('reviewer.my-reviews', compact('reviews'));
-    }
-
+            ->with('success', "Review berhasil disimpan! Proposal \"{$proposal->judul}\" telah {$statusMessage}.");
+}
+    
     // Show detail review
     public function showReview(Review $review)
     {
-        $this->authorize('view', $review);
-        return view('reviewer.show-review', compact('review'));
+        // Authorization: Hanya reviewer yang buat review ini yang bisa lihat
+        if ($review->reviewer_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        return view('reviewer.show-review', [
+            'review' => $review->load('proposal.author')
+        ]);
     }
-
-    // Edit review
+    
+    // Edit review (jika diperlukan)
     public function editReview(Review $review)
     {
-        $this->authorize('update', $review);
-        $proposal = $review->proposal;
+        if ($review->reviewer_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
         
-        return view('reviewer.edit-review', compact('review', 'proposal'));
+        return view('reviewer.review', [
+            'proposal' => $review->proposal,
+            'review' => $review
+        ]);
     }
-
+    
     // Update review
     public function updateReview(Request $request, Review $review)
     {
-        $this->authorize('update', $review);
-
+        if ($review->reviewer_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+        
         $validated = $request->validate([
-            'nilai' => 'required|integer|min:0|max:100',
-            'catatan' => 'nullable|string',
-            'recommendation' => 'required|in:accept,minor_revision,major_revision,reject',
+            'pendahuluan' => 'required|integer|min:0|max:100',
+            'tinjauan_pustaka' => 'required|integer|min:0|max:100',
+            'metodologi' => 'required|integer|min:0|max:100',
+            'kelayakan' => 'required|integer|min:0|max:100',
+            'recommendation' => 'required|in:setuju,tidak_setuju',
+            'comment' => 'nullable|string|max:5000',
         ]);
-
+        
+        $totalScore = (
+            ($validated['pendahuluan'] * 0.25) +
+            ($validated['tinjauan_pustaka'] * 0.25) +
+            ($validated['metodologi'] * 0.25) +
+            ($validated['kelayakan'] * 0.25)
+        );
+        
         $review->update([
-            'comment' => $validated['catatan'],
+            'scores' => [
+                'pendahuluan' => $validated['pendahuluan'],
+                'tinjauan_pustaka' => $validated['tinjauan_pustaka'],
+                'metodologi' => $validated['metodologi'],
+                'kelayakan' => $validated['kelayakan'],
+            ],
+            'total_score' => $totalScore,
             'recommendation' => $validated['recommendation'],
+            'comment' => $validated['comment'],
         ]);
-
-        return redirect()->route('reviewer.my-reviews')->with('success', 'Review berhasil diupdate');
+        
+        // Update status proposal
+        $proposal = $review->proposal;
+        if ($validated['recommendation'] === 'setuju') {
+            $proposal->update(['status' => 'accepted']);
+        } else {
+            $proposal->update(['status' => 'need_revision']);
+        }
+        
+        return redirect()->route('reviewer.show-review', $review)
+            ->with('success', 'Review berhasil diupdate');
     }
-
+    
     // Delete review
     public function deleteReview(Review $review)
     {
-        $this->authorize('delete', $review);
+        if ($review->reviewer_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        $proposal = $review->proposal;
         $review->delete();
-
-        return back()->with('success', 'Review berhasil dihapus');
+        
+        // Kembalikan status proposal ke 'submitted'
+        $proposal->update(['status' => 'submitted']);
+        
+        return redirect()->route('reviewer.dashboard')
+            ->with('success', 'Review berhasil dihapus');
     }
 }

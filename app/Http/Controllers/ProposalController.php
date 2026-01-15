@@ -22,7 +22,7 @@ class ProposalController extends Controller
             ->paginate(10);
         
         return view('proposals.index', [
-            'title' => 'Proposal Usulan',
+            'title' => 'daftar pengajuan Usulan',
             'proposals' => $proposals,
         ]);
     }
@@ -56,7 +56,7 @@ class ProposalController extends Controller
     public function create()
     {
         return view('proposals.create', [
-            'title' => 'Buat Proposal Baru'
+            'title' => 'Buat usulan Baru'
         ]);
     }
 
@@ -68,7 +68,7 @@ class ProposalController extends Controller
             'file_usulan' => 'required|mimes:pdf|max:10240|mimetypes:application/pdf',
         ], [
             // Custom error messages
-            'judul.min' => 'Judul proposal minimal 5 karakter',
+            'judul.min' => 'Judul usulan minimal 5 karakter',
             'judul.regex' => 'Judul hanya boleh mengandung huruf, angka, dan tanda baca standar',
             'deskripsi.min' => 'Deskripsi/abstrak minimal 50 karakter',
             'file_usulan.mimetypes' => 'File harus berupa PDF yang valid',
@@ -83,14 +83,14 @@ class ProposalController extends Controller
             'status' => 'draft',
         ]);
 
-        return redirect()->route('proposals.show', $proposal)->with('success', 'Proposal berhasil dibuat');
+        return redirect()->route('proposals.show', $proposal)->with('success', 'usulan berhasil dibuat');
     }
 
     public function show(Proposal $proposal)
     {
         $this->authorize('view', $proposal);
             
-        $title = 'Detail Proposal : '; 
+        $title = 'Detil usulan : '; 
 
         return view('proposals.show', compact('proposal', 'title'));
     }
@@ -105,66 +105,59 @@ class ProposalController extends Controller
         if (!in_array($proposal->status, $editableStatuses)) {
             return redirect()
                 ->route('proposals.show', $proposal)
-                ->with('error', 'Proposal dengan status "' . $proposal->status . '" tidak dapat diedit. Hanya proposal dengan status "draft" atau "need_revision" yang dapat diedit.');
+                ->with('error', 'usulan dengan status "' . $proposal->status . '" tidak dapat diedit. Hanya usulan dengan status "draft" atau "need_revision" yang dapat diedit.');
         }
         
         return view('proposals.edit', [
             'proposal' => $proposal,
-            'title' => 'Edit Proposal'
+            'title' => 'Edit usulan'
         ]);
     }
 
     public function update(Request $request, Proposal $proposal)
     {
-        $this->authorize('update', $proposal);
-
-        // Hanya draft dan need_revision yang boleh diedit
-        $editableStatuses = ['draft', 'need_revision'];
-        
-        if (!in_array($proposal->status, $editableStatuses)) {
-            return back()->with('error', 'Proposal dengan status "' . $proposal->status . '" tidak dapat diedit.');
+        // Authorization
+        if ($proposal->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
         }
-
-        // Untuk need_revision, file wajib diupload
+        
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'file_usulan' => $proposal->status === 'need_revision' 
-                ? 'required|mimes:pdf|max:10240'  // Wajib untuk revisi
-                : 'nullable|mimes:pdf|max:10240', // Opsional untuk draft
-        ], [
-            'file_usulan.required' => 'File revisi wajib diupload untuk proposal yang perlu revisi.',
+            'file_usulan' => 'nullable|file|mimes:pdf|max:10240', // 10MB
         ]);
-
-        // Update judul dan deskripsi
+        
+        // Update data
         $proposal->judul = $validated['judul'];
         $proposal->deskripsi = $validated['deskripsi'];
-
-        // Handle file upload
+        
+        // Upload file baru jika ada
         if ($request->hasFile('file_usulan')) {
             // Hapus file lama
-            Storage::disk('public')->delete($proposal->file_usulan);
+            if ($proposal->file_usulan) {
+                Storage::delete($proposal->file_usulan);
+            }
             
-            // Upload file baru
             $proposal->file_usulan = $request->file('file_usulan')->store('proposals', 'public');
         }
-
-        // Jika status need_revision, hapus review lama agar reviewer bisa review lagi
+        
+        // 🎯 PENTING: Jika status 'need_revision', kembalikan ke 'submitted' untuk review ulang
         if ($proposal->status === 'need_revision') {
-            // Hapus semua review terkait proposal ini
+            // 🔥 HAPUS SEMUA REVIEW LAMA (agar reviewer bisa review ulang)
             $proposal->reviews()->delete();
             
+            // Set status kembali ke submitted
             $proposal->status = 'submitted';
-            $successMessage = 'Revisi berhasil diupload dan dikirim untuk review ulang. Review sebelumnya telah dihapus.';
-        } else {
-            $successMessage = 'Proposal berhasil diupdate';
         }
-
+        
         $proposal->save();
-
-        return redirect()
-            ->route('proposals.show', $proposal)
-            ->with('success', $successMessage);
+        
+        $message = $proposal->status === 'submitted' 
+            ? 'Revisi berhasil diupload dan dikirim untuk review ulang!'
+            : 'Proposal berhasil diupdate!';
+        
+        return redirect()->route('proposals.show', $proposal)
+            ->with('success', $message);
     }
 
     public function destroy(Proposal $proposal)
@@ -174,21 +167,27 @@ class ProposalController extends Controller
         Storage::disk('public')->delete($proposal->file_usulan);
         $proposal->delete();
 
-        return redirect()->route('proposals.index')->with('success', 'Proposal berhasil dihapus');
+        return redirect()->route('proposals.index')->with('success', 'usulan berhasil dihapus');
     }
 
     public function submit(Proposal $proposal)
-    {
-        $this->authorize('update', $proposal);
-
-        if ($proposal->status !== 'draft') {
-            return back()->with('error', 'Hanya draft proposal yang bisa di-submit');
-        }
-
-        $proposal->update(['status' => 'submitted']);
-
-        return back()->with('success', 'Proposal berhasil di-submit untuk review');
+{
+    // Authorization: Hanya pemilik proposal
+    if ($proposal->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized');
     }
+    
+    // Cek: Proposal harus status 'draft'
+    if ($proposal->status !== 'draft') {
+        return redirect()->back()->with('error', 'Proposal ini sudah disubmit sebelumnya');
+    }
+    
+    // Update status jadi 'submitted'
+    $proposal->update(['status' => 'submitted']);
+    
+    return redirect()->route('proposals.show', $proposal)
+        ->with('success', 'Proposal berhasil disubmit untuk direview!');
+}
 
     public function browseForReviewer()
     {
@@ -199,7 +198,7 @@ class ProposalController extends Controller
             ->paginate(10);
 
         return view('proposals.browse', [
-            'title' => 'Proposal Menunggu Review',
+            'title' => 'usulan Menunggu Review',
             'proposals' => $proposals,
         ]);
     }

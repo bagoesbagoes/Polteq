@@ -8,7 +8,7 @@
             <div class="hidden md:block">
                 <div class="ml-10 flex items-baseline space-x-4" >
                 <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">Manajemen Proposal usulan</x-nav-link>
+                <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">Manajemen usulan</x-nav-link>
                 <x-nav-link href="/ManajemenLaporanPenelitian" :active="request()->is('ManajemenLaporanPenelitian')">ManajemenLaporanPenelitian</x-nav-link>
                 <x-nav-link href="/ManajemenProposalPKM" :active="request()->is('ManajemenProposalPKM')">ManajemenProposalPKM</x-nav-link>
                 <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">ManajemenLaporanPKM</x-nav-link>
@@ -70,7 +70,7 @@
             <div class="space-y-1 px-1 pt-1 pb-3 sm:px-3">
                 <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
                     
-                    <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">ManajemenProposalUsulan</x-nav-link>
+                    <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">ManajemenUsulan</x-nav-link>
                     <x-nav-link href="/ManajemenLaporanPenelitian" :active="request()->is('ManajemenLaporanPenelitian')">ManajemenLaporanPenelitian</x-nav-link>
                     <x-nav-link href="/ManajemenProposalPKM" :active="request()->is('ManajemenProposalPKM')">ManajemenProposalPKM</x-nav-link>
                     <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">ManajemenLaporanPKM</x-nav-link>
