@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
         // Create Admin
         \App\Models\User::factory()->create([
             'name' => 'Admin User',
-            'username' => 'admin',
             'email' => 'admin@politeq.com',
             'password' => bcrypt('password'),
             'role' => 'admin',

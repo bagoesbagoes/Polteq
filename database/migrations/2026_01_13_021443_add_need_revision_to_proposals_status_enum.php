@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -12,19 +12,45 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Cek database driver
+        $driver = DB::connection()->getDriverName();
         
-        // Update data lama jika ada (safety measure)
-        DB::table('proposals')
-            ->where('status', 'under_review')
-            ->update(['status' => 'submitted']);
-        
-        DB::statement("
-            ALTER TABLE proposals 
-            MODIFY COLUMN status 
-            ENUM('draft', 'submitted', 'accepted', 'need_revision') 
-            NOT NULL 
-            DEFAULT 'draft'
-        ");
+        if ($driver === 'sqlite') {
+            // ✅ CARA SQLITE: Recreate table dengan kolom baru
+            
+            // 1. Buat tabel temporary dengan SEMUA kolom yang ada
+            Schema::create('proposals_temp', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('journal_id')->nullable()->constrained('journals')->onDelete('cascade');
+                $table->string('judul');
+                $table->text('deskripsi')->nullable();
+                $table->string('file_usulan');
+                $table->string('file_revisi')->nullable();
+                $table->enum('status', ['draft', 'submitted', 'accepted', 'need_revision'])
+                      ->default('draft');
+                $table->timestamps();
+            });
+            
+            // 2. Copy SEMUA data dari tabel lama ke temporary
+            DB::statement('INSERT INTO proposals_temp SELECT * FROM proposals');
+            
+            // 3. Drop tabel lama
+            Schema::drop('proposals');
+            
+            // 4. Rename tabel temporary jadi proposals
+            Schema::rename('proposals_temp', 'proposals');
+            
+        } else {
+            // ✅ CARA MYSQL/PostgreSQL: Gunakan MODIFY
+            DB::statement("
+                ALTER TABLE proposals 
+                MODIFY COLUMN status 
+                ENUM('draft', 'submitted', 'accepted', 'need_revision') 
+                NOT NULL 
+                DEFAULT 'draft'
+            ");
+        }
     }
 
     /**
@@ -32,18 +58,38 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Rollback: Update data need_revision ke submitted dulu
-        DB::table('proposals')
-            ->where('status', 'need_revision')
-            ->update(['status' => 'submitted']);
+        $driver = DB::connection()->getDriverName();
         
-        // Kembalikan ke enum tanpa need_revision
-        DB::statement("
-            ALTER TABLE proposals 
-            MODIFY COLUMN status 
-            ENUM('draft', 'submitted', 'accepted') 
-            NOT NULL 
-            DEFAULT 'draft'
-        ");
+        if ($driver === 'sqlite') {
+            // Recreate dengan status lama (tanpa need_revision)
+            Schema::create('proposals_temp', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('journal_id')->nullable()->constrained('journals')->onDelete('cascade');
+                $table->string('judul');
+                $table->text('deskripsi')->nullable();
+                $table->string('file_usulan');
+                $table->string('file_revisi')->nullable();
+                $table->enum('status', ['draft', 'submitted', 'accepted'])
+                      ->default('draft');
+                $table->timestamps();
+            });
+            
+            DB::statement('INSERT INTO proposals_temp SELECT id, user_id, journal_id, judul, deskripsi, file_usulan, file_revisi,
+                          CASE WHEN status = "need_revision" THEN "draft" ELSE status END as status,
+                          created_at, updated_at FROM proposals');
+            
+            Schema::drop('proposals');
+            Schema::rename('proposals_temp', 'proposals');
+            
+        } else {
+            DB::statement("
+                ALTER TABLE proposals 
+                MODIFY COLUMN status 
+                ENUM('draft', 'submitted', 'accepted') 
+                NOT NULL 
+                DEFAULT 'draft'
+            ");
+        }
     }
 };

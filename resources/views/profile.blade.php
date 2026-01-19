@@ -10,7 +10,15 @@
     <main>
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div class="px-4 sm:px-0">
-    <h3 class="text-base/7 font-semibold text-white">Informasi personel</h3>
+    <h3 class="text-base/7 font-semibold text-white">
+      @if (auth()->user()->role === 'reviewer')
+        Informasi Reviewer
+      @elseif (auth()->user()->role === 'publisher')
+        Informasi Dosen
+      @else
+        Informasi Admin
+      @endif
+    </h3>
   </div>
 
 <!-- PROFIL PENGGUNA -->
@@ -23,12 +31,12 @@
         </dd>
       </div>
 
-      <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+      {{-- <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
         <dt class="text-sm/6 font-medium text-gray-100">Username</dt>
         <dd class="mt-1 text-sm/6 text-gray-400 sm:col-span-2 sm:mt-0">
                     {{ $user->username }}  
         </dd>
-      </div>
+      </div> --}}
       
       <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
         <dt class="text-sm/6 font-medium text-gray-100">Email address</dt>
@@ -36,6 +44,25 @@
                     {{ $user->email }}  
         </dd>
       </div>
+      
+      @if ($user->nidn_nuptk)
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt class="text-sm/6 font-medium text-gray-100">NIDN/NUPTK</dt>
+            <dd class="mt-1 text-sm/6 text-gray-400 sm:col-span-2 sm:mt-0">
+                        {{ $user->nidn_nuptk }}  
+            </dd>
+        </div>
+      @endif
+
+      @if ($user->jabatan_fungsional)
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt class="text-sm/6 font-medium text-gray-100">Jabatan Fungsional</dt>
+            <dd class="mt-1 text-sm/6 text-gray-400 sm:col-span-2 sm:mt-0">
+                        {{ $user->jabatan_fungsional }}  
+            </dd>
+        </div>
+      @endif  
+
 
       {{-- Role --}}
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

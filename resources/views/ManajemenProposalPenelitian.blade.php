@@ -1,17 +1,40 @@
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    {{-- ❌ HAPUS BARIS INI - Alpine.js sudah ada di layout.blade.php! --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> --}}
 
-    @if(session()->has('success'))
+    {{-- ✅ SUCCESS ALERT dengan Auto-Dismiss 4 detik --}}
+    @if(session('success'))
+        @php
+            // Simpan pesan dulu sebelum dihapus
+            $successMessage = session('success');
+            // FORCE HAPUS session sekarang juga
+            session()->forget('success');
+        @endphp
+        
         <div 
             x-data="{ show: true }" 
             x-show="show" 
-            class="mb-4 bg-green-600 text-white px-4 py-3 rounded flex justify-between items-center"
+            x-init="setTimeout(() => show = false, 4000)"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95"
+            class="mb-4 bg-green-600 text-white px-4 py-3 rounded-lg flex justify-between items-center shadow-lg"
         >
-            <span>{{ session()->pull('success') }}</span>
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">{{ $successMessage }}</span>
+            </div>
             <button 
                 @click="show = false" 
-                class="text-white font-bold px-2"
+                class="ml-4 text-white hover:text-gray-200 font-bold px-2 focus:outline-none"
+                aria-label="Close"
             >
                 ×
             </button>

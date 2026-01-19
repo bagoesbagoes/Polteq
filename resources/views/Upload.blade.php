@@ -51,7 +51,7 @@
                         </div>
 
                         {{-- Username --}}
-                        <div class="sm:col-span-4">
+                        {{-- <div class="sm:col-span-4">
                             <label for="username" class="block text-sm/6 font-medium text-white">
                                 Username <span class="text-red-500">*</span>
                             </label>
@@ -65,7 +65,7 @@
                                     class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
                             </div>
                             <p class="mt-2 text-sm text-gray-400">Username harus unique dan akan digunakan untuk login.</p>
-                        </div>
+                        </div> --}}
 
                         {{-- Email --}}
                         <div class="sm:col-span-4">
@@ -99,6 +99,45 @@
                                     class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
                             </div>
                             <p class="mt-2 text-sm text-gray-400">Minimal 5 karakter.</p>
+                        </div>
+
+                        {{-- NIDN/NUPTK --}}
+                        <div class="sm:col-span-4">
+                            <label for="nidn_nuptk" class="block text-sm/6 font-medium text-white">
+                                NIDN/NUPTK <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-2">
+                                <input 
+                                    id="nidn_nuptk" 
+                                    type="text" 
+                                    name="nidn_nuptk" 
+                                    value="{{ old('nidn_nuptk', $user->nidn_nuptk) }}"
+                                    required
+                                    minlength="10"
+                                    maxlength="16"
+                                    pattern="[0-9]{10,16}"
+                                    placeholder="Contoh: 1234567890 / 12345678901234567"
+                                    class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
+                            </div>
+                            <p class="mt-2 text-sm text-gray-400">NIDN : 10 digit | NUPTK : 16 digit. Angka tanpa spasi atau tanda baca.</p>
+                        </div>
+
+
+                        {{-- JABATAN FUNGSIONAL --}}
+                        <div class="sm:col-span-4">
+                            <label for="jabatan_fungsional" class="block text-sm/6 font-medium text-white">
+                                Jabatan Fungsional <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-2">
+                                <input 
+                                    id="jabatan_fungsional" 
+                                    type="text" 
+                                    name="jabatan_fungsional" 
+                                    value="{{ old('jabatan_fungsional', $user->jabatan_fungsional) }}"
+                                    required
+                                    placeholder="Contoh: Lektor, Asisten Ahli"
+                                    class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
+                            </div>
                         </div>
                     </div>
                 </div>

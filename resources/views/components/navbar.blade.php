@@ -8,10 +8,10 @@
             <div class="hidden md:block">
                 <div class="ml-10 flex items-baseline space-x-4" >
                 <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">Manajemen usulan</x-nav-link>
-                <x-nav-link href="/ManajemenLaporanPenelitian" :active="request()->is('ManajemenLaporanPenelitian')">ManajemenLaporanPenelitian</x-nav-link>
-                <x-nav-link href="/ManajemenProposalPKM" :active="request()->is('ManajemenProposalPKM')">ManajemenProposalPKM</x-nav-link>
-                <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">ManajemenLaporanPKM</x-nav-link>
+                <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">Usulan Penelitian</x-nav-link>
+                <x-nav-link href="/ManajemenLaporanPenelitian" :active="request()->is('ManajemenLaporanPenelitian')">Laporan Penelitian</x-nav-link>
+                <x-nav-link href="/ManajemenProposalPKM" :active="request()->is('ManajemenProposalPKM')">Usulan PKM</x-nav-link>
+                <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">Laporan PKM</x-nav-link>
                 </div>
             </div>
         </div>

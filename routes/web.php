@@ -76,13 +76,15 @@ Route::middleware('auth')->group(function () {
         
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:255',
-            'username' => 'required|min:3|max:255|unique:users,username,' . $user->id,
+            // 'username' => 'required|min:3|max:255|unique:users,username,' . $user->id,
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:5|max:255',
+            'nidn_nuptk' => 'required|string|min:10|max:16|unique:users,nidn_nuptk,' . $user->id,
+            'jabatan_fungsional' => 'required|string|max:255',
         ]);
 
         $user->name = $validated['name'];
-        $user->username = $validated['username'];
+        // $user->username = $validated['username'];
         $user->email = $validated['email'];
         
         if (!empty($validated['password'])) {
