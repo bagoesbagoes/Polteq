@@ -1,15 +1,9 @@
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
-    
-    {{-- ❌ HAPUS BARIS INI - Alpine.js sudah ada di layout.blade.php! --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> --}}
 
-    {{-- ✅ SUCCESS ALERT dengan Auto-Dismiss 4 detik --}}
     @if(session('success'))
         @php
-            // Simpan pesan dulu sebelum dihapus
             $successMessage = session('success');
-            // FORCE HAPUS session sekarang juga
             session()->forget('success');
         @endphp
         

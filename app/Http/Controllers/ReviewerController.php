@@ -120,10 +120,10 @@ class ReviewerController extends Controller
             $statusMessage = 'memerlukan revisi';
         }
         
-        // 🎯 REDIRECT KE /proposals/browse dengan pesan yang lebih informatif
+        // REDIRECT KE /proposals/browse dengan pesan yang lebih informatif
         return redirect()->route('proposals.browse')
             ->with('success', "Review berhasil disimpan! Proposal \"{$proposal->judul}\" {$statusMessage}.");
-}
+    }
     
     // Show detail review
     public function showReview(Review $review)

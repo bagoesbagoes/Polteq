@@ -141,9 +141,9 @@ class ProposalController extends Controller
             $proposal->file_usulan = $request->file('file_usulan')->store('proposals', 'public');
         }
         
-        // 🎯 PENTING: Jika status 'need_revision', kembalikan ke 'submitted' untuk review ulang
+        // Jika status 'need_revision', kembalikan ke 'submitted' untuk review ulang
         if ($proposal->status === 'need_revision') {
-            // 🔥 HAPUS SEMUA REVIEW LAMA (agar reviewer bisa review ulang)
+            // HAPUS SEMUA REVIEW LAMA
             $proposal->reviews()->delete();
             
             // Set status kembali ke submitted
@@ -171,23 +171,23 @@ class ProposalController extends Controller
     }
 
     public function submit(Proposal $proposal)
-{
-    // Authorization: Hanya pemilik proposal
-    if ($proposal->user_id !== Auth::id()) {
-        abort(403, 'Unauthorized');
+    {
+        // Authorization: Hanya pemilik proposal
+        if ($proposal->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        // Cek: Proposal harus status 'draft'
+        if ($proposal->status !== 'draft') {
+            return redirect()->back()->with('error', 'Proposal ini sudah disubmit sebelumnya');
+        }
+        
+        // Update status jadi 'submitted'
+        $proposal->update(['status' => 'submitted']);
+        
+        return redirect()->route('proposals.show', $proposal)
+            ->with('success', 'Proposal berhasil disubmit untuk direview!');
     }
-    
-    // Cek: Proposal harus status 'draft'
-    if ($proposal->status !== 'draft') {
-        return redirect()->back()->with('error', 'Proposal ini sudah disubmit sebelumnya');
-    }
-    
-    // Update status jadi 'submitted'
-    $proposal->update(['status' => 'submitted']);
-    
-    return redirect()->route('proposals.show', $proposal)
-        ->with('success', 'Proposal berhasil disubmit untuk direview!');
-}
 
     public function browseForReviewer()
     {

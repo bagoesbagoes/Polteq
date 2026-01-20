@@ -30,13 +30,6 @@
                     {{ $user->name }}  
         </dd>
       </div>
-
-      {{-- <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-        <dt class="text-sm/6 font-medium text-gray-100">Username</dt>
-        <dd class="mt-1 text-sm/6 text-gray-400 sm:col-span-2 sm:mt-0">
-                    {{ $user->username }}  
-        </dd>
-      </div> --}}
       
       <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
         <dt class="text-sm/6 font-medium text-gray-100">Email address</dt>
@@ -87,7 +80,7 @@
 
             {{-- Tombol Edit Profile --}}
             <div class="mt-6 flex justify-end">
-                <a href="{{ route('profile.edit') }}"  {{-- 👈 Pakai route name --}}
+                <a href="{{ route('profile.edit') }}"
                   class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
                     Edit Profile
                 </a>

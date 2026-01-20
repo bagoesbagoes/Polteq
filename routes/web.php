@@ -102,7 +102,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ManajemenLaporanPKM', function () {
         return view('ManajemenLaporanPKM', ['title' => 'Manajemen Laporan PKM']);
     });
-
+    
     Route::get('/ManajemenProposalPKM', function () {
         return view('ManajemenProposalPKM', ['title' => 'Manajemen Proposal PKM']);
     });
@@ -120,7 +120,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviewer/proposals', [ProposalController::class, 'browseForReviewer'])
         ->name('reviewer.proposals');
     });
-
 
     // Browse proposals (untuk reviewer & admin)
     Route::get('/proposals/browse', function (Request $request) {
