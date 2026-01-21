@@ -66,7 +66,15 @@
 
                             <!-- Password -->
                             <div>
-                                <label for="password" class="block text-sm font-medium text-gray-100">Password</label>
+                                <div class="flex items-center justify-between">
+                                    <label for="password" class="block text-sm font-medium text-gray-100">Password</label>
+                                    {{-- LINK LUPA PASSWORD  --}}
+                                    <div class="text-sm">
+                                        <a href="{{ route('password.request') }}" class="font-semibold text-indigo-400 hover:text-indigo-300">
+                                            Lupa password?
+                                        </a>
+                                    </div>
+                                </div>
                                 <div class="mt-2">
                                     <input 
                                         id="password" 

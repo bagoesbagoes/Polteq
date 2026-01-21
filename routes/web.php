@@ -30,6 +30,21 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/signup', [RegisterController::class, 'index'])->name('signup');
     Route::post('/signup', [RegisterController::class, 'store'])->name('signup.process');
+
+    // Forgot Password Routes
+    Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'showForgotForm'])
+        ->name('password.request');
+    
+    Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'verifyIdentity'])
+        ->name('password.verify');
+    
+    // Reset Password Routes
+    Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'showResetForm'])
+        ->name('password.reset');
+    
+    Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'reset'])
+        ->name('password.update');
+
 });
 
 // ==========================
@@ -102,13 +117,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/ManajemenLaporanPKM', function () {
         return view('ManajemenLaporanPKM', ['title' => 'Manajemen Laporan PKM']);
     });
-    
+
     Route::get('/ManajemenProposalPKM', function () {
         return view('ManajemenProposalPKM', ['title' => 'Manajemen Proposal PKM']);
     });
 
-    Route::get('/ManajemenLaporanPenelitian', function () {
-        return view('ManajemenLaporanPenelitian', ['title' => 'Manajemen Laporan Penelitian']);
+    Route::get('/LaporanPenelitian', function () {
+        return view('LaporanPenelitian', ['title' => 'Manajemen Laporan Penelitian']);
     });
 
     // ==========================

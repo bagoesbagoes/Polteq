@@ -35,7 +35,7 @@ class PublisherController extends Controller
             'user_id' => $request->user()->id,
             'judul' => $validated['judul'],
             'deskripsi' => $validated['deskripsi'] ?? null,
-            'file_usulan' => 'proposals/' . $filename, // relative to storage/app/public
+            'file_usulan' => 'proposals/' . $filename, 
             'status' => 'menunggu',
         ]);
 
@@ -44,13 +44,13 @@ class PublisherController extends Controller
 
     public function show(Proposal $proposal)
     {
-        // ensure only owner publisher or admin/reviewer can access view — or middleware handles routes
+        
         return view('publisher.show', compact('proposal'));
     }
 
     public function submitRevision(Request $request, Proposal $proposal)
     {
-        // ensure current user is owner
+        
         if ($request->user()->id !== $proposal->user_id) abort(403);
 
         $validated = $request->validate([
@@ -62,10 +62,10 @@ class PublisherController extends Controller
         $filename = time() . '_rev_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/proposals', $filename);
 
-        // update proposal: set file_revisi and status to 'menunggu' or 'revisi' depending desired flow.
+        
         $proposal->update([
             'file_revisi' => 'proposals/' . $filename,
-            'status' => 'menunggu', // or 'revisi' until reviewer checks; choose consistent approach
+            'status' => 'menunggu', 
         ]);
 
         return back()->with('success', 'Revisi berhasil diunggah. Menunggu penilaian reviewer.');
