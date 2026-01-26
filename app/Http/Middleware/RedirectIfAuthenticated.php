@@ -12,7 +12,7 @@ class RedirectIfAuthenticated
     {
         // Jika user sudah login DAN user sedang mengakses halaman tamu (guest)
         if (Auth::check() && $this->isGuestRoute($request)) {
-            return redirect('/ManajemenProposalPenelitian');
+            return redirect('/UsulanPenelitian');
         }
         return $next($request);
     }

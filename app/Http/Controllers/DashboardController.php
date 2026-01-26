@@ -63,7 +63,7 @@ class DashboardController extends Controller
             ];
         }
         
-        return view('ManajemenProposalPenelitian', [
+        return view('UsulanPenelitian', [
             'title' => 'Manajemen usulan',
             'active' => 'dashboard',
             'counts' => $counts,

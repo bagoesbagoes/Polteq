@@ -26,7 +26,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             return redirect()
-                ->intended('/ManajemenProposalPenelitian')
+                ->intended('/UsulanPenelitian')
                 ->with('success', 'Login berhasil!');
         }
 

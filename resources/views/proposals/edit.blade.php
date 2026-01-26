@@ -80,7 +80,7 @@
                 {{-- Deskripsi --}}
                 <div>
                     <label for="deskripsi" class="block text-sm font-medium leading-6 text-white">
-                        Abstrak <span class="text-red-500">*</span>
+                        Deskripsi <span class="text-red-500">*</span>
                     </label>
                     <textarea 
                         name="deskripsi" 

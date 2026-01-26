@@ -8,10 +8,10 @@
             <div class="hidden md:block">
                 <div class="ml-10 flex items-baseline space-x-4" >
                 <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">Usulan Penelitian</x-nav-link>
+                <x-nav-link href="/UsulanPenelitian" :active="request()->is('UsulanPenelitian')">Usulan Penelitian</x-nav-link>
                 <x-nav-link href="/LaporanPenelitian" :active="request()->is('LaporanPenelitian')">Laporan Penelitian</x-nav-link>
-                <x-nav-link href="/ManajemenProposalPKM" :active="request()->is('ManajemenProposalPKM')">Usulan PKM</x-nav-link>
-                <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">Laporan PKM</x-nav-link>
+                <x-nav-link href="/UsulanPKM" :active="request()->is('UsulanPKM')">Usulan PKM</x-nav-link>
+                <x-nav-link href="/LaporanPKM" :active="request()->is('LaporanPKM')">Laporan PKM</x-nav-link>
                 </div>
             </div>
         </div>
@@ -19,12 +19,12 @@
                 <div class="ml-4 flex items-center md:ml-6">
                     <!-- Profile dropdown -->
                     <el-dropdown class="relative ml-3">
-                        <button class="relative flex max-w-xs items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                        <button class="relative flex max-w-xs items-center gap-2 rounded-full focus-visible:outline-2 cursor-pointer focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                             
                             <span class="sr-only">Open user menu</span>
                             
                             
-                            {{-- Nama User (BARU!) --}}
+                            {{-- Nama User --}}
                             <span class="hidden md:block text-sm font-medium text-white">
                                 {{ Auth::user()->name }}
                             </span>
@@ -70,10 +70,10 @@
             <div class="space-y-1 px-1 pt-1 pb-3 sm:px-3">
                 <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
                     
-                    <x-nav-link href="/ManajemenProposalPenelitian" :active="request()->is('ManajemenProposalPenelitian')">ManajemenUsulan</x-nav-link>
+                    <x-nav-link href="/UsulanPenelitian" :active="request()->is('UsulanPenelitian')">ManajemenUsulan</x-nav-link>
                     <x-nav-link href="/LaporanPenelitian" :active="request()->is('LaporanPenelitian')">Laporan Penelitian</x-nav-link>
-                    <x-nav-link href="/ManajemenProposalPKM" :active="request()->is('ManajemenProposalPKM')">ManajemenProposalPKM</x-nav-link>
-                    <x-nav-link href="/ManajemenLaporanPKM" :active="request()->is('ManajemenLaporanPKM')">ManajemenLaporanPKM</x-nav-link>
+                    <x-nav-link href="/UsulanPKM" :active="request()->is('UsulanPKM')">Usulan PKM</x-nav-link>
+                    <x-nav-link href="/LaporanPKM" :active="request()->is('LaporanPKM')">Laporan PKM</x-nav-link>
             </div>
             <div class="border-t border-white/10 pt-4 pb-3">
                 <div class="border-t border-white/10 pt-4 pb-3">

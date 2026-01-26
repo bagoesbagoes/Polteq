@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -40,11 +41,31 @@ class PasswordResetController extends Controller
         $attempts = session('reset_attempts', 0);
         $lastAttempt = session('last_reset_attempt');
 
-        if ($attempts >= 3 && $lastAttempt && now()->diffInMinutes($lastAttempt) < 10) {
-            return back()->withErrors([
-                'rate_limit' => 'Terlalu banyak percobaan. Silakan coba lagi dalam ' . 
-                    (10 - now()->diffInMinutes($lastAttempt)) . ' menit.'
-            ])->withInput();
+        if ($attempts >= 3 && $lastAttempt) {
+            // 1. Pastikan format tanggal aman & Timezone konsisten
+            $lastAttemptTime = Carbon::parse($lastAttempt);
+            
+            // 2. Hitung waktu kapan user boleh mencoba lagi (Waktu blokir habis)
+            $unlockTime = $lastAttemptTime->copy()->addMinutes(10);
+
+            // 3. Cek apakah SEKARANG masih sebelum waktu unlock?
+            if (now()->lessThan($unlockTime)) {
+                // Hitung sisa waktu dalam menit (float)
+                $minutesLeft = now()->floatDiffInMinutes($unlockTime);
+                
+                // 4. Bulatkan ke atas (ceil) agar jadi bilangan bulat (Integer)
+                // Contoh: 0.1 menit jadi 1 menit, 9.5 menit jadi 10 menit
+                $minutesText = ceil($minutesLeft);
+
+                return back()->withErrors([
+                    'rate_limit' => 'Terlalu banyak percobaan. Silakan coba lagi dalam ' . $minutesText . ' menit.'
+                ])->withInput();
+            } else {
+                // Jika sudah lewat 10 menit, reset session agar user bisa coba lagi
+                session()->forget(['reset_attempts', 'last_reset_attempt']);
+                // Reset variabel local juga untuk logika di bawahnya
+                $attempts = 0; 
+            }
         }
 
         // Cari user berdasarkan email DAN NIDN/NUPTK

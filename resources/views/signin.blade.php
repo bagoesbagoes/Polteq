@@ -28,11 +28,10 @@
                         </div>
                     @endif
 
-
                     <!-- Title -->
                     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                         <h1 class="mt-10 text-center text-2xl font-bold tracking-tight text-white">
-                            Sign in to your account
+                            Sign in ke akun Anda
                         </h1>
                     </div>
 

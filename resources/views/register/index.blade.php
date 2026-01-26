@@ -87,7 +87,7 @@
                                 minlength="10"
                                 maxlength="16"
                                 pattern="[0-9]{10,16}"
-                                placeholder="Contoh: 1234567890 / 12345678901234567"
+                                placeholder="Contoh : 1234567890 / 12345678901234567"
                                 class="mt-1 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white 
                                        outline -outline-offset-1 outline-white/10 
                                        placeholder:text-gray-500 
@@ -158,8 +158,8 @@
                         </button>
 
                         <small class="text-white">
-                            Already have account? 
-                            <a href="/signin" class="text-indigo-500 hover:text-indigo-400">Sign in here</a>
+                            Sudah memiliki akun ? 
+                            <a href="/signin" class="text-indigo-500 hover:text-indigo-400">Sign in disini</a>
                         </small>
                     </form>
                 </div>

@@ -35,7 +35,12 @@ class ProposalPolicy
      */
     public function delete(User $user, Proposal $proposal): bool
     {
-        // Hanya owner yang bisa delete DAN hanya yang masih draft
+        // ADMIN: Bisa hapus semua status KECUALI draft
+        if ($user->role === 'admin') {
+            return $proposal->status !== 'draft';
+        }
+
+        // PUBLISHER: Hanya bisa hapus milik sendiri DAN hanya yang masih draft
         return $user->id === $proposal->user_id && $proposal->status === 'draft';
     }
 

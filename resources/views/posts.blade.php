@@ -29,7 +29,7 @@
             cursor: help;
         }
     </style>
-
+    
     {{-- SUCCESS MESSAGE (DITAMBAHKAN) --}}
     @if(session('success'))
         <div x-data="{ show: true }" x-show="show" class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">

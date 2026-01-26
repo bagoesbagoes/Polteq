@@ -63,20 +63,28 @@ Route::post('/signout', function () {
 // ==========================
 Route::middleware('auth')->group(function () {
 
-    // ==========================
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+    
+    // Admin Dashboard
+    Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])
+        ->name('admin.dashboard');
+    
+    // Create Reviewer (POST)
+    Route::post('/admin/reviewer/create', [App\Http\Controllers\AdminController::class, 'storeReviewer'])
+        ->name('admin.store-reviewer');
+    });
+
     // DASHBOARD
-    // ==========================
-    Route::get('/ManajemenProposalPenelitian', [DashboardController::class, 'index'])
+    Route::get('/UsulanPenelitian', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    // ==========================
     // PROFILE
-    // ==========================
     Route::get('/profile', function () {
         return view('profile', [
             'title' => 'Profile',
             'user' => Auth::user()
         ]);
+
     });
 
     Route::get('/upload', function () {
@@ -114,12 +122,12 @@ Route::middleware('auth')->group(function () {
     // ==========================
     // OTHER PAGES
     // ==========================
-    Route::get('/ManajemenLaporanPKM', function () {
-        return view('ManajemenLaporanPKM', ['title' => 'Manajemen Laporan PKM']);
+    Route::get('/LaporanPKM', function () {
+        return view('LaporanPKM', ['title' => 'Manajemen Laporan PKM']);
     });
 
-    Route::get('/ManajemenProposalPKM', function () {
-        return view('ManajemenProposalPKM', ['title' => 'Manajemen Proposal PKM']);
+    Route::get('/UsulanPKM', function () {
+        return view('UsulanPKM', ['title' => 'Manajemen Proposal PKM']);
     });
 
     Route::get('/LaporanPenelitian', function () {
@@ -245,11 +253,11 @@ Route::middleware('auth')->group(function () {
     // ==========================
     // ADMIN ROUTES
     // ==========================
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-        Route::get('/admin/reviewer/create', [AdminController::class, 'createReviewer']);
-        Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer']);
-    });
+    // Route::middleware('role:admin')->group(function () {
+    //     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    //     Route::get('/admin/reviewer/create', [AdminController::class, 'createReviewer']);
+    //     Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer']);
+    // });
 
     // ==========================
     // PROPOSAL RESOURCE ROUTES

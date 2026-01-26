@@ -18,29 +18,61 @@
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Judul</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Dibuat</th>
-                        <th scope="col" class="relative px-6 py-3 text-left text-sm font-semibold text-white">Aksi</th>
+                        <th scope="col" class="px-6 py-3 text-right text-sm font-semibold text-white">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-gray-700 bg-gray-800">
                     @foreach ($proposals as $proposal)
-                        <tr>
-                            <td class="px-6 py-4 text-sm text-gray-200">{{ $proposal->judul }}</td>
+                        <tr class="hover:bg-gray-700/50 transition">
+                            <td class="px-6 py-4 text-sm text-gray-200">
+                                <div class="max-w-md truncate" title="{{ $proposal->judul }}">
+                                    {{ $proposal->judul }}
+                                </div>
+                            </td>
                             <td class="px-6 py-4 text-sm text-gray-200">
                                 <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ App\Helpers\ProposalHelper::statusColor($proposal->status) }}">
                                     {{ ucfirst(str_replace('_', ' ', $proposal->status)) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-400">{{ $proposal->created_at->format('d M Y') }}</td>
-                            <td class="px-6 py-4 text-sm text-right">
-                                <a href="{{ route('proposals.show', $proposal) }}" class="text-indigo-400 hover:text-indigo-300">Lihat</a>
-                                @if($proposal->status === 'draft')
-                                    <a href="{{ route('proposals.edit', $proposal) }}" class="ml-4 text-blue-400 hover:text-blue-300">Edit</a>
-                                    <form method="POST" action="{{ route('proposals.destroy', $proposal) }}" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="ml-4 text-red-400 hover:text-red-300" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                                    </form>
-                                @endif
+                            <td class="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">
+                                {{ $proposal->created_at->format('d M Y') }}
+                            </td>
+                            
+                            {{-- ✅ FIXED: Action Buttons dengan Flexbox --}}
+                            <td class="px-6 py-4 text-sm">
+                                <div class="flex items-center justify-end gap-3">
+                                    
+                                    {{-- Tombol Lihat (Selalu ada) --}}
+                                    <a href="{{ route('proposals.show', $proposal) }}" 
+                                       class="text-indigo-400 hover:text-indigo-300 font-medium transition">
+                                        Lihat
+                                    </a>
+                                    
+                                    {{-- Tombol Edit & Hapus (Hanya untuk status draft) --}}
+                                    @if($proposal->status === 'draft')
+                                        <span class="text-gray-600">|</span>
+                                        
+                                        <a href="{{ route('proposals.edit', $proposal) }}" 
+                                           class="text-blue-400 hover:text-blue-300 font-medium transition">
+                                            Edit
+                                        </a>
+                                        
+                                        <span class="text-gray-600">|</span>
+                                        
+                                        <form method="POST" 
+                                              action="{{ route('proposals.destroy', $proposal) }}" 
+                                              class="inline-block"
+                                              onsubmit="return confirm('Yakin ingin menghapus usulan ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="text-red-400 hover:text-red-300 font-medium transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
+                                    
+                                </div>
                             </td>
                         </tr>
                     @endforeach
