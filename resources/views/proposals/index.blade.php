@@ -38,7 +38,7 @@
                                 {{ $proposal->created_at->format('d M Y') }}
                             </td>
                             
-                            {{-- ✅ FIXED: Action Buttons dengan Flexbox --}}
+                            {{-- FIXED: Action Buttons dengan Flexbox --}}
                             <td class="px-6 py-4 text-sm">
                                 <div class="flex items-center justify-end gap-3">
                                     
@@ -70,8 +70,7 @@
                                                 Hapus
                                             </button>
                                         </form>
-                                    @endif
-                                    
+                                    @endif 
                                 </div>
                             </td>
                         </tr>

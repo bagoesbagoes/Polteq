@@ -63,6 +63,10 @@ Route::post('/signout', function () {
 // ==========================
 Route::middleware('auth')->group(function () {
 
+    Route::get('/proposals/{proposal}/download-surat-kerja', [ProposalController::class, 'downloadSuratKerja'])
+    ->middleware('auth')
+    ->name('proposals.download-surat-kerja');
+
     Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // Admin Dashboard
@@ -249,15 +253,6 @@ Route::middleware('auth')->group(function () {
         Route::put('reviewer/reviews/{review}', [ReviewerController::class, 'updateReview'])->name('reviewer.update-review');
         Route::delete('reviewer/reviews/{review}', [ReviewerController::class, 'deleteReview'])->name('reviewer.delete-review');
     });
-
-    // ==========================
-    // ADMIN ROUTES
-    // ==========================
-    // Route::middleware('role:admin')->group(function () {
-    //     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-    //     Route::get('/admin/reviewer/create', [AdminController::class, 'createReviewer']);
-    //     Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer']);
-    // });
 
     // ==========================
     // PROPOSAL RESOURCE ROUTES

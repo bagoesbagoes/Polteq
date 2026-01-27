@@ -1,7 +1,8 @@
+{{-- resources/views/proposals/create.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 
-    {{-- ✅ ERROR MESSAGES SECTION --}}
+    {{-- ERROR MESSAGES SECTION --}}
     @if($errors->any())
         <div class="mb-6 rounded-md bg-red-900/20 p-4 border border-red-700">
             <div class="flex">

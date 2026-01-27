@@ -1,3 +1,4 @@
+{{-- resources/views/admin/dashboard.blade.php --}}
 <x-layout>
     <x-slot:title>Admin Dashboard</x-slot:title>
 
@@ -154,7 +155,7 @@
                 {{-- NIDN/NUPTK --}}
                 <div>
                     <label for="nidn_nuptk" class="block text-sm font-medium text-gray-300 mb-2">
-                        NIDN/NUPTK <span class="text-red-500">*</span>
+                        NIDN / NUPTK <span class="text-red-500">*</span>
                     </label>
                     <input 
                         type="text" 
@@ -163,11 +164,11 @@
                         value="{{ old('nidn_nuptk') }}"
                         required
                         maxlength="17"
-                        pattern="[0-9]{17}"
+                        pattern="[0-9]{10,16}"
                         class="block w-full rounded-md bg-gray-700 border border-gray-600 text-white px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        placeholder="17 digit angka"
+                        placeholder="Contoh : 1234567890 / 12345678901234567"
                     >
-                    <p class="mt-1 text-xs text-gray-400">17 digit angka tanpa spasi</p>
+                    <p class="mt-1 text-xs text-gray-400"> nidn :10 digit | nuptk : 16 digit .angka tanpa spasi atau tanda baca</p>
                     @error('nidn_nuptk')
                         <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                     @enderror

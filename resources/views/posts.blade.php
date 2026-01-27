@@ -1,3 +1,5 @@
+{{-- resources/views/posts.blade.php --}}
+
 {{-- TAMPILAN DAFTAR USULAN UNTUK REVIEWER --}}
 
 <x-layout>

@@ -1,9 +1,10 @@
+{{-- resources/views/reviewer/review.blade.php --}}
 <x-layout>
     <x-slot:title>Form Review Usulan</x-slot:title>
 
     <div class="bg-gray-800 shadow sm:rounded-lg p-6">
         
-        {{-- ✅ ERROR MESSAGES SECTION --}}
+        {{-- ERROR MESSAGES SECTION --}}
         @if($errors->any())
             <div class="mb-6 rounded-md bg-red-900/20 p-4 border border-red-700">
                 <div class="flex">

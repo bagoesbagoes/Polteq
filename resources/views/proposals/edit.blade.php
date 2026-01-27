@@ -1,3 +1,4 @@
+{{-- resources/views/proposals/edit.blade.php --}}
 <x-layout>
     <x-slot:title>Edit usulan - {{ $proposal->judul }}</x-slot:title>
     

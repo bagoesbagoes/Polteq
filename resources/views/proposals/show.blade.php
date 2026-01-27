@@ -1,3 +1,4 @@
+{{-- resources/views/proposals/show.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 
@@ -191,6 +192,17 @@
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:px-6">
                     <div class="flex gap-3 justify-end">
                         @auth
+                            {{-- TOMBOL DOWNLOAD SURAT KERJA (BARU!) --}}
+                            @if(Auth::user()->id === $proposal->user_id && $proposal->status === 'accepted')
+                                        <a href="{{ route('proposals.download-surat-kerja', $proposal) }}" 
+                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Download Surat Kerja
+                                        </a>
+                            @endif
+
                             {{-- ✅ TOMBOL HAPUS UNTUK ADMIN (BARU!) --}}
                             @if(Auth::user()->role === 'admin' && $proposal->status !== 'draft')
                                 <form method="POST" 

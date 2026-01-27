@@ -1,3 +1,4 @@
+{{-- resources/views/auth/forgot-password.blade.php --}}
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-900">
 <head>

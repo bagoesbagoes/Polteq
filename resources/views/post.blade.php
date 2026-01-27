@@ -1,3 +1,4 @@
+{{-- resources/views/post.blade.php --}}
 {{-- TAMPILAN DAFTAR USULAN UNTUK PUBLISHER --}}
 
 <x-layout>

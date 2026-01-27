@@ -1,3 +1,4 @@
+<!-- database/migrations/2025_12_12_080856_add_scores_to_reviews_table.php -->
 <?php
 
 use Illuminate\Database\Migrations\Migration;

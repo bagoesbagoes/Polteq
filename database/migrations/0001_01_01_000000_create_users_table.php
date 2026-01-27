@@ -1,3 +1,4 @@
+<!-- database/factories/migrations/0001_01_01_000000_create_users_table.php -->
 <?php
 
 use Illuminate\Database\Migrations\Migration;

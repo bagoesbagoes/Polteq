@@ -1,3 +1,4 @@
+<!-- database/migrations/2026_01_13_021529_fix_recommendation_enum_in_reviews_table.php -->
 <?php
 
 use Illuminate\Support\Facades\DB;

@@ -1,3 +1,4 @@
+<!-- database/migrations/2026_01_09_023206_update_role_enum_in_users_table.php -->
 <?php
 
 use Illuminate\Database\Migrations\Migration;

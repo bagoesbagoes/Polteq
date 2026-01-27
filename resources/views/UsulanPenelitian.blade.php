@@ -1,3 +1,4 @@
+{{-- resources/views/UsulanPenelitian.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 
@@ -162,6 +163,26 @@
                         <h3 class="mb-2 text-xl font-bold dark:text-white">Pengumuman Hasil Akhir</h3>
                         <p class="text-gray-500 dark:text-gray-400">
                             Surat kerja untuk proposal yang disetujui
+                        </p>
+                    </div>
+                @endif
+
+                {{-- Card 5: halaman dashboard admin (HANYA admin) --}}
+                @if(Auth::user()->role === 'admin')
+                    <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
+                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+
+                        <a href="{{ route('admin.dashboard') }}"
+                           class="mb-2 text-xl font-bold dark:text-white hover:underline">
+                            Dashboard Admin
+                        </a>
+
+                        <p class="text-gray-500 dark:text-gray-400">
+                            Daftar statistik dan manajemen reviewer
                         </p>
                     </div>
                 @endif

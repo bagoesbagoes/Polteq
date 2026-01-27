@@ -1,3 +1,4 @@
+<!-- database/migrations/2026_01_19_012746_add_nidn_and_jabatan_to_users_table.php -->
 <?php
 
 use Illuminate\Database\Migrations\Migration;

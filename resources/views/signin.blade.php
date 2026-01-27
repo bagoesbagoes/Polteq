@@ -1,3 +1,4 @@
+{{-- resources/views/signin.blade.php --}}
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-900">
     <head>

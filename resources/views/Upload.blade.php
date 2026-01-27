@@ -50,23 +50,6 @@
                             </div>
                         </div>
 
-                        {{-- Username --}}
-                        {{-- <div class="sm:col-span-4">
-                            <label for="username" class="block text-sm/6 font-medium text-white">
-                                Username <span class="text-red-500">*</span>
-                            </label>
-                            <div class="mt-2">
-                                <input 
-                                    id="username" 
-                                    type="text" 
-                                    name="username" 
-                                    value="{{ old('username', $user->username) }}"
-                                    required
-                                    class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-                            </div>
-                            <p class="mt-2 text-sm text-gray-400">Username harus unique dan akan digunakan untuk login.</p>
-                        </div> --}}
-
                         {{-- Email --}}
                         <div class="sm:col-span-4">
                             <label for="email" class="block text-sm/6 font-medium text-white">

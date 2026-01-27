@@ -1,3 +1,4 @@
+{{-- resources/views/publisher/create.blade.php --}}
 <x-layout>
     <x-slot:title>Upload Proposal</x-slot>
     <form action="{{ url('/publisher/upload') }}" method="POST" enctype="multipart/form-data">

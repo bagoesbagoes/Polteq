@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Proposal;
+use Carbon\Carbon;
 use App\Models\Review;
+use App\Models\Proposal;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -202,4 +204,81 @@ class ProposalController extends Controller
             'proposals' => $proposals,
         ]);
     }
+
+    public function downloadSuratKerja(Proposal $proposal)
+    {
+        // ========================================
+        // 1. AUTHORIZATION CHECK
+        // ========================================
+        
+        // Cek 1: Hanya pemilik proposal yang bisa download
+        if ($proposal->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses untuk mengunduh surat kerja ini.');
+        }
+        
+        // Cek 2: Hanya proposal yang sudah "accepted"
+        if ($proposal->status !== 'accepted') {
+            return redirect()
+                ->route('proposals.show', $proposal)
+                ->with('error', 'Surat kerja hanya tersedia untuk usulan yang sudah disetujui.');
+        }
+
+        $logoPath = public_path('image/profil1.jpg');
+        $logoBase64 = '';
+        
+        if (file_exists($logoPath)) {
+            $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoBase64 = 'data:image/' . $logoType . ';base64,' . $logoData;
+        }
+
+        // ========================================
+        // 2. PREPARE DATA UNTUK PDF
+        // ========================================
+        
+        // Nomor surat (auto-generate berdasarkan ID)
+        $nomorSurat = sprintf(
+            '%03d/SK-PENELITIAN/POLTEQ/%s/%04d',
+            $proposal->id,
+            strtoupper(Carbon::now()->translatedFormat('F')), // Nama bulan (Indonesia)
+            Carbon::now()->year
+        );
+        // Contoh output: 001/SK-PENELITIAN/POLTEQ/JANUARI/2026
+        
+        // Data yang akan di-pass ke view
+        $data = [
+            'proposal' => $proposal,
+            'nomorSurat' => $nomorSurat,
+            'tanggalSurat' => Carbon::now()->translatedFormat('d F Y'), // 27 Januari 2026
+            'namaDosen' => $proposal->author->name,
+            'nidnNuptk' => $proposal->author->nidn_nuptk,
+            'jabatan' => $proposal->author->jabatan_fungsional,
+            'judulUsulan' => $proposal->judul,
+            'logoBase64' => $logoBase64,
+        ];
+        
+        // ========================================
+        // 3. LOAD VIEW & GENERATE PDF
+        // ========================================
+        
+        $pdf = Pdf::loadView('proposals.surat-kerja', $data);
+        
+        // Konfigurasi PDF
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Filename untuk download
+        $filename = 'Surat_Kerja_' . str_replace(' ', '_', $proposal->judul) . '.pdf';
+        
+        // ========================================
+        // 4. DOWNLOAD PDF
+        // ========================================
+        
+        return $pdf->download($filename);
+        
+        // Alternatif: Stream (tampilkan di browser tanpa download)
+        // return $pdf->stream($filename);
+
+
+    }
+
 }

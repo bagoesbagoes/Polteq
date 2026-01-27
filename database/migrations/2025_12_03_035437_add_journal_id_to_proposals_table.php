@@ -1,3 +1,4 @@
+<!-- database/migrations/2025_12_03_035437_add_journal_id_to_proposals_table.php -->
 <?php
 
 use Illuminate\Database\Migrations\Migration;

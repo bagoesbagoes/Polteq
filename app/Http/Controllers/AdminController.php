@@ -26,7 +26,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:255|regex:/^[\pL\s]+$/u',
             'email' => 'required|email:rfc|unique:users',
-            'nidn_nuptk' => 'required|numeric|digits:17|unique:users',
+            'nidn_nuptk' => 'required|string|min:10|max:16|unique:users',
             'jabatan_fungsional' => 'required|string|max:255',
             'password' => 'required|min:5|max:255',
         ], [

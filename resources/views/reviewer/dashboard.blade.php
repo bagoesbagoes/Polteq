@@ -1,3 +1,4 @@
+{{-- resources/views/reviewer/dashboard.blade.php --}}
 <x-layout>
     <x-slot:title>Dashboard Reviewer</x-slot:title>
 

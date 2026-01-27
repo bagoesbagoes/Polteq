@@ -1,3 +1,4 @@
+<!-- database/migrations/2025_12_03_030534_create_journals_table.php -->
 <?php
 
 use Illuminate\Database\Migrations\Migration;
