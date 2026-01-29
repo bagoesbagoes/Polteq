@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Report;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,4 +70,48 @@ class DashboardController extends Controller
             'counts' => $counts,
         ]);
     }
+
+    public function IndexLaporanPenelitian()
+    {
+        $user = Auth::user();
+        
+        // Initialize counts
+        $counts = [
+            'laporan_akhir' => 0,
+            'luaran' => 0,
+            'accepted_proposals' => 0,
+        ];
+        
+        // Jika Publisher
+        if ($user->role === 'publisher') {
+            // Hitung jumlah proposals yang accepted
+            $counts['accepted_proposals'] = Proposal::where('user_id', $user->id)
+                ->where('status', 'accepted')
+                ->count();
+            
+            // Hitung jumlah laporan akhir yang sudah diupload
+            $counts['laporan_akhir'] = Report::where('user_id', $user->id)
+                ->where('type', 'laporan_akhir')
+                ->count();
+            
+            // Hitung jumlah luaran yang sudah diupload
+            $counts['luaran'] = Report::where('user_id', $user->id)
+                ->where('type', 'luaran')
+                ->count();
+        }
+        
+        // Jika Admin
+        elseif ($user->role === 'admin') {
+            $counts['accepted_proposals'] = Proposal::where('status', 'accepted')->count();
+            $counts['laporan_akhir'] = Report::where('type', 'laporan_akhir')->count();
+            $counts['luaran'] = Report::where('type', 'luaran')->count();
+        }
+        
+        return view('LaporanPenelitian', [
+            'title' => 'Laporan Penelitian',
+            'active' => 'laporan_penelitian',
+            'counts' => $counts,
+        ]);
+    }
+
 }

@@ -192,7 +192,7 @@
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:px-6">
                     <div class="flex gap-3 justify-end">
                         @auth
-                            {{-- TOMBOL DOWNLOAD SURAT KERJA (BARU!) --}}
+                            {{-- TOMBOL DOWNLOAD SURAT KERJA --}}
                             @if(Auth::user()->id === $proposal->user_id && $proposal->status === 'accepted')
                                         <a href="{{ route('proposals.download-surat-kerja', $proposal) }}" 
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -203,7 +203,7 @@
                                         </a>
                             @endif
 
-                            {{-- ✅ TOMBOL HAPUS UNTUK ADMIN (BARU!) --}}
+                            {{-- TOMBOL HAPUS UNTUK ADMIN (BARU!) --}}
                             @if(Auth::user()->role === 'admin' && $proposal->status !== 'draft')
                                 <form method="POST" 
                                       action="{{ route('proposals.destroy', $proposal) }}" 

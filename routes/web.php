@@ -1,18 +1,18 @@
 <?php
-use App\Models\Post;
 use App\Models\User;
-use App\Models\Category;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublisherController;
+use App\Http\Controllers\PasswordResetController;
 
 // ==========================
 // PUBLIC ROUTES (TANPA LOGIN)
@@ -32,17 +32,17 @@ Route::middleware('guest')->group(function () {
     Route::post('/signup', [RegisterController::class, 'store'])->name('signup.process');
 
     // Forgot Password Routes
-    Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'showForgotForm'])
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])
         ->name('password.request');
     
-    Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'verifyIdentity'])
+    Route::post('/forgot-password', [PasswordResetController::class, 'verifyIdentity'])
         ->name('password.verify');
     
     // Reset Password Routes
-    Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'showResetForm'])
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
         ->name('password.reset');
     
-    Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'reset'])
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])
         ->name('password.update');
 
 });
@@ -70,11 +70,11 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // Admin Dashboard
-    Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard');
     
     // Create Reviewer (POST)
-    Route::post('/admin/reviewer/create', [App\Http\Controllers\AdminController::class, 'storeReviewer'])
+    Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer'])
         ->name('admin.store-reviewer');
     });
 
@@ -113,7 +113,7 @@ Route::middleware('auth')->group(function () {
         $user->name = $validated['name'];
         // $user->username = $validated['username'];
         $user->email = $validated['email'];
-        
+    
         if (!empty($validated['password'])) {
             $user->password = bcrypt($validated['password']);
         }
@@ -123,6 +123,69 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
     })->name('profile.update');
 
+    // ==============================
+    // ==Halaman Laporan Penelitian==
+    // ==============================
+    Route::get('/LaporanPenelitian', [DashboardController::class, 'IndexLaporanPenelitian'])
+        ->name('laporan_penelitian');
+
+    // ==============================
+    // == PUBLISHER: Reports Routes ==
+    // ==============================
+    Route::middleware(['auth', 'role:publisher'])->group(function () {
+        
+        // Laporan Akhir
+        Route::get('/reports/laporan-akhir', [ReportController::class, 'index'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('reports.laporan-akhir');
+        
+        Route::get('/reports/laporan-akhir/create', [ReportController::class, 'create'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('reports.create-laporan-akhir');
+        
+        Route::post('/reports/laporan-akhir', [ReportController::class, 'store'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('reports.store-laporan-akhir');
+        
+        // Luaran
+        Route::get('/reports/luaran', [ReportController::class, 'index'])
+            ->defaults('type', 'luaran')
+            ->name('reports.luaran');
+        
+        Route::get('/reports/luaran/create', [ReportController::class, 'create'])
+            ->defaults('type', 'luaran')
+            ->name('reports.create-luaran');
+        
+        Route::post('/reports/luaran', [ReportController::class, 'store'])
+            ->defaults('type', 'luaran')
+            ->name('reports.store-luaran');
+        
+        // Common routes (work for both types)
+        Route::get('/reports/{type}/{report}', [ReportController::class, 'show'])
+            ->name('reports.show');
+        
+        Route::delete('/reports/{type}/{report}', [ReportController::class, 'destroy'])
+            ->name('reports.destroy');
+        
+        Route::get('/reports/{type}/{report}/download', [ReportController::class, 'download'])
+            ->name('reports.download');
+    });
+
+    // ==============================
+    // == ADMIN: Manage All Reports ==
+    // ==============================
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+        
+        Route::get('/admin/reports/laporan-akhir', [ReportController::class, 'adminIndex'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('admin.reports.laporan-akhir');
+        
+        Route::get('/admin/reports/luaran', [ReportController::class, 'adminIndex'])
+            ->defaults('type', 'luaran')
+            ->name('admin.reports.luaran');
+    });
+    
+    
     // ==========================
     // OTHER PAGES
     // ==========================
@@ -132,10 +195,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/UsulanPKM', function () {
         return view('UsulanPKM', ['title' => 'Manajemen Proposal PKM']);
-    });
-
-    Route::get('/LaporanPenelitian', function () {
-        return view('LaporanPenelitian', ['title' => 'Manajemen Laporan Penelitian']);
     });
 
     // ==========================

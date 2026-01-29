@@ -249,7 +249,7 @@
                     <td>{{ $namaDosen }}</td>
                 </tr>
                 <tr>
-                    <td>NIDN/NUPTK</td>
+                    <td>NIDN / NUPTK</td>
                     <td>:</td>
                     <td>{{ $nidnNuptk }}</td>
                 </tr>

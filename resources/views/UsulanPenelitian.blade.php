@@ -8,7 +8,7 @@
             session()->forget('success');
         @endphp
         
-        <div 
+        <div
             x-data="{ show: true }" 
             x-show="show" 
             x-init="setTimeout(() => show = false, 4000)"
