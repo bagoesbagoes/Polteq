@@ -71,4 +71,44 @@ class Proposal extends Model
         return $this->belongsTo(Journal::class, 'journal_id');
     }
 
+    /**
+     * Proposal has many Reports (laporan_akhir & luaran)
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class, 'proposal_id');
+    }
+
+    /**
+     * Check if proposal has laporan_akhir
+     */
+    public function hasLaporanAkhir(): bool
+    {
+        return $this->reports()->where('type', 'laporan_akhir')->exists();
+    }
+
+    /**
+     * Check if proposal has luaran
+     */
+    public function hasLuaran(): bool
+    {
+        return $this->reports()->where('type', 'luaran')->exists();
+    }
+
+    /**
+     * Get laporan_akhir
+     */
+    public function laporanAkhir()
+    {
+        return $this->reports()->where('type', 'laporan_akhir')->first();
+    }
+
+    /**
+     * Get luaran
+     */
+    public function luaran()
+    {
+        return $this->reports()->where('type', 'luaran')->first();
+    }
+
 }

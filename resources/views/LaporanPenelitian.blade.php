@@ -10,11 +10,11 @@
                 <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition relative">
 
                     {{-- BADGE COUNTER - Pojok Kanan Atas (Selalu tampil) --}}
-                    @if(isset($counts['all']))
+                    @if(isset($counts['laporan_akhir']))
                         <div class="absolute top-4 right-4">
                             <span class="inline-flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full shadow-lg
-                                {{ $counts['all'] > 0 ? 'bg-blue-600' : 'bg-gray-600' }}">
-                                {{ $counts['all'] }}
+                                {{ $counts['laporan_akhir'] > 0 ? 'bg-blue-600' : 'bg-gray-600' }}">
+                                {{ $counts['laporan_akhir'] }}
                             </span>
                         </div>
                     @endif
@@ -27,17 +27,17 @@
 
                     @php
                         $link = Auth::user()->role === 'publisher' 
-                            ? route('proposals.index')
-                            : route('proposals.browse');
+                            ? route('reports.laporan-akhir')
+                            : route('admin.reports.laporan-akhir');
                     @endphp
 
                     <a href="{{ $link }}"
                        class="mb-2 text-xl font-bold dark:text-white hover:underline">
-                        Upload laporan akhir
+                        Laporan Akhir
                     </a>
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        tempat pengumpulan laporan akhir
+                        Tempat pengumpulan laporan akhir penelitian
                     </p>
                 </div>
 
@@ -46,11 +46,11 @@
                     <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition relative">
                         
                         {{-- BADGE COUNTER (Selalu tampil) --}}
-                        @if(isset($counts['accepted']))
+                        @if(isset($counts['luaran']))
                             <div class="absolute top-4 right-4">
                                 <span class="inline-flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full shadow-lg
-                                    {{ $counts['accepted'] > 0 ? 'bg-green-600' : 'bg-gray-600' }}">
-                                    {{ $counts['accepted'] }}
+                                    {{ $counts['luaran'] > 0 ? 'bg-green-600' : 'bg-gray-600' }}">
+                                    {{ $counts['luaran'] }}
                                 </span>
                             </div>
                         @endif
@@ -65,13 +65,19 @@
                             </svg>
                         </div>
 
-                        <a href="{{ route('proposals.accepted') }}"
+                        @php
+                            $luaranLink = Auth::user()->role === 'publisher' 
+                                ? route('reports.luaran')
+                                : route('admin.reports.luaran');
+                        @endphp
+
+                        <a href="{{ $luaranLink }}"
                            class="mb-2 text-xl font-bold dark:text-white hover:underline">
                             Luaran
                         </a>
 
                         <p class="text-gray-500 dark:text-gray-400">
-                            tempat pengumpulan luaran, hasil dari penilaian
+                            Tempat pengumpulan luaran penelitian
                         </p>
                     </div>
                 @endif
@@ -81,11 +87,11 @@
                     <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition relative">
                         
                         {{-- BADGE COUNTER (Selalu tampil, pulse jika > 0) --}}
-                        @if(isset($counts['need_revision']))
+                        @if(isset($counts['accepted_proposals']))
                             <div class="absolute top-4 right-4">
                                 <span class="inline-flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full shadow-lg
-                                    {{ $counts['need_revision'] > 0 ? 'bg-red-600 animate-pulse' : 'bg-gray-600' }}">
-                                    {{ $counts['need_revision'] }}
+                                    {{ $counts['accepted_proposals'] > 0 ? 'bg-yellow-600' : 'bg-gray-600' }}">
+                                    {{ $counts['accepted_proposals'] }}
                                 </span>
                             </div>
                         @endif
@@ -100,13 +106,13 @@
                             </svg>
                         </div>
 
-                        <a href="{{ route('proposals.revisions') }}"
+                        <a href="{{ route('proposals.accepted') }}"
                            class="mb-2 text-xl font-bold dark:text-white hover:underline">
-                            Revisi Usulan
+                            Usulan Disetujui
                         </a>
 
                         <p class="text-gray-500 dark:text-gray-400">
-                            Hasil karya ilmiah tidak memenuhi kriteria
+                            Daftar usulan yang telah disetujui untuk dikerjakan
                         </p>
                     </div>
                 @endif
