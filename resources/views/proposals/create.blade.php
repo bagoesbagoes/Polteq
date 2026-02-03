@@ -32,7 +32,7 @@
             </div>
 
             <div>
-                <label for="deskripsi" class="block text-sm font-medium leading-6 text-white">Deskripsi</label>
+                <label for="deskripsi" class="block text-sm font-medium leading-6 text-white">Abstrak</label>
                 <textarea name="deskripsi" id="deskripsi" rows="6" required class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">{{ old('deskripsi') }}</textarea>
             </div>
 

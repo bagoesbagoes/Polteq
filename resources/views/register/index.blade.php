@@ -85,17 +85,15 @@
                                 name="nidn_nuptk"
                                 value="{{ old('nidn_nuptk') }}"
                                 required
-                                minlength="10"
-                                maxlength="16"
-                                pattern="[0-9]{10,16}"
-                                placeholder="Contoh : 1234567890 / 12345678901234567"
+                                inputmode="numeric"
+                                placeholder="Contoh: 1234567890 (NIDN) atau 1234567890123456 (NUPTK)"
                                 class="mt-1 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white 
-                                       outline -outline-offset-1 outline-white/10 
-                                       placeholder:text-gray-500 
-                                       focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
-                                       sm:text-sm @error('nidn_nuptk') border border-red-500 @enderror"
+                                    outline -outline-offset-1 outline-white/10 
+                                    placeholder:text-gray-500 
+                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
+                                    sm:text-sm @error('nidn_nuptk') border border-red-500 @enderror"
                             />
-                            <p class="mt-1 text-xs text-gray-400"> nidn :10 digit | nuptk : 16 digit .angka tanpa spasi atau tanda baca</p>
+                            <p class="mt-1 text-xs text-gray-400">NIDN: 10 digit | NUPTK: 16 digit (angka saja, tanpa spasi)</p>
                             @error('nidn_nuptk')
                                 <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
                             @enderror
@@ -106,20 +104,66 @@
                             <label for="jabatan_fungsional" class="block text-sm font-medium text-gray-100">
                                 Jabatan Fungsional <span class="text-red-500">*</span>
                             </label>
-                            <input
+                            <select
                                 id="jabatan_fungsional"
-                                type="text"
                                 name="jabatan_fungsional"
-                                value="{{ old('jabatan_fungsional') }}"
                                 required
-                                placeholder="Contoh: Asisten Ahli, Lektor, dll"
                                 class="mt-1 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white 
-                                       outline -outline-offset-1 outline-white/10 
-                                       placeholder:text-gray-500 
-                                       focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
-                                       sm:text-sm @error('jabatan_fungsional') border border-red-500 @enderror"
-                            />
+                                    outline -outline-offset-1 outline-white/10 
+                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
+                                    sm:text-sm @error('jabatan_fungsional') border border-red-500 @enderror"
+                            >
+                                <option value="" class="bg-gray-800">-- Pilih Jabatan Fungsional --</option>
+                                <option value="Asisten Ahli" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Asisten Ahli' ? 'selected' : '' }}>
+                                    Asisten Ahli
+                                </option>
+                                <option value="Lektor" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Lektor' ? 'selected' : '' }}>
+                                    Lektor
+                                </option>
+                                <option value="Lektor Kepala" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Lektor Kepala' ? 'selected' : '' }}>
+                                    Lektor Kepala
+                                </option>
+                                <option value="Guru Besar" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Guru Besar' ? 'selected' : '' }}>
+                                    Guru Besar
+                                </option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-400">Pilih sesuai jabatan fungsional Anda saat ini</p>
                             @error('jabatan_fungsional')
+                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- PROGRAM STUDI --}}
+
+                        <div>
+                            <label for="prodi" class="block text-sm font-medium text-gray-100">
+                                Program Studi <span class="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="prodi"
+                                name="prodi"
+                                required
+                                class="mt-1 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white 
+                                    outline -outline-offset-1 outline-white/10 
+                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
+                                    sm:text-sm @error('prodi') border border-red-500 @enderror"
+                            >
+                                <option value="" class="bg-gray-800">-- Pilih Program Studi --</option>
+                                <option value="English for Business & Professional Communication" class="bg-gray-800" {{ old('prodi') == 'English for Business & Professional Communication' ? 'selected' : '' }}>
+                                    English for Business & Professional Communication
+                                </option>
+                                <option value="Bisnis Kreatif" class="bg-gray-800" {{ old('prodi') == 'Bisnis Kreatif' ? 'selected' : '' }}>
+                                    Bisnis Kreatif
+                                </option>
+                                <option value="Teknologi Produksi Tanaman Perkebunan" class="bg-gray-800" {{ old('prodi') == 'Teknologi Produksi Tanaman Perkebunan' ? 'selected' : '' }}>
+                                    Teknologi Produksi Tanaman Perkebunan
+                                </option>
+                                <option value="Teknologi Pangan" class="bg-gray-800" {{ old('prodi') == 'Teknologi Pangan' ? 'selected' : '' }}>
+                                    Teknologi Pangan
+                                </option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-400">Pilih program studi tempat Anda mengajar</p>
+                            @error('prodi')
                                 <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
                             @enderror
                         </div>

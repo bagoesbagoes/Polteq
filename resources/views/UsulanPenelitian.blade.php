@@ -76,7 +76,7 @@
                     </a>
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        Hasil karya ilmiah yang telah dikirim
+                        Usulan yang telah dikirim
                     </p>
                     
                 </div>
@@ -111,7 +111,7 @@
                         </a>
 
                         <p class="text-gray-500 dark:text-gray-400">
-                            Hasil karya ilmiah yang telah disetujui reviewer
+                            usulan yang telah disetujui reviewer
                         </p>
                     </div>
                 @endif
@@ -146,23 +146,7 @@
                         </a>
 
                         <p class="text-gray-500 dark:text-gray-400">
-                            Hasil karya ilmiah tidak memenuhi kriteria
-                        </p>
-                    </div>
-                @endif
-
-                {{-- Card 4: Pengumuman Hasil Akhir (HANYA PUBLISHER) --}}
-                @if(Auth::user()->role === 'publisher')
-                    <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
-                        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd" d="M18.458 3.11A1 1 0 0 1 19 4v16a1 1 0 0 1-1.581.814L12 16.944V7.056l5.419-3.87a1 1 0 0 1 1.039-.076ZM22 12c0 1.48-.804 2.773-2 3.465v-6.93c1.196.692 2 1.984 2 3.465ZM10 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6V8Zm0 9H5v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3Z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-
-                        <h3 class="mb-2 text-xl font-bold dark:text-white">Pengumuman Hasil Akhir</h3>
-                        <p class="text-gray-500 dark:text-gray-400">
-                            Surat kerja untuk proposal yang disetujui
+                            Usulan yang memerlukan perbaikan
                         </p>
                     </div>
                 @endif

@@ -105,23 +105,78 @@
                             <p class="mt-2 text-sm text-gray-400">NIDN : 10 digit | NUPTK : 16 digit. Angka tanpa spasi atau tanda baca.</p>
                         </div>
 
-
                         {{-- JABATAN FUNGSIONAL --}}
                         <div class="sm:col-span-4">
                             <label for="jabatan_fungsional" class="block text-sm/6 font-medium text-white">
                                 Jabatan Fungsional <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-2">
-                                <input 
-                                    id="jabatan_fungsional" 
-                                    type="text" 
-                                    name="jabatan_fungsional" 
-                                    value="{{ old('jabatan_fungsional', $user->jabatan_fungsional) }}"
-                                    required
-                                    placeholder="Contoh: Lektor, Asisten Ahli"
-                                    class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
+                                <select
+                                id="jabatan_fungsional"
+                                name="jabatan_fungsional"
+                                required
+                                class="mt-1 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white 
+                                    outline -outline-offset-1 outline-white/10 
+                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
+                                    sm:text-sm @error('jabatan_fungsional') border border-red-500 @enderror"
+                            >
+                                    <option value="" class="bg-gray-800">-- Pilih Jabatan Fungsional --</option>
+                                    <option value="Asisten Ahli" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Asisten Ahli' ? 'selected' : '' }}>
+                                        Asisten Ahli
+                                    </option>
+                                    <option value="Lektor" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Lektor' ? 'selected' : '' }}>
+                                        Lektor
+                                    </option>
+                                    <option value="Lektor Kepala" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Lektor Kepala' ? 'selected' : '' }}>
+                                        Lektor Kepala
+                                    </option>
+                                    <option value="Guru Besar" class="bg-gray-800" {{ old('jabatan_fungsional') == 'Guru Besar' ? 'selected' : '' }}>
+                                        Guru Besar
+                                    </option>
+                                </select>
+                                <p class="mt-2 text-sm text-gray-400">Pilih sesuai jabatan fungsional Anda saat ini</p>
+                                @error('jabatan_fungsional')
+                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
+
+                        {{-- Program Studi --}}
+                        <div class="sm:col-span-4">
+                            <label for="prodi" class="block text-sm/6 font-medium text-white">
+                                Program Studi <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-2">
+                                <select
+                                id="prodi"
+                                name="prodi"
+                                required
+                                class="mt-1 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white 
+                                    outline -outline-offset-1 outline-white/10 
+                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 
+                                    sm:text-sm @error('prodi') border border-red-500 @enderror"
+                            >
+                                    <option value="" class="bg-gray-800">-- Pilih Program Studi --</option>
+                                    <option value="English for Business & Professional Communication" class="bg-gray-800" {{ old('prodi') == 'English for Business & Professional Communication' ? 'selected' : '' }}>
+                                        English for Business & Professional Communication
+                                    </option>
+                                    <option value="Bisnis Kreatif" class="bg-gray-800" {{ old('prodi') == 'Bisnis Kreatif' ? 'selected' : '' }}>
+                                        Bisnis Kreatif
+                                    </option>
+                                    <option value="Teknologi Produksi Tanaman Perkebunan" class="bg-gray-800" {{ old('prodi') == 'Teknologi Produksi Tanaman Perkebunan' ? 'selected' : '' }}>
+                                        Teknologi Produksi Tanaman Perkebunan
+                                    </option>
+                                    <option value="Teknologi Pangan" class="bg-gray-800" {{ old('prodi') == 'Teknologi Pangan' ? 'selected' : '' }}>
+                                        Teknologi Pangan
+                                    </option>
+                                </select>
+                                <p class="mt-2 text-sm text-gray-400">Pilih sesuai program studi Anda saat ini</p>
+                                @error('prodi')
+                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 

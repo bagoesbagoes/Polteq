@@ -68,7 +68,7 @@
 
                 {{-- Publisher/Author --}}
                 <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Pengaju usulan</dt>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Dosen</dt>
                     <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
                         {{ $proposal->author->name ?? 'N/A' }}
                     </dd>
@@ -76,7 +76,7 @@
                 
                 {{-- Deskripsi --}}
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Abstrak/Deskripsi</dt>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Abstrak</dt>
                     <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
                         {{ $proposal->deskripsi }}
                     </dd>
@@ -199,7 +199,7 @@
                                             <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
-                                            Download Surat Kerja
+                                            Download Surat tugas
                                         </a>
                             @endif
 

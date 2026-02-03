@@ -8,7 +8,7 @@
         <input type="text" name="judul" value="{{ old('judul') }}" />
         @error('judul') <div class="text-red-500">{{ $message }}</div> @enderror
 
-        <label>Deskripsi</label>
+        <label>Abstrak</label>
         <textarea name="deskripsi">{{ old('deskripsi') }}</textarea>
 
         <label>File (PDF)</label>

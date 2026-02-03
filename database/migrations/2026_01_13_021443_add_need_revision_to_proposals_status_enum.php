@@ -17,7 +17,6 @@ return new class extends Migration
         $driver = DB::connection()->getDriverName();
         
         if ($driver === 'sqlite') {
-            // ✅ CARA SQLITE: Recreate table dengan kolom baru
             
             // 1. Buat tabel temporary dengan SEMUA kolom yang ada
             Schema::create('proposals_temp', function (Blueprint $table) {

@@ -44,18 +44,35 @@
                 {{-- Pilih Usulan --}}
                 <div>
                     <label for="proposal_id" class="block text-sm font-medium leading-6 text-white">
-                        Pilih Usulan <span class="text-red-500">*</span>
+                        Pilih Usulan 
+                        @if($type === 'laporan_akhir')
+                            <span class="text-red-500">*</span>
+                        @else
+                            <span class="text-gray-400">(Opsional)</span>
+                        @endif
                     </label>
-                    <select name="proposal_id" id="proposal_id" required 
+                    <select name="proposal_id" id="proposal_id" 
+                            {{ $type === 'laporan_akhir' ? 'required' : '' }}
                             class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">-- Pilih Usulan yang Sudah Disetujui --</option>
+                        
+                        @if($type === 'luaran')
+                            <option value="">-- Tidak Terkait Usulan --</option>
+                        @else
+                            <option value="">-- Pilih Usulan yang Sudah Disetujui --</option>
+                        @endif
+                        
                         @foreach($proposals as $proposal)
                             <option value="{{ $proposal->id }}" {{ old('proposal_id') == $proposal->id ? 'selected' : '' }}>
                                 {{ $proposal->judul }}
                             </option>
                         @endforeach
                     </select>
-                    <p class="mt-1 text-xs text-gray-400">Pilih usulan dengan status "Accepted"</p>
+                    
+                    @if($type === 'laporan_akhir')
+                        <p class="mt-1 text-xs text-gray-400">Pilih usulan dengan status "Accepted"</p>
+                    @else
+                        <p class="mt-1 text-xs text-gray-400">Kosongkan jika luaran tidak terkait dengan usulan tertentu</p>
+                    @endif
                 </div>
 
                 {{-- Judul --}}
@@ -75,7 +92,7 @@
                 {{-- Deskripsi --}}
                 <div>
                     <label for="description" class="block text-sm font-medium leading-6 text-white">
-                        Deskripsi <span class="text-gray-400">(Opsional)</span>
+                        Abstrak <span class="text-gray-400">(Opsional)</span>
                     </label>
                     <textarea name="description" 
                               id="description" 

@@ -22,7 +22,8 @@ class User extends Authenticatable
         'role',
         'nidn_nuptk',
         'jabatan_fungsional',
-    ];
+        'prodi',
+    ];              
 
     protected $hidden = [
         'password',

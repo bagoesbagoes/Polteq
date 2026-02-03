@@ -81,7 +81,7 @@
                 {{-- Deskripsi --}}
                 <div>
                     <label for="deskripsi" class="block text-sm font-medium leading-6 text-white">
-                        Deskripsi <span class="text-red-500">*</span>
+                        Abstrak <span class="text-red-500">*</span>
                     </label>
                     <textarea 
                         name="deskripsi" 
@@ -177,7 +177,7 @@
                     type="submit"
                     class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     @if($proposal->status === 'need_revision')
-                        💾 Simpan & Submit Revisi
+                        💾 Submit Revisi
                     @else
                         💾 Simpan Perubahan
                     @endif

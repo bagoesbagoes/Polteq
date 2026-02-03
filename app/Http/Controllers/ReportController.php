@@ -54,11 +54,14 @@ class ReportController extends Controller
             })
             ->get();
         
-        if ($proposals->isEmpty()) {
+        // HANYA untuk laporan_akhir, wajib ada proposal
+        if ($type === 'laporan_akhir' && $proposals->isEmpty()) {
             return redirect()
                 ->route('laporan_penelitian')
-                ->with('error', 'Tidak ada usulan yang disetujui atau semua usulan sudah memiliki ' . ($type === 'laporan_akhir' ? 'laporan akhir' : 'luaran') . '.');
+                ->with('error', 'Tidak ada usulan yang disetujui atau semua usulan sudah memiliki laporan akhir.');
         }
+        
+        // Untuk luaran, boleh kosong (bisa upload tanpa proposal)
         
         $title = $type === 'laporan_akhir' ? 'Upload Laporan Akhir' : 'Upload Luaran';
         
@@ -85,21 +88,22 @@ class ReportController extends Controller
                 'proposal_id' => 'required|exists:proposals,id',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:5000',
-                'file_upload' => 'required|file|mimes:pdf|max:10240', // 10MB, PDF only
+                'file_upload' => 'required|file|mimes:pdf|max:10240',
             ], [
+                'proposal_id.required' => 'Usulan wajib dipilih untuk laporan akhir',
                 'file_upload.required' => 'File laporan akhir wajib di-upload',
                 'file_upload.mimes' => 'File harus berupa PDF',
                 'file_upload.max' => 'Ukuran file maksimal 10MB',
             ]);
         } else {
-            // Luaran: File ATAU Hyperlink
+            // Luaran: proposal_id OPSIONAL
             $validated = $request->validate([
-                'proposal_id' => 'required|exists:proposals,id',
+                'proposal_id' => 'nullable|exists:proposals,id',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:5000',
                 'luaran_type' => 'required|in:file,link',
-                'file_upload' => 'required_if:luaran_type,file|file|max:10240', // 10MB, any file
-                'hyperlink' => 'required_if:luaran_type,link|url|max:500',
+                'file_upload' => 'nullable|required_if:luaran_type,file|file|max:10240',
+                'hyperlink' => 'nullable|required_if:luaran_type,link|url|max:500',
             ], [
                 'luaran_type.required' => 'Pilih tipe luaran (File atau Hyperlink)',
                 'file_upload.required_if' => 'File wajib di-upload jika memilih tipe File',
@@ -109,30 +113,32 @@ class ReportController extends Controller
             ]);
         }
         
-        // Cek apakah proposal milik user
-        $proposal = Proposal::findOrFail($validated['proposal_id']);
-        
-        if ($proposal->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
-        
-        // Cek apakah proposal sudah accepted
-        if ($proposal->status !== 'accepted') {
-            return back()->with('error', 'Hanya usulan yang sudah disetujui yang bisa upload laporan/luaran.');
-        }
-        
-        // Cek apakah sudah ada laporan/luaran untuk proposal ini
-        $existingReport = Report::where('proposal_id', $validated['proposal_id'])
-            ->where('type', $type)
-            ->first();
-        
-        if ($existingReport) {
-            return back()->with('error', 'Proposal ini sudah memiliki ' . ($type === 'laporan_akhir' ? 'laporan akhir' : 'luaran') . '.');
+        // Cek apakah proposal milik user (hanya jika proposal_id ada)
+        if (!empty($validated['proposal_id'])) {
+            $proposal = Proposal::findOrFail($validated['proposal_id']);
+            
+            if ($proposal->user_id !== Auth::id()) {
+                abort(403, 'Unauthorized');
+            }
+            
+            // Cek apakah proposal sudah accepted
+            if ($proposal->status !== 'accepted') {
+                return back()->with('error', 'Hanya usulan yang sudah disetujui yang bisa upload laporan/luaran.');
+            }
+            
+            // Cek apakah sudah ada laporan/luaran untuk proposal ini
+            $existingReport = Report::where('proposal_id', $validated['proposal_id'])
+                ->where('type', $type)
+                ->first();
+            
+            if ($existingReport) {
+                return back()->with('error', 'Proposal ini sudah memiliki ' . ($type === 'laporan_akhir' ? 'laporan akhir' : 'luaran') . '.');
+            }
         }
         
         // Prepare data
         $data = [
-            'proposal_id' => $validated['proposal_id'],
+            'proposal_id' => $validated['proposal_id'] ?? null,
             'user_id' => Auth::id(),
             'type' => $type,
             'title' => $validated['title'],
@@ -170,7 +176,8 @@ class ReportController extends Controller
         return redirect()
             ->route('laporan_penelitian')
             ->with('success', $successMessage);
-    }
+}
+
 
     /**
      * Show report detail
@@ -210,9 +217,18 @@ class ReportController extends Controller
             ? 'Laporan akhir berhasil dihapus!' 
             : 'Luaran berhasil dihapus!';
         
-        return redirect()
-            ->route($type === 'laporan_akhir' ? 'reports.laporan-akhir' : 'reports.luaran')
-            ->with('success', $successMessage);
+        // Redirect berdasarkan role
+        if (Auth::user()->role === 'admin') {
+            // Admin redirect ke halaman admin
+            return redirect()
+                ->route($type === 'laporan_akhir' ? 'admin.reports.laporan-akhir' : 'admin.reports.luaran')
+                ->with('success', $successMessage);
+        } else {
+            // Publisher redirect ke halaman publisher
+            return redirect()
+                ->route($type === 'laporan_akhir' ? 'reports.laporan-akhir' : 'reports.luaran')
+                ->with('success', $successMessage);
+        }
     }
 
     /**

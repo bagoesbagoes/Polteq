@@ -103,16 +103,18 @@ Route::middleware('auth')->group(function () {
         
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:255',
-            // 'username' => 'required|min:3|max:255|unique:users,username,' . $user->id,
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:5|max:255',
             'nidn_nuptk' => 'required|string|min:10|max:16|unique:users,nidn_nuptk,' . $user->id,
             'jabatan_fungsional' => 'required|string|max:255',
+            'prodi' => 'required|in:English for Business & Professional Communication,Bisnis Kreatif,Teknologi Produksi Tanaman Perkebunan,Teknologi Pangan',
         ]);
 
         $user->name = $validated['name'];
-        // $user->username = $validated['username'];
         $user->email = $validated['email'];
+        $user->nidn_nuptk = $validated['nidn_nuptk'];
+        $user->jabatan_fungsional = $validated['jabatan_fungsional'];
+        $user->prodi = $validated['prodi'];
     
         if (!empty($validated['password'])) {
             $user->password = bcrypt($validated['password']);
@@ -126,6 +128,7 @@ Route::middleware('auth')->group(function () {
     // ==============================
     // ==Halaman Laporan Penelitian==
     // ==============================
+
     Route::get('/LaporanPenelitian', [DashboardController::class, 'IndexLaporanPenelitian'])
         ->name('laporan_penelitian');
 
@@ -159,20 +162,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/reports/luaran', [ReportController::class, 'store'])
             ->defaults('type', 'luaran')
             ->name('reports.store-luaran');
-        
-        // Common routes (work for both types)
-        Route::get('/reports/{type}/{report}', [ReportController::class, 'show'])
-            ->name('reports.show');
-        
-        Route::delete('/reports/{type}/{report}', [ReportController::class, 'destroy'])
-            ->name('reports.destroy');
-        
-        Route::get('/reports/{type}/{report}/download', [ReportController::class, 'download'])
-            ->name('reports.download');
     });
 
     // ==============================
-    // == ADMIN: Manage All Reports ==
+    // ADMIN: Manage All Reports 
     // ==============================
     Route::middleware(['auth', 'role:admin'])->group(function () {
         
@@ -183,6 +176,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/reports/luaran', [ReportController::class, 'adminIndex'])
             ->defaults('type', 'luaran')
             ->name('admin.reports.luaran');
+    });
+
+    // ==============================
+    // (Publisher & Admin) untuk show, delete dan download (khusus admin)
+    // ==============================
+    Route::middleware('auth')->group(function () {
+        
+        Route::get('/reports/{type}/{report}', [ReportController::class, 'show'])
+            ->whereIn('type', ['laporan_akhir', 'luaran'])
+            ->name('reports.show');
+        
+        Route::delete('/reports/{type}/{report}', [ReportController::class, 'destroy'])
+            ->whereIn('type', ['laporan_akhir', 'luaran'])
+            ->name('reports.destroy');
+        
+        Route::get('/reports/{type}/{report}/download', [ReportController::class, 'download'])
+            ->whereIn('type', ['laporan_akhir', 'luaran'])
+            ->name('reports.download');
     });
     
     

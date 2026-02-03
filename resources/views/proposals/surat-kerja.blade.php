@@ -9,7 +9,7 @@
            /* GENERAL STYLING */
            
         @page {
-            margin: 2cm 2cm 2cm 2cm;
+            margin: 4.5.cm 4.5cm 3cm 3cm;
         }
         
         body {
@@ -185,24 +185,17 @@
         {{-- KOP SURAT --}}
          
     <div class="kop-surat">
-        {{-- Logo Institusi --}}
-        @if($logoBase64)
-        <img src="{{ $logoBase64 }}" alt="Logo POLTEQ" class="logo">
-        @else
-            <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 24pt; font-weight: bold;">POLTEQ</span>
-            </div>
-        @endif
+        <div style="width: 80px; height: 30px; margin: 0 auto;"></div>
         
         {{-- Nama Institusi --}}
-        <h1>POLITEKNIK TEKNOLOGI</h1>
-        <h2>Politeknik Tonggak Equator</h2>
+        {{-- <h1>POLITEKNIK TEKNOLOGI</h1>
+        <h2>Politeknik Tonggak Equator</h2> --}}
         
         {{-- Alamat & Kontak --}}
-        <p>
+        {{-- <p>
             JL. FATIMAH NO 1-2 PONTIANAK<br>
             TELP. (0561) 767 884 / HP : 0819 560 8767 / 0812 5771 8282 (WA)
-        </p>
+        </p> --}}
     </div>
 
     

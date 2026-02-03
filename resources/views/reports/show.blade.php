@@ -5,13 +5,25 @@
         
         {{-- Back Button --}}
         <div class="mb-6">
-            <a href="{{ $type === 'laporan_akhir' ? route('reports.laporan-akhir') : route('reports.luaran') }}" 
-               class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
-                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Kembali ke Daftar {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}
-            </a>
+            @if(Auth::user()->role === 'admin')
+                {{-- Admin kembali ke halaman admin --}}
+                <a href="{{ $type === 'laporan_akhir' ? route('admin.reports.laporan-akhir') : route('admin.reports.luaran') }}" 
+                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali ke Daftar {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}
+                </a>
+            @else
+                {{-- Publisher kembali ke halaman publisher --}}
+                <a href="{{ $type === 'laporan_akhir' ? route('reports.laporan-akhir') : route('reports.luaran') }}" 
+                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali ke Daftar {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}
+                </a>
+            @endif
         </div>
 
         {{-- Main Card --}}
@@ -46,8 +58,13 @@
                         </svg>
                         Usulan Terkait
                     </h3>
-                    <p class="text-white font-medium">{{ $report->proposal->judul }}</p>
-                    <p class="text-gray-400 text-sm mt-1">ID Proposal: #{{ $report->proposal->id }}</p>
+                    @if($report->proposal)
+                        <p class="text-white font-medium">{{ $report->proposal->judul }}</p>
+                        <p class="text-gray-400 text-sm mt-1">ID Proposal: #{{ $report->proposal->id }}</p>
+                    @else
+                        <p class="text-gray-500 italic">Tidak terkait dengan usulan tertentu</p>
+                        <p class="text-gray-400 text-sm mt-1">Luaran ini diupload secara mandiri tanpa proposal</p>
+                    @endif
                 </div>
 
                 {{-- Penulis --}}

@@ -48,26 +48,27 @@ class PublisherController extends Controller
         return view('publisher.show', compact('proposal'));
     }
 
-    public function submitRevision(Request $request, Proposal $proposal)
-    {
+    // public function submitRevision(Request $request, Proposal $proposal)
+    // {
         
-        if ($request->user()->id !== $proposal->user_id) abort(403);
+    //     if ($request->user()->id !== $proposal->user_id) abort(403);
 
-        $validated = $request->validate([
-            'file_revisi' => 'required|file|mimes:pdf|max:10240',
-            'note' => 'nullable|string',
-        ]);
+    //     $validated = $request->validate([
+    //         'file_revisi' => 'required|file|mimes:pdf|max:10240',
+    //         'note' => 'nullable|string',
+    //     ]);
 
-        $file = $request->file('file_revisi');
-        $filename = time() . '_rev_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('public/proposals', $filename);
+
+    //     $file = $request->file('file_revisi');
+    //     $filename = time() . '_rev_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+    //     $path = $file->storeAs('public/proposals', $filename);
 
         
-        $proposal->update([
-            'file_revisi' => 'proposals/' . $filename,
-            'status' => 'menunggu', 
-        ]);
+    //     $proposal->update([
+    //         'file_revisi' => 'proposals/' . $filename,
+    //         'status' => 'menunggu', 
+    //     ]);
 
-        return back()->with('success', 'Revisi berhasil diunggah. Menunggu penilaian reviewer.');
-    }
+    //     return back()->with('success', 'Revisi berhasil diunggah. Menunggu penilaian reviewer.');
+    // }
 }

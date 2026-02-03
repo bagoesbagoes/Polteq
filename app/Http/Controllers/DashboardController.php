@@ -65,7 +65,7 @@ class DashboardController extends Controller
         }
         
         return view('UsulanPenelitian', [
-            'title' => 'Manajemen usulan',
+            'title' => 'Pengusulan',
             'active' => 'dashboard',
             'counts' => $counts,
         ]);

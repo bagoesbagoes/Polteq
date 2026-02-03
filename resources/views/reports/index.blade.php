@@ -58,7 +58,11 @@
                                 {{ Str::limit($report->title, 50) }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-300">
-                                {{ Str::limit($report->proposal->judul, 40) }}
+                                @if($report->proposal)
+                                    {{ Str::limit($report->proposal->judul, 40) }}
+                                @else
+                                    <span class="text-gray-500 italic">Tidak terkait usulan</span>
+                                @endif
                             </td>
                             @if($type === 'luaran')
                                 <td class="px-6 py-4 text-sm text-gray-300">
@@ -74,11 +78,11 @@
                                 </td>
                             @endif
                             <td class="px-6 py-4 text-sm text-gray-400">
-                                {{ $report->created_at->format('d M Y, H:i') }}
+                                {{ $report->created_at->format('d M Y, H:i') }} WIB
                             </td>
                             <td class="px-6 py-4 text-sm text-right">
                                 <div class="flex items-center justify-end gap-3">
-                                    <a href="{{ route('reports.show', ['type' => $type, 'report' => $report]) }}" 
+                                    <a href="{{ route('reports.show', ['type' => $type, 'report' => $report->id]) }}" 
                                        class="text-indigo-400 hover:text-indigo-300">
                                         Lihat
                                     </a>

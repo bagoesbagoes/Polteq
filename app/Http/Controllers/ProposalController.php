@@ -23,7 +23,7 @@ class ProposalController extends Controller
             ->paginate(10);
         
         return view('proposals.index', [
-            'title' => 'daftar pengajuan Usulan',
+            'title' => 'Upload usulan baru',
             'proposals' => $proposals,
         ]);
     }
@@ -91,7 +91,7 @@ class ProposalController extends Controller
     {
         $this->authorize('view', $proposal);
             
-        $title = 'Detil usulan : '; 
+        $title = 'Detail usulan : '; 
 
         return view('proposals.show', compact('proposal', 'title'));
     }
@@ -154,7 +154,7 @@ class ProposalController extends Controller
         $proposal->save();
         
         $message = $proposal->status === 'submitted' 
-            ? 'Revisi berhasil diupload dan dikirim untuk review ulang!'
+            ? 'Revisi berhasil diupload dan dikirim untuk direview kembali!'
             : 'Proposal berhasil diupdate!';
         
         return redirect()->route('proposals.show', $proposal)
