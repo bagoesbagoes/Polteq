@@ -86,7 +86,6 @@ class ReportController extends Controller
         if ($type === 'laporan_akhir') {
             $validated = $request->validate([
                 'proposal_id' => 'required|exists:proposals,id',
-                'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:5000',
                 'file_upload' => 'required|file|mimes:pdf|max:10240',
             ], [
@@ -99,12 +98,16 @@ class ReportController extends Controller
             // Luaran: proposal_id OPSIONAL
             $validated = $request->validate([
                 'proposal_id' => 'nullable|exists:proposals,id',
+                'jenis_luaran' => 'required|in:Artikel Jurnal Nasional Terakreditasi,Jurnal Internasional Bereputasi,Buku Referensi,Buku Ajar,Hak Cipta dan Paten,Lainnya, sebutkan',
+                'jenis_luaran_lainnya' => 'required_if:jenis_luaran,Lainnya, sebutkan|nullable|string|max:255',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:5000',
                 'luaran_type' => 'required|in:file,link',
                 'file_upload' => 'nullable|required_if:luaran_type,file|file|max:10240',
                 'hyperlink' => 'nullable|required_if:luaran_type,link|url|max:500',
             ], [
+                'jenis_luaran.required' => 'Jenis luaran wajib dipilih',
+                'jenis_luaran_lainnya.required_if' => 'Mohon sebut jenis luaran lainnya',
                 'luaran_type.required' => 'Pilih tipe luaran (File atau Hyperlink)',
                 'file_upload.required_if' => 'File wajib di-upload jika memilih tipe File',
                 'file_upload.max' => 'Ukuran file maksimal 10MB',
@@ -141,7 +144,9 @@ class ReportController extends Controller
             'proposal_id' => $validated['proposal_id'] ?? null,
             'user_id' => Auth::id(),
             'type' => $type,
-            'title' => $validated['title'],
+            'title' => $type === 'laporan_akhir' && !empty($validated['proposal_id']) 
+            ? Proposal::find($validated['proposal_id'])->judul 
+            : ($validated['title'] ?? 'Tanpa Judul'),
             'description' => $validated['description'],
         ];
         
@@ -159,6 +164,13 @@ class ReportController extends Controller
         
         // Handle hyperlink (untuk luaran tipe link)
         if ($type === 'luaran') {
+            $data['jenis_luaran'] = $validated['jenis_luaran'];
+            
+            // Jika pilih "Lainnya", simpan juga spesifikasi
+            if ($validated['jenis_luaran'] === 'Lainnya, sebutkan') {
+                $data['jenis_luaran_lainnya'] = $validated['jenis_luaran_lainnya'];
+            }
+            
             $data['luaran_type'] = $validated['luaran_type'];
             
             if ($validated['luaran_type'] === 'link') {
@@ -174,7 +186,7 @@ class ReportController extends Controller
             : 'Luaran berhasil di-upload!';
         
         return redirect()
-            ->route('laporan_penelitian')
+            ->route($type === 'laporan_akhir' ? 'reports.laporan-akhir' : 'reports.luaran')
             ->with('success', $successMessage);
 }
 

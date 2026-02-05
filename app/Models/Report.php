@@ -21,6 +21,8 @@ class Report extends Model
         'file_type',
         'hyperlink',
         'luaran_type',
+        'jenis_luaran',
+        'jenis_luaran_lainnya',
     ];
 
     /**

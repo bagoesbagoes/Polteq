@@ -23,7 +23,7 @@
                 </div>
             </div>
         @endif
-
+        
         <form method="POST" 
               action="{{ $type === 'laporan_akhir' ? route('reports.store-laporan-akhir') : route('reports.store-luaran') }}" 
               enctype="multipart/form-data" 
@@ -75,19 +75,73 @@
                     @endif
                 </div>
 
+                {{-- Jenis LUaran --}}
+                @if($type === 'luaran')
+                    <div x-data="{ jenisLuaran: '{{ old('jenis_luaran', '') }}' }">
+                        <label for="jenis_luaran" class="block text-sm font-medium leading-6 text-white">
+                            Jenis Luaran <span class="text-red-500">*</span>
+                        </label>
+                        <select name="jenis_luaran" 
+                                id="jenis_luaran" 
+                                x-model="jenisLuaran"
+                                required
+                                class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
+                            <option value="">-- Pilih Jenis Luaran --</option>
+                            <option value="Artikel Jurnal Nasional Terakreditasi" {{ old('jenis_luaran') == 'Artikel Jurnal Nasional Terakreditasi' ? 'selected' : '' }}>
+                                Artikel Jurnal Nasional Terakreditasi
+                            </option>
+                            <option value="Jurnal Internasional Bereputasi" {{ old('jenis_luaran') == 'Jurnal Internasional Bereputasi' ? 'selected' : '' }}>
+                                Jurnal Internasional Bereputasi
+                            </option>
+                            <option value="Buku Referensi" {{ old('jenis_luaran') == 'Buku Referensi' ? 'selected' : '' }}>
+                                Buku Referensi
+                            </option>
+                            <option value="Buku Ajar" {{ old('jenis_luaran') == 'Buku Ajar' ? 'selected' : '' }}>
+                                Buku Ajar
+                            </option>
+                            <option value="Hak Cipta dan Paten" {{ old('jenis_luaran') == 'Hak Cipta dan Paten' ? 'selected' : '' }}>
+                                Hak Cipta dan Paten
+                            </option>
+                            <option value="Lainnya, sebutkan" {{ old('jenis_luaran') == 'Lainnya, sebutkan' ? 'selected' : '' }}>
+                                Lainnya, sebutkan
+                            </option>
+                        </select>
+                        
+                        {{-- Input tambahan jika pilih "Lainnya, sebutkan" --}}
+                        <div x-show="jenisLuaran === 'Lainnya, sebutkan'" 
+                            x-transition
+                            class="mt-3">
+                            <label for="jenis_luaran_lainnya" class="block text-sm font-medium leading-6 text-white">
+                                Sebutkan Jenis Luaran Lainnya <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                name="jenis_luaran_lainnya" 
+                                id="jenis_luaran_lainnya" 
+                                value="{{ old('jenis_luaran_lainnya') }}"
+                                placeholder="Contoh: jurnal Seminar Internasional"
+                                class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" />
+                        </div>
+                        
+                        <p class="mt-1 text-xs text-gray-400">Pilih kategori luaran penelitian Anda</p>
+                    </div>
+                @endif
+
+
                 {{-- Judul --}}
-                <div>
-                    <label for="title" class="block text-sm font-medium leading-6 text-white">
-                        Judul {{ $type === 'laporan_akhir' ? 'Laporan' : 'Luaran' }} <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           name="title" 
-                           id="title" 
-                           value="{{ old('title') }}" 
-                           required 
-                           class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" 
-                           placeholder="{{ $type === 'laporan_akhir' ? 'Contoh: Laporan Akhir Penelitian Machine Learning' : 'Contoh: Publikasi Jurnal Internasional Scopus' }}" />
-                </div>
+                @if($type === 'luaran')
+                    <div>
+                        <label for="title" class="block text-sm font-medium leading-6 text-white">
+                            Judul Luaran <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                            name="title" 
+                            id="title" 
+                            value="{{ old('title') }}" 
+                            required 
+                            class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" 
+                            placeholder="Contoh: Publikasi Jurnal Internasional Scopus" />
+                    </div>
+                @endif
 
                 {{-- Deskripsi --}}
                 <div>

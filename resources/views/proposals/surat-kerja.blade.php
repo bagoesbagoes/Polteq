@@ -3,312 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surat Kerja - {{ $judulUsulan }}</title>
+    <title>Surat Tugas - {{ $judulUsulan }}</title>
     <style>
-        
-           /* GENERAL STYLING */
-           
         @page {
-            margin: 4.5.cm 4.5cm 3cm 3cm;
+            margin: 2cm 2cm 2cm 2cm;
         }
         
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
-            line-height: 1.6;
+            line-height: 1.5;
             color: #000;
         }
         
-        
-           /* KOP SURAT */
-           
+        /* KOP SURAT */
         .kop-surat {
-            border-bottom: 3px solid #000;
-            padding-bottom: 10px;
+            position: relative;
+            padding-bottom: 15px;
             margin-bottom: 20px;
-            text-align: center;
+            /* border-bottom: 3px solid #000; */
         }
         
-        .kop-surat .logo {
-            width: 80px;
+        .kop-content {
+            display: table;
+            width: 100%;
+        } 
+        
+        .kop-logo {
+            display: table-cell;
+            width: 100px;
+            vertical-align: middle;
+            padding-right: 15px;
+        } */
+        
+        .kop-logo img {
+            width: 700px; /* Sesuaikan ukuran yang pas menurutmu */
             height: auto;
-            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto; 
         }
         
-        .kop-surat h1 {
+        /* .kop-text {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 100px 0 0;
+        }
+        
+        .kop-text h1 {
             margin: 0;
             padding: 0;
-            font-size: 18pt;
+            font-size: 14pt;
             font-weight: bold;
-            text-transform: uppercase;
+            color: #4A90E2;
+            letter-spacing: 1px;
         }
         
-        .kop-surat h2 {
-            margin: 5px 0 0 0;
-            padding: 0;
-            font-size: 16pt;
-            font-weight: bold;
-        }
-        
-        .kop-surat p {
+        .kop-text h2 {
             margin: 3px 0;
-            font-size: 10pt;
-            line-height: 1.4;
-        }
-        
-        
-           /* HEADER SURAT */
-           
-        .nomor-surat {
-            margin-top: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .nomor-surat table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .nomor-surat td {
-            padding: 3px 0;
-            vertical-align: top;
-        }
-        
-        .nomor-surat td:nth-child(1) {
-            width: 120px;
-        }
-        
-        .nomor-surat td:nth-child(2) {
-            width: 10px;
-            text-align: center;
-        }
-        
-        
-           /* ISI SURAT */
-           
-        .isi-surat {
-            text-align: justify;
-            margin-bottom: 30px;
-        }
-        
-        .isi-surat p {
-            margin-bottom: 15px;
-        }
-        
-        .isi-surat .indent {
-            text-indent: 50px;
-        }
-        
-        /* Tabel detail penelitian */
-        .detail-penelitian {
-            margin: 20px 0;
-            width: 100%;
-        }
-        
-        .detail-penelitian table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .detail-penelitian td {
-            padding: 5px 0;
-            vertical-align: top;
-        }
-        
-        .detail-penelitian td:nth-child(1) {
-            width: 200px;
+            padding: 0;
+            font-size: 12pt;
             font-weight: bold;
+            color: #000;
         }
         
-        .detail-penelitian td:nth-child(2) {
-            width: 20px;
+        .kop-text p {
+            margin: 2px 0;
+            font-size: 9pt;
+            line-height: 1.3;
+        } */
+        
+        .kop-border {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to bottom, #E74C3C 0%, #E74C3C 50%, #C0392B 100%);
+            border-radius: 2px;
+        }
+        
+        /* JUDUL SURAT */
+        .judul-surat {
             text-align: center;
+            margin: 30px 0 20px 0;
         }
         
-        
-           /* TTD & STEMPEL */
-           
-        .ttd-section {
-            margin-top: 50px;
-            text-align: left;
-        }
-        
-        .ttd-box {
-            display: inline-block;
-            text-align: center;
-            margin-left: 60%;
-        }
-        
-        .ttd-box .tempat-tanggal {
-            margin-bottom: 5px;
-        }
-        
-        .ttd-box .jabatan {
-            font-weight: bold;
-            margin-bottom: 80px; /* Space untuk tanda tangan */
-        }
-        
-        .ttd-box .nama {
+        .judul-surat h3 {
+            margin: 0;
+            font-size: 14pt;
             font-weight: bold;
             text-decoration: underline;
         }
         
-        .ttd-box .nip {
-            margin-top: 3px;
-            font-size: 10pt;
-        }
-        
-        
-           /* TEMBUSAN */
-           
-        .tembusan {
-            margin-top: 40px;
+        .judul-surat .nomor {
+            margin-top: 5px;
             font-size: 11pt;
         }
         
-        .tembusan p {
-            margin: 5px 0;
+        /* ISI SURAT */
+        .isi-surat {
+            text-align: justify;
+            margin-bottom: 20px;
         }
         
-        .tembusan ol {
-            margin: 5px 0;
-            padding-left: 20px;
+        .isi-surat p {
+            margin: 10px 0;
+            text-indent: 50px;
         }
         
-        .tembusan li {
-            margin: 3px 0;
+        .isi-surat p.no-indent {
+            text-indent: 0;
+        }
+        
+        /* TABEL TIM PENELITI */
+        .tabel-tim {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .tabel-tim th,
+        .tabel-tim td {
+            border: 1px solid #000;
+            padding: 8px;
+            font-size: 11pt;
+        }
+        
+        .tabel-tim th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .tabel-tim td:nth-child(1) {
+            text-align: center;
+            width: 30px;
+        }
+        
+        .tabel-tim td:nth-child(2) {
+            width: 35%;
+        }
+        
+        .tabel-tim td:nth-child(3) {
+            width: 25%;
+            text-align: center;
+        }
+        
+        .tabel-tim td:nth-child(4) {
+            width: 30%;
+            text-align: center;
+        }
+        
+        /* HIGHLIGHT TEXT */
+        .highlight-yellow {
+            background-color: #FFFF00;
+            padding: 2px 4px;
+        }
+        
+        /* TTD */
+        .ttd-section {
+            margin-top: 40px;
+            text-align: right;
+        }
+
+        .ttd-box {
+            display: inline-block;
+            text-align: left; /* ← UBAH dari center ke left */
+            min-width: 200px;
+        }
+
+        .ttd-box .tempat-tanggal {
+            margin-bottom: 0; /* ← UBAH dari 5px ke 0 */
+        }
+
+        .ttd-box .jabatan {
+            font-weight: bold;
+            margin-bottom: 70px; /* Tetap 70px untuk space TTD */
+        }
+
+        .ttd-box .nama {
+            font-weight: bold;
+            text-align: left; /* ← PASTIKAN rata kiri */
+        }
+
+        .ttd-box .nik {
+            margin-top: 2px;
+            font-size: 10pt;
+            text-align: left; /* ← TAMBAHKAN ini */
         }
     </style>
 </head>
-
 <body>
-        {{-- KOP SURAT --}}
-         
+
+    {{-- KOP SURAT --}}
     <div class="kop-surat">
-        <div style="width: 80px; height: 30px; margin: 0 auto;"></div>
-        
-        {{-- Nama Institusi --}}
-        {{-- <h1>POLITEKNIK TEKNOLOGI</h1>
-        <h2>Politeknik Tonggak Equator</h2> --}}
-        
-        {{-- Alamat & Kontak --}}
-        {{-- <p>
-            JL. FATIMAH NO 1-2 PONTIANAK<br>
-            TELP. (0561) 767 884 / HP : 0819 560 8767 / 0812 5771 8282 (WA)
-        </p> --}}
-    </div>
-
-    
-    {{-- NOMOR & TANGGAL SURAT --}}
-         
-    <div class="nomor-surat">
-        <table>
-            <tr>
-                <td>Nomor</td>
-                <td>:</td>
-                <td><strong>{{ $nomorSurat }}</strong></td>
-            </tr>
-            <tr>
-                <td>Lampiran</td>
-                <td>:</td>
-                <td>1 (satu) berkas</td>
-            </tr>
-            <tr>
-                <td>Perihal</td>
-                <td>:</td>
-                <td><strong>Surat Tugas Penelitian</strong></td>
-            </tr>
-        </table>
-    </div>
-
-    
-    {{-- ISI SURAT --}}
-         
-    <div class="isi-surat">
-        {{-- Pembukaan --}}
-        <p style="text-align: center; font-weight: bold; margin-bottom: 30px;">
-            SURAT TUGAS
-        </p>
-        
-        {{-- Dasar Hukum --}}
-        <p>Berdasarkan hasil review dan evaluasi usulan penelitian yang telah dilakukan, dengan ini Ketua Lembaga Penelitian dan Pengabdian Masyarakat (LPPM) Politeknik Teknologi memberikan tugas kepada:</p>
-        
-        {{-- Detail Dosen --}}
-        <div class="detail-penelitian">
-            <table>
-                <tr>
-                    <td>Nama</td>
-                    <td>:</td>
-                    <td>{{ $namaDosen }}</td>
-                </tr>
-                <tr>
-                    <td>NIDN / NUPTK</td>
-                    <td>:</td>
-                    <td>{{ $nidnNuptk }}</td>
-                </tr>
-                <tr>
-                    <td>Jabatan Fungsional</td>
-                    <td>:</td>
-                    <td>{{ $jabatan }}</td>
-                </tr>
-                <tr>
-                    <td>Judul Penelitian</td>
-                    <td>:</td>
-                    <td><strong>{{ $judulUsulan }}</strong></td>
-                </tr>
-            </table>
+        <div class="kop-content">
+            <div class="kop-logo">
+                @if($logoBase64)
+                    <img src="{{ $logoBase64 }}" alt="KopPolteq.png">
+                @endif
+            </div>
         </div>
-        
-        {{-- Tugas --}}
-        <p class="indent">
-            Untuk melaksanakan penelitian sesuai dengan proposal yang telah disetujui. Penelitian ini diharapkan dapat memberikan kontribusi positif bagi pengembangan ilmu pengetahuan dan teknologi.
+        <div class="kop-border"></div>
+    </div>
+
+    {{-- JUDUL SURAT --}}
+    <div class="judul-surat">
+        <h3>SURAT TUGAS</h3>
+        <div class="nomor">Nomor: {{ $nomorSurat }}</div>
+    </div>
+
+    {{-- ISI SURAT --}}
+    <div class="isi-surat">
+        <p class="no-indent">
+            Ketua Unit Penelitian dan Pengabdian pada Masyarakat (UPPM) Politeknik Tonggak Equator Pontianak dengan ini memberikan tugas kepada:
         </p>
-        
-        {{-- Kewajiban --}}
-        <p>Dalam melaksanakan tugas penelitian, yang bersangkutan berkewajiban untuk:</p>
-        <ol style="padding-left: 30px; margin: 10px 0;">
-            <li>Melaksanakan penelitian sesuai dengan proposal yang telah disetujui;</li>
-            <li>Melaporkan perkembangan penelitian secara berkala kepada LPPM;</li>
-            <li>Menyerahkan laporan akhir penelitian paling lambat 6 (enam) bulan sejak tanggal surat tugas ini;</li>
-            <li>Mempublikasikan hasil penelitian pada jurnal ilmiah atau seminar nasional/internasional.</li>
-        </ol>
-        
-        {{-- Penutup --}}
-        <p class="indent">
-            Demikian surat tugas ini dibuat untuk dapat dilaksanakan dengan penuh tanggung jawab.
+
+        {{-- TABEL TIM PENELITI --}}
+        <table class="tabel-tim">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>NIDN/NUPTK/NIM</th>
+                    <th>Posisi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{-- Baris 1: Auto-fill dari data dosen --}}
+                <tr>
+                    <td>1</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>Ketua Peneliti</td>
+                </tr>
+                {{-- Baris 2-4: Kosong untuk diisi manual --}}
+                <tr>
+                    <td>2</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>Anggota Peneliti</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>Mahasiswa</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>Mahasiswa</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="no-indent">
+            Untuk melaksanakan penelitian dalam rangka memenuhi salah satu tugas Tri Dharma Perguruan Tinggi dengan 
+            judul<strong>"{{ $judulUsulan }}"</strong> 
+            dan diwajibkan untuk memberikan laporan akhir penelitian kepada Ketua UPPM Politeknik Tonggak Equator Pontianak.
+        </p>
+
+        <p class="no-indent">
+            Demikian tugas ini dibuat agar dapat dipergunakan sebagaimana mestinya.
         </p>
     </div>
 
-    
-    {{-- TTD & STEMPEL --}}
-         
+    {{-- TTD --}}
     <div class="ttd-section">
         <div class="ttd-box">
             <div class="tempat-tanggal">
                 Pontianak, {{ $tanggalSurat }}
             </div>
             <div class="jabatan">
-                Ketua UPPM
+                Ketua UPPM,
             </div>
             <div class="nama">
-                Dr. Ahmad Santoso, M.T.
+                Fera Maulina, SET., MM., CAP., PMR.
             </div>
-            <div class="nip">
-                NIP. 196801011995031001
+            <div class="nik">
+                NIK. 035.1.2908.05
             </div>
         </div>
     </div>
 
-    
-    {{-- TEMBUSAN --}}
-         
-    <div class="tembusan">
-        <p><strong>Tembusan:</strong></p>
-        <ol>
-            <li>Direktur Politeknik Teknologi;</li>
-            <li>Kepala Bagian Akademik;</li>
-            <li>Arsip.</li>
-        </ol>
-    </div>
 </body>
 </html>

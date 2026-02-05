@@ -25,7 +25,7 @@
             </div>
         @endif
 
-        {{-- ✅ SUCCESS MESSAGE --}}
+        {{-- SUCCESS MESSAGE --}}
         @if(session('success'))
             <div class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">
                 <div class="flex">
@@ -74,15 +74,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- Kriteria 1: Pendahuluan --}}
+                        {{-- Kriteria 1 : Perumusan masalah --}}
                         <tr class="border-b border-gray-700">
                             <td class="px-4 py-3">1.</td>
                             <td class="px-4 py-3">
-                                <strong>PENDAHULUAN</strong>
+                                <strong>Perumusan masalah</strong>
                                 <ul class="text-xs text-gray-400 mt-1">
-                                    <li>• Kelengkapan Perumusan Masalah</li>
-                                    <li>• Kesesuaian Tujuan Penelitian dengan Masalah Penelitian</li>
-                                    <li>• Manfaat Penelitian</li>
+                                    <li>• Ketajaman perumusan masalah</li>
+                                    <li>• Tujuan penelitian</li>
                                 </ul>
                             </td>
                             <td class="px-4 py-3">25</td>
@@ -111,16 +110,16 @@
                             </td>
                         </tr>
 
-                        {{-- Kriteria 2: Tinjauan Pustaka --}}
+                        {{-- Kriteria 2 : Peluang luaran penelitian --}}
                         <tr class="border-b border-gray-700">
                             <td class="px-4 py-3">2.</td>
                             <td class="px-4 py-3">
-                                <strong>TINJAUAN PUSTAKA</strong>
+                                <strong>Peluang luaran penelitian</strong>
                                 <ul class="text-xs text-gray-400 mt-1">
-                                    <li>• Relevansi dengan Masalah Penelitian</li>
-                                    <li>• Cara Mengutip</li>
-                                    <li>• Kemutakhiran Sumber Pustaka</li>
-                                    <li>• Cara Penulisan Daftar Pustaka</li>
+                                    <li>• Publikasi ilmiah</li>
+                                    <li>• Pengembangan Iptek - Sosbud</li>
+                                    <li>• Pengayaan bahan ajar</li>
+                                    <li>• HKI</li>
                                 </ul>
                             </td>
                             <td class="px-4 py-3">25</td>
@@ -148,15 +147,13 @@
                             </td>
                         </tr>
 
-                        {{-- Kriteria 3: Metodologi --}}
+                        {{-- Kriteria 3 : Metode penelitian --}}
                         <tr class="border-b border-gray-700">
                             <td class="px-4 py-3">3.</td>
                             <td class="px-4 py-3">
-                                <strong>METODOLOGI PENELITIAN</strong>
+                                <strong>Metode penelitian</strong>
                                 <ul class="text-xs text-gray-400 mt-1">
-                                    <li>• Kesesuaian Rancangan dengan Masalah Penelitian</li>
-                                    <li>• Kelengkapan Instrumen Penelitian</li>
-                                    <li>• Kelengkapan Metode Analisis Data</li>
+                                    <li>• Ketetapan dan kesesuaian metode yang digunakan</li>
                                 </ul>
                             </td>
                             <td class="px-4 py-3">25</td>
@@ -184,17 +181,18 @@
                             </td>
                         </tr>
 
-                        {{-- Kriteria 4: Kelayakan --}}
+                        {{-- Kriteria 4 : Tinjauan pustaka --}}
                         <tr class="border-b border-gray-700">
                             <td class="px-4 py-3">4.</td>
                             <td class="px-4 py-3">
-                                <strong>KELAYAKAN PENELITIAN</strong>
+                                <strong>Tinjauan pustaka</strong>
                                 <ul class="text-xs text-gray-400 mt-1">
-                                    <li>• Kelayakan Biaya Penelitian</li>
-                                    <li>• Kelayakan Jadwal Penelitian</li>
+                                    <li>• Kesesuaian waktu</li>
+                                    <li>• Kesesuaian biaya</li>
+                                    <li>• Kesesuaian personalia</li>
                                 </ul>
                             </td>
-                            <td class="px-4 py-3">25</td>
+                            <td class="px-4 py-3">15</td>
                             <td class="px-4 py-3">
                                 <input 
                                     type="number" 
@@ -218,6 +216,43 @@
                                 <span id="nilai_kelayakan" class="font-bold">0</span>
                             </td>
                         </tr>
+
+                        {{-- Kriteria 5 : Kelayakan Penelitian --}}
+                        <tr class="border-b border-gray-700">
+                            <td class="px-4 py-3">5.</td>
+                            <td class="px-4 py-3">
+                                <strong>Kelayakan penelitian</strong>
+                                <ul class="text-xs text-gray-400 mt-1">
+                                    <li>• Kesesuaian penelitian</li>
+                                    <li>• Kesesuaian biaya</li>
+                                    <li>• Kesesuaian personalia</li>
+                                </ul>
+                            </td>
+                            <td class="px-4 py-3">10</td>
+                            <td class="px-4 py-3">
+                                <input 
+                                    type="number" 
+                                    name="kelayakan_penelitian" 
+                                    min="0" 
+                                    max="100" 
+                                    step="1"
+                                    value="{{ old('kelayakan_penelitian', $review->scores['kelayakan_penelitian'] ?? '') }}"
+                                    class="w-20 bg-gray-700 border {{ $errors->has('kelayakan_penelitian') ? 'border-red-500' : 'border-gray-600' }} text-white rounded px-2 py-1"
+                                    oninput="
+                                        if(this.value > 100) this.value = 100;
+                                        if(this.value < 0) this.value = 0;
+                                        hitungNilai();
+                                    "
+                                    required>
+                                @error('kelayakan_penelitian')
+                                    <p class="text-xs text-red-400 mt-1">{{ $message }}</p>
+                                @enderror
+                            </td>
+                            <td class="px-4 py-3">
+                                <span id="nilai_kelayakan_penelitian" class="font-bold">0</span>
+                            </td>
+                        </tr>
+
 
                         {{-- Total --}}
                         <tr class="bg-gray-700 font-bold">
@@ -288,26 +323,29 @@
     {{-- JavaScript hitung nilai otomatis --}}
     <script>
         function hitungNilai() {
-            const pendahuluan = parseFloat(document.querySelector('[name="pendahuluan"]').value) || 0;
-            const tinjauan = parseFloat(document.querySelector('[name="tinjauan_pustaka"]').value) || 0;
-            const metodologi = parseFloat(document.querySelector('[name="metodologi"]').value) || 0;
-            const kelayakan = parseFloat(document.querySelector('[name="kelayakan"]').value) || 0;
+        const pendahuluan = parseFloat(document.querySelector('[name="pendahuluan"]').value) || 0;
+        const tinjauan = parseFloat(document.querySelector('[name="tinjauan_pustaka"]').value) || 0;
+        const metodologi = parseFloat(document.querySelector('[name="metodologi"]').value) || 0;
+        const kelayakan = parseFloat(document.querySelector('[name="kelayakan"]').value) || 0;
+        const kelayakanPenelitian = parseFloat(document.querySelector('[name="kelayakan_penelitian"]').value) || 0;
 
-            // Hitung nilai (bobot * skor)
-            const nilaiPendahuluan = pendahuluan * 0.25;
-            const nilaiTinjauan = tinjauan * 0.25;
-            const nilaiMetodologi = metodologi * 0.25;
-            const nilaiKelayakan = kelayakan * 0.25;
+        // Hitung nilai (bobot 20% untuk setiap kriteria)
+        const nilaiPendahuluan = pendahuluan * 0.25;
+        const nilaiTinjauan = tinjauan * 0.25;
+        const nilaiMetodologi = metodologi * 0.25;
+        const nilaiKelayakan = kelayakan * 0.15;
+        const nilaiKelayakanPenelitian = kelayakanPenelitian * 0.10;
 
-            // Update tampilan
-            document.getElementById('nilai_pendahuluan').textContent = nilaiPendahuluan.toFixed(2);
-            document.getElementById('nilai_tinjauan').textContent = nilaiTinjauan.toFixed(2);
-            document.getElementById('nilai_metodologi').textContent = nilaiMetodologi.toFixed(2);
-            document.getElementById('nilai_kelayakan').textContent = nilaiKelayakan.toFixed(2);
+        // Update tampilan
+        document.getElementById('nilai_pendahuluan').textContent = nilaiPendahuluan.toFixed(2);
+        document.getElementById('nilai_tinjauan').textContent = nilaiTinjauan.toFixed(2);
+        document.getElementById('nilai_metodologi').textContent = nilaiMetodologi.toFixed(2);
+        document.getElementById('nilai_kelayakan').textContent = nilaiKelayakan.toFixed(2);
+        document.getElementById('nilai_kelayakan_penelitian').textContent = nilaiKelayakanPenelitian.toFixed(2);
 
-            // Total
-            const total = nilaiPendahuluan + nilaiTinjauan + nilaiMetodologi + nilaiKelayakan;
-            document.getElementById('total_nilai').textContent = total.toFixed(2);
+        // Total
+        const total = nilaiPendahuluan + nilaiTinjauan + nilaiMetodologi + nilaiKelayakan + nilaiKelayakanPenelitian;
+        document.getElementById('total_nilai').textContent = total.toFixed(2);
         }
 
         // Event listener untuk semua input

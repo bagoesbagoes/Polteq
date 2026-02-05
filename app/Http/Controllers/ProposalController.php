@@ -222,7 +222,7 @@ class ProposalController extends Controller
                 ->with('error', 'Surat kerja hanya tersedia untuk usulan yang sudah disetujui.');
         }
 
-        $logoPath = public_path('image/profil1.jpg');
+        $logoPath = public_path('image/KopPolteq.png');
         $logoBase64 = '';
         
         if (file_exists($logoPath)) {
@@ -252,6 +252,7 @@ class ProposalController extends Controller
             'namaDosen' => $proposal->author->name,
             'nidnNuptk' => $proposal->author->nidn_nuptk,
             'jabatan' => $proposal->author->jabatan_fungsional,
+            'prodi' => $proposal->author->prodi,
             'judulUsulan' => $proposal->judul,
             'logoBase64' => $logoBase64,
         ];

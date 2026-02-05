@@ -163,8 +163,13 @@
                                     <div class="text-sm font-medium text-white">
                                         {{ Str::limit($report->title, 40) }}
                                     </div>
-                                    <div class="text-sm text-gray-400 mt-1">
-                                        Usulan: {{ Str::limit($report->proposal->judul, 35) }}
+
+                                    <div class="text-sm text-gray-400 mt-1"> 
+                                        @if($report->proposal)
+                                            {{ Str::limit($report->proposal->judul, 35) }}
+                                        @else
+                                            <span class="text-gray-500 italic">Tidak terkait usulan</span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">

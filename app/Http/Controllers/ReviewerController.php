@@ -84,15 +84,17 @@ class ReviewerController extends Controller
             'metodologi' => 'required|integer|min:0|max:100',
             'kelayakan' => 'required|integer|min:0|max:100',
             'recommendation' => 'required|in:setuju,tidak_setuju',
+            'kelayakan_penelitian' => 'required|integer|min:0|max:100',
             'comment' => 'nullable|string|max:5000',
         ]);
         
         // Hitung total score (bobot 25% untuk setiap kriteria)
         $totalScore = (
-            ($validated['pendahuluan'] * 0.25) +
-            ($validated['tinjauan_pustaka'] * 0.25) +
-            ($validated['metodologi'] * 0.25) +
-            ($validated['kelayakan'] * 0.25)
+            ($validated['pendahuluan'] * 0.20) +
+            ($validated['tinjauan_pustaka'] * 0.20) +
+            ($validated['metodologi'] * 0.20) +
+            ($validated['kelayakan'] * 0.20)+
+            ($validated['kelayakan_penelitian'] * 0.20)
         );
         
         // Simpan review
@@ -104,6 +106,7 @@ class ReviewerController extends Controller
                 'tinjauan_pustaka' => $validated['tinjauan_pustaka'],
                 'metodologi' => $validated['metodologi'],
                 'kelayakan' => $validated['kelayakan'],
+                'kelayakan_penelitian' => $validated['kelayakan_penelitian'],
             ],
             'total_score' => $totalScore,
             'recommendation' => $validated['recommendation'],
@@ -163,15 +166,17 @@ class ReviewerController extends Controller
             'tinjauan_pustaka' => 'required|integer|min:0|max:100',
             'metodologi' => 'required|integer|min:0|max:100',
             'kelayakan' => 'required|integer|min:0|max:100',
+            'kelayakan_penelitian' => 'required|integer|min:0|max:100',
             'recommendation' => 'required|in:setuju,tidak_setuju',
             'comment' => 'nullable|string|max:5000',
         ]);
         
         $totalScore = (
-            ($validated['pendahuluan'] * 0.25) +
-            ($validated['tinjauan_pustaka'] * 0.25) +
-            ($validated['metodologi'] * 0.25) +
-            ($validated['kelayakan'] * 0.25)
+            ($validated['pendahuluan'] * 0.20) +
+            ($validated['tinjauan_pustaka'] * 0.20) +
+            ($validated['metodologi'] * 0.20) +
+            ($validated['kelayakan'] * 0.20)+
+            ($validated['kelayakan_penelitian'] * 0.20)
         );
         
         $review->update([
@@ -180,6 +185,7 @@ class ReviewerController extends Controller
                 'tinjauan_pustaka' => $validated['tinjauan_pustaka'],
                 'metodologi' => $validated['metodologi'],
                 'kelayakan' => $validated['kelayakan'],
+                'kelayakan_penelitian' => $validated['kelayakan_penelitian'],
             ],
             'total_score' => $totalScore,
             'recommendation' => $validated['recommendation'],

@@ -138,36 +138,98 @@
                                         <table class="w-full text-sm text-gray-300">
                                             <thead class="text-xs uppercase bg-gray-600">
                                                 <tr>
-                                                    <th class="px-3 py-2 text-left">Kriteria</th>
-                                                    <th class="px-3 py-2 text-center">Skor</th>
-                                                    <th class="px-3 py-2 text-center">Nilai (25%)</th>
+                                                    <th class="px-3 py-2 text-left">NO.</th>
+                                                    <th class="px-3 py-2 text-left">KRITERIA PENILAIAN</th>
+                                                    <th class="px-3 py-2 text-center">BOBOT (%)</th>
+                                                    <th class="px-3 py-2 text-center">SKOR</th>
+                                                    <th class="px-3 py-2 text-center">NILAI</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                {{-- Kriteria 1: Perumusan Masalah --}}
                                                 <tr class="border-b border-gray-600">
-                                                    <td class="px-3 py-2">Pendahuluan</td>
+                                                    <td class="px-3 py-2 text-center">1.</td>
+                                                    <td class="px-3 py-2">
+                                                        <strong>Perumusan masalah</strong>
+                                                        <ul class="text-xs text-gray-400 mt-1">
+                                                            <li>• Ketajaman perumusan masalah</li>
+                                                            <li>• Tujuan penelitian</li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="px-3 py-2 text-center">25</td>
                                                     <td class="px-3 py-2 text-center">{{ $review->scores['pendahuluan'] ?? 0 }}</td>
-                                                    <td class="px-3 py-2 text-center">{{ ($review->scores['pendahuluan'] ?? 0) * 0.25 }}</td>
+                                                    <td class="px-3 py-2 text-center font-bold">{{ number_format(($review->scores['pendahuluan'] ?? 0) * 0.25, 2) }}</td>
                                                 </tr>
+                                                
+                                                {{-- Kriteria 2: Peluang Luaran Penelitian --}}
                                                 <tr class="border-b border-gray-600">
-                                                    <td class="px-3 py-2">Tinjauan Pustaka</td>
+                                                    <td class="px-3 py-2 text-center">2.</td>
+                                                    <td class="px-3 py-2">
+                                                        <strong>Peluang luaran penelitian</strong>
+                                                        <ul class="text-xs text-gray-400 mt-1">
+                                                            <li>• Publikasi ilmiah</li>
+                                                            <li>• Pengembangan Iptek - Sosbud</li>
+                                                            <li>• Pengayaan bahan ajar</li>
+                                                            <li>• HKI</li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="px-3 py-2 text-center">25</td>
                                                     <td class="px-3 py-2 text-center">{{ $review->scores['tinjauan_pustaka'] ?? 0 }}</td>
-                                                    <td class="px-3 py-2 text-center">{{ ($review->scores['tinjauan_pustaka'] ?? 0) * 0.25 }}</td>
+                                                    <td class="px-3 py-2 text-center font-bold">{{ number_format(($review->scores['tinjauan_pustaka'] ?? 0) * 0.25, 2) }}</td>
                                                 </tr>
+                                                
+                                                {{-- Kriteria 3: Metode Penelitian --}}
                                                 <tr class="border-b border-gray-600">
-                                                    <td class="px-3 py-2">Metodologi Penelitian</td>
+                                                    <td class="px-3 py-2 text-center">3.</td>
+                                                    <td class="px-3 py-2">
+                                                        <strong>Metode penelitian</strong>
+                                                        <ul class="text-xs text-gray-400 mt-1">
+                                                            <li>• Ketetapan dan kesesuaian metode yang digunakan</li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="px-3 py-2 text-center">25</td>
                                                     <td class="px-3 py-2 text-center">{{ $review->scores['metodologi'] ?? 0 }}</td>
-                                                    <td class="px-3 py-2 text-center">{{ ($review->scores['metodologi'] ?? 0) * 0.25 }}</td>
+                                                    <td class="px-3 py-2 text-center font-bold">{{ number_format(($review->scores['metodologi'] ?? 0) * 0.25, 2) }}</td>
                                                 </tr>
+                                                
+                                                {{-- Kriteria 4: Tinjauan Pustaka --}}
                                                 <tr class="border-b border-gray-600">
-                                                    <td class="px-3 py-2">Kelayakan Penelitian</td>
+                                                    <td class="px-3 py-2 text-center">4.</td>
+                                                    <td class="px-3 py-2">
+                                                        <strong>Tinjauan pustaka</strong>
+                                                        <ul class="text-xs text-gray-400 mt-1">
+                                                            <li>• Kesesuaian waktu</li>
+                                                            <li>• Kesesuaian biaya</li>
+                                                            <li>• Kesesuaian personalia</li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="px-3 py-2 text-center">15</td>
                                                     <td class="px-3 py-2 text-center">{{ $review->scores['kelayakan'] ?? 0 }}</td>
-                                                    <td class="px-3 py-2 text-center">{{ ($review->scores['kelayakan'] ?? 0) * 0.25 }}</td>
+                                                    <td class="px-3 py-2 text-center font-bold">{{ number_format(($review->scores['kelayakan'] ?? 0) * 0.15, 2) }}</td>
                                                 </tr>
+                                                
+                                                {{-- Kriteria 5: Kelayakan Penelitian --}}
+                                                <tr class="border-b border-gray-600">
+                                                    <td class="px-3 py-2 text-center">5.</td>
+                                                    <td class="px-3 py-2">
+                                                        <strong>Kelayakan penelitian</strong>
+                                                        <ul class="text-xs text-gray-400 mt-1">
+                                                            <li>• Kesesuaian penelitian</li>
+                                                            <li>• Kesesuaian biaya</li>
+                                                            <li>• Kesesuaian personalia</li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="px-3 py-2 text-center">10</td>
+                                                    <td class="px-3 py-2 text-center">{{ $review->scores['kelayakan_penelitian'] ?? 0 }}</td>
+                                                    <td class="px-3 py-2 text-center font-bold">{{ number_format(($review->scores['kelayakan_penelitian'] ?? 0) * 0.10, 2) }}</td>
+                                                </tr>
+                                                
+                                                {{-- Total --}}
                                                 <tr class="bg-gray-600 font-bold">
-                                                    <td class="px-3 py-2">TOTAL</td>
+                                                    <td colspan="2" class="px-3 py-2 text-right">TOTAL</td>
+                                                    <td class="px-3 py-2 text-center">100</td>
                                                     <td class="px-3 py-2 text-center">-</td>
-                                                    <td class="px-3 py-2 text-center">{{ $review->total_score }}</td>
+                                                    <td class="px-3 py-2 text-center text-lg">{{ number_format($review->total_score, 2) }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
