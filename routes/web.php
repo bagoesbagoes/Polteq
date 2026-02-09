@@ -76,6 +76,15 @@ Route::middleware('auth')->group(function () {
     // Create Reviewer (POST)
     Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer'])
         ->name('admin.store-reviewer');
+    
+    // Edit Reviewer
+    Route::put('/admin/reviewer/{user}/update', [AdminController::class, 'updateReviewer'])
+        ->name('admin.update-reviewer');
+    
+    // Delete Reviewer
+    Route::delete('/admin/reviewer/{user}/delete', [AdminController::class, 'deleteReviewer'])
+        ->name('admin.delete-reviewer');
+
     });
 
     // DASHBOARD

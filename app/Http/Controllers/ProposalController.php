@@ -6,17 +6,22 @@ use Carbon\Carbon;
 use App\Models\Review;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\SuratKerjaService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProposalController extends Controller  
 {
+    protected $suratKerjaService;
+
+    public function __construct(SuratKerjaService $suratKerjaService)
+    {
+        $this->suratKerjaService = $suratKerjaService;
+    }
 
     public function index()
     {
-        // Exclude proposals yang sudah accepted
         $proposals = Auth::user()->proposals()
             ->whereNotIn('status', ['accepted', 'need_revision'])
             ->latest()
@@ -68,7 +73,6 @@ class ProposalController extends Controller
             'deskripsi' => 'required|string|min:50|max:5000',
             'file_usulan' => 'required|mimes:pdf|max:10240|mimetypes:application/pdf',
         ], [
-            // Custom error messages
             'judul.min' => 'Judul usulan minimal 5 karakter',
             'judul.regex' => 'Judul hanya boleh mengandung huruf, angka, dan tanda baca standar',
             'deskripsi.min' => 'Deskripsi/abstrak minimal 50 karakter',
@@ -100,7 +104,6 @@ class ProposalController extends Controller
     {
         $this->authorize('update', $proposal);
         
-        // VALIDASI: Cek apakah status boleh diedit
         $editableStatuses = ['draft', 'need_revision'];
         
         if (!in_array($proposal->status, $editableStatuses)) {
@@ -117,7 +120,6 @@ class ProposalController extends Controller
 
     public function update(Request $request, Proposal $proposal)
     {
-        // Authorization
         if ($proposal->user_id !== Auth::id()) {
             abort(403, 'Unauthorized');
         }
@@ -125,16 +127,13 @@ class ProposalController extends Controller
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'file_usulan' => 'nullable|file|mimes:pdf|max:10240', // 10MB
+            'file_usulan' => 'nullable|file|mimes:pdf|max:10240',
         ]);
         
-        // Update data
         $proposal->judul = $validated['judul'];
         $proposal->deskripsi = $validated['deskripsi'];
         
-        // Upload file baru jika ada
         if ($request->hasFile('file_usulan')) {
-            // Hapus file lama
             if ($proposal->file_usulan) {
                 Storage::delete($proposal->file_usulan);
             }
@@ -142,12 +141,8 @@ class ProposalController extends Controller
             $proposal->file_usulan = $request->file('file_usulan')->store('proposals', 'public');
         }
         
-        // Jika status 'need_revision', kembalikan ke 'submitted' untuk review ulang
         if ($proposal->status === 'need_revision') {
-            // HAPUS SEMUA REVIEW LAMA
             $proposal->reviews()->delete();
-            
-            // Set status kembali ke submitted
             $proposal->status = 'submitted';
         }
         
@@ -173,17 +168,14 @@ class ProposalController extends Controller
 
     public function submit(Proposal $proposal)
     {
-        // Authorization: Hanya pemilik proposal
         if ($proposal->user_id !== Auth::id()) {
             abort(403, 'Unauthorized');
         }
         
-        // Cek: Proposal harus status 'draft'
         if ($proposal->status !== 'draft') {
             return redirect()->back()->with('error', 'Proposal ini sudah disubmit sebelumnya');
         }
         
-        // Update status jadi 'submitted'
         $proposal->update(['status' => 'submitted']);
         
         return redirect()->route('proposals.show', $proposal)
@@ -204,81 +196,56 @@ class ProposalController extends Controller
         ]);
     }
 
-    public function downloadSuratKerja(Proposal $proposal)
+    public function downloadSuratKerja(Proposal $proposal, Request $request)
     {
         // ========================================
         // 1. AUTHORIZATION CHECK
         // ========================================
         
-        // Cek 1: Hanya pemilik proposal yang bisa download
         if ($proposal->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk mengunduh surat kerja ini.');
         }
         
-        // Cek 2: Hanya proposal yang sudah "accepted"
         if ($proposal->status !== 'accepted') {
             return redirect()
                 ->route('proposals.show', $proposal)
                 ->with('error', 'Surat kerja hanya tersedia untuk usulan yang sudah disetujui.');
         }
-
-        $logoPath = public_path('image/KopPolteq.png');
-        $logoBase64 = '';
         
-        if (file_exists($logoPath)) {
-            $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
-            $logoData = base64_encode(file_get_contents($logoPath));
-            $logoBase64 = 'data:image/' . $logoType . ';base64,' . $logoData;
+        // ========================================
+        // 2. PERIOD CHECK
+        // ========================================
+        
+        $today = Carbon::now('Asia/Jakarta');
+        $currentYear = $today->year;
+        
+        $startDate = Carbon::create($currentYear, 2, 1, 0, 0, 0, 'Asia/Jakarta');
+        $endDate = Carbon::create($currentYear, 9, 1, 23, 59, 59, 'Asia/Jakarta');
+        
+        if (!$today->between($startDate, $endDate)) {
+            if ($today->lt($startDate)) {
+                $nextPeriod = '1 Juli - 1 September ' . $currentYear;
+            } else {
+                $nextPeriod = '1 Juli - 1 September ' . ($currentYear + 1);
+            }
+            
+            return redirect()
+                ->route('proposals.show', $proposal)
+                ->with('error', 'Download surat tugas hanya dapat dilakukan pada periode 1 Juli - 1 September. Periode download berikutnya: ' . $nextPeriod);
         }
 
         // ========================================
-        // 2. PREPARE DATA UNTUK PDF
+        // 3. PREPARE DATA & GENERATE
         // ========================================
         
-        // Nomor surat (auto-generate berdasarkan ID)
-        $nomorSurat = sprintf(
-            '%03d/SK-PENELITIAN/POLTEQ/%s/%04d',
-            $proposal->id,
-            strtoupper(Carbon::now()->translatedFormat('F')), // Nama bulan (Indonesia)
-            Carbon::now()->year
-        );
-        // Contoh output: 001/SK-PENELITIAN/POLTEQ/JANUARI/2026
+        $data = $this->suratKerjaService->prepareData($proposal);
+        $format = $request->get('format', 'pdf');
         
-        // Data yang akan di-pass ke view
-        $data = [
-            'proposal' => $proposal,
-            'nomorSurat' => $nomorSurat,
-            'tanggalSurat' => Carbon::now()->translatedFormat('d F Y'), // 27 Januari 2026
-            'namaDosen' => $proposal->author->name,
-            'nidnNuptk' => $proposal->author->nidn_nuptk,
-            'jabatan' => $proposal->author->jabatan_fungsional,
-            'prodi' => $proposal->author->prodi,
-            'judulUsulan' => $proposal->judul,
-            'logoBase64' => $logoBase64,
-        ];
-        
-        // ========================================
-        // 3. LOAD VIEW & GENERATE PDF
-        // ========================================
-        
-        $pdf = Pdf::loadView('proposals.surat-kerja', $data);
-        
-        // Konfigurasi PDF
-        $pdf->setPaper('A4', 'portrait');
-        
-        // Filename untuk download
-        $filename = 'Surat_Kerja_' . str_replace(' ', '_', $proposal->judul) . '.pdf';
-        
-        // ========================================
-        // 4. DOWNLOAD PDF
-        // ========================================
-        
-        return $pdf->download($filename);
-        
-        // Alternatif: Stream (tampilkan di browser tanpa download)
-        // return $pdf->stream($filename);
-
-
+        if ($format === 'docx') {
+            return $this->suratKerjaService->generateDocx($proposal, $data);
+        } else {
+            return $this->suratKerjaService->generatePdf($proposal, $data);
+        }
     }
 
 }

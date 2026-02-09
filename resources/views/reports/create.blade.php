@@ -146,7 +146,7 @@
                 {{-- Deskripsi --}}
                 <div>
                     <label for="description" class="block text-sm font-medium leading-6 text-white">
-                        Abstrak <span class="text-gray-400">(Opsional)</span>
+                        Deskripsi <span class="text-gray-400">(Opsional)</span>
                     </label>
                     <textarea name="description" 
                               id="description" 

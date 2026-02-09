@@ -230,7 +230,14 @@
     </div>
 
     {{-- SECTION 3: Daftar Reviewer (Optional - untuk tracking) --}}
-    <div class="mt-6 bg-gray-800 rounded-lg p-6 shadow-lg">
+    <div class="mt-6 bg-gray-800 rounded-lg p-6 shadow-lg" x-data="{ 
+        editModal: false, 
+        editingReviewer: null,
+        openEditModal(reviewer) {
+            this.editingReviewer = reviewer;
+            this.editModal = true;
+        }
+        }">
         <h2 class="text-xl font-bold text-white mb-4 flex items-center">
             <svg class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -252,6 +259,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">NIDN/NUPTK</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Jabatan</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Bergabung</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-300 uppercase">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
@@ -262,6 +270,42 @@
                                 <td class="px-4 py-3 text-sm text-gray-300">{{ $reviewer->nidn_nuptk ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-300">{{ $reviewer->jabatan_fungsional ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-400">{{ $reviewer->created_at->format('d M Y') }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <div class="flex items-center justify-center gap-2">
+                                        {{-- Button Edit --}}
+                                        <button 
+                                            @click="openEditModal({
+                                                id: {{ $reviewer->id }},
+                                                name: '{{ $reviewer->name }}',
+                                                email: '{{ $reviewer->email }}',
+                                                nidn_nuptk: '{{ $reviewer->nidn_nuptk }}',
+                                                jabatan_fungsional: '{{ $reviewer->jabatan_fungsional }}'
+                                            })"
+                                            class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition">
+                                            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Edit
+                                        </button>
+
+                                        {{-- Button Hapus --}}
+                                        <form method="POST" 
+                                            action="{{ route('admin.delete-reviewer', $reviewer) }}" 
+                                            class="inline-block"
+                                            onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus akun reviewer:\n{{ $reviewer->name }}\n\nData yang dihapus TIDAK DAPAT dikembalikan!\n\nLanjutkan menghapus?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button 
+                                                type="submit"
+                                                class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition">
+                                                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -270,5 +314,132 @@
         @else
             <p class="text-gray-400 text-center py-8">Belum ada reviewer terdaftar.</p>
         @endif
+
+        {{-- MODAL EDIT REVIEWER --}}
+        <div x-show="editModal" 
+            x-cloak
+            class="fixed inset-0 z-50 overflow-y-auto" 
+            style="display: none;">
+            {{-- Backdrop --}}
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="editModal" 
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    @click="editModal = false"
+                    class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75"></div>
+
+                {{-- Modal Content --}}
+                <div x-show="editModal"
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="inline-block align-bottom bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    
+                    <form method="POST" x-bind:action="`/admin/reviewer/${editingReviewer?.id}/update`">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="flex items-center mb-4">
+                                <svg class="w-6 h-6 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                <h3 class="text-lg font-medium text-white">Edit Data Reviewer</h3>
+                            </div>
+
+                            <div class="space-y-4">
+                                {{-- Nama --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        Nama Lengkap <span class="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        x-model="editingReviewer.name"
+                                        required
+                                        class="block w-full rounded-md bg-gray-700 border border-gray-600 text-white px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                {{-- Email --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        Email <span class="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        x-model="editingReviewer.email"
+                                        required
+                                        class="block w-full rounded-md bg-gray-700 border border-gray-600 text-white px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                {{-- NIDN/NUPTK --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        NIDN/NUPTK <span class="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="nidn_nuptk" 
+                                        x-model="editingReviewer.nidn_nuptk"
+                                        required
+                                        maxlength="16"
+                                        class="block w-full rounded-md bg-gray-700 border border-gray-600 text-white px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                {{-- Jabatan --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        Jabatan Fungsional <span class="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="jabatan_fungsional" 
+                                        x-model="editingReviewer.jabatan_fungsional"
+                                        required
+                                        class="block w-full rounded-md bg-gray-700 border border-gray-600 text-white px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                {{-- Password (Opsional) --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        Password Baru <span class="text-gray-500">(Opsional)</span>
+                                    </label>
+                                    <input 
+                                        type="password" 
+                                        name="password"
+                                        class="block w-full rounded-md bg-gray-700 border border-gray-600 text-white px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Kosongkan jika tidak ingin mengubah password">
+                                    <p class="mt-1 text-xs text-gray-400">Minimal 5 karakter</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                            <button 
+                                type="submit"
+                                class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm">
+                                💾 Simpan Perubahan
+                            </button>
+                            <button 
+                                type="button"
+                                @click="editModal = false"
+                                class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 sm:text-sm">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </x-layout>

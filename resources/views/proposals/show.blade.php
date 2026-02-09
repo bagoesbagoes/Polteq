@@ -254,9 +254,10 @@
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:px-6">
                     <div class="flex gap-3 justify-end">
                         @auth
-                            {{-- TOMBOL DOWNLOAD SURAT KERJA --}}
+                            {{-- TOMBOL DOWNLOAD SURAT KERJA HAPUS BAGIAN INI JIKA SUDAH TAHAP PELUNCURAN !!!!! --}}
                             @if(Auth::user()->id === $proposal->user_id && $proposal->status === 'accepted')
-                                        <a href="{{ route('proposals.download-surat-kerja', $proposal) }}" 
+                                        {{-- <a href="{{ route('proposals.download-surat-kerja', $proposal) }}"  --}}
+                                        <a href="{{ route('proposals.download-surat-kerja', $proposal) }}?format=docx" 
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                                             <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -264,6 +265,54 @@
                                             Download Surat tugas
                                         </a>
                             @endif
+
+                            {{-- @if(Auth::user()->id === $proposal->user_id && $proposal->status === 'accepted')
+                                @php --}}
+                                    {{-- // Cek apakah hari ini tanggal 1 Juli
+                                    $today = \Carbon\Carbon::now('Asia/Jakarta');
+                                    $allowedDate = \Carbon\Carbon::create($today->year, 7, 1, 0, 0, 0, 'Asia/Jakarta');
+                                    $isAllowedDate = $today->isSameDay($allowedDate);
+                                    
+                                    // Tanggal download berikutnya
+                                    $nextAllowedDate = $allowedDate->isFuture() 
+                                        ? $allowedDate->translatedFormat('d F Y') 
+                                        : $allowedDate->addYear()->translatedFormat('d F Y');
+                                @endphp
+
+                                @if($isAllowedDate) --}}
+                                    {{-- Jika tanggal 1 Juli: Button aktif --}}
+                                    {{-- <a href="{{ route('proposals.download-surat-kerja', $proposal) }}" 
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Download Surat Tugas
+                                    </a>
+                                @else --}}
+                                    {{-- Jika BUKAN tanggal 1 Juli: Button disabled dengan tooltip --}}
+                                    {{-- <div class="relative group">
+                                        <button type="button" 
+                                                disabled
+                                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-gray-400 bg-gray-600 cursor-not-allowed opacity-50">
+                                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            Download Surat Tugas
+                                        </button> --}}
+                                        
+                                        {{-- Tooltip --}}
+                                        {{-- <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                                            🔒 Download tersedia mulai dari tanggal 1 Juli - 1 September
+                                            <br>
+                                            📅 Silakan download pada: <strong>{{ $nextAllowedDate }}</strong>
+                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                                                <div class="border-4 border-transparent border-t-gray-900"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif --}}
+
 
                             {{-- TOMBOL HAPUS UNTUK ADMIN (BARU!) --}}
                             @if(Auth::user()->role === 'admin' && $proposal->status !== 'draft')
