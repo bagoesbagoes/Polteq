@@ -27,7 +27,25 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:255|regex:/^[\pL\s]+$/u',
             'email' => 'required|email:rfc|unique:users',
-            'nidn_nuptk' => 'required|string|min:10|max:16|unique:users',
+            'nidn_nuptk' => [
+                'required',
+                'unique:users',
+                'string',
+                'regex:/^[0-9]+$/',
+                function ($attribute, $value, $fail) {
+                    // Cek hanya angka
+                    if (!ctype_digit($value)) {
+                        $fail('NIDN/NUPTK harus berupa angka.');
+                        return;
+                    }
+                    
+                    // Cek panjang 10 atau 16
+                    $length = strlen($value);
+                    if ($length !== 10 && $length !== 16) {
+                        $fail('NIDN/NUPTK harus tepat 10 digit (NIDN) atau 16 digit (NUPTK).');
+                    }
+                },
+            ],
             'jabatan_fungsional' => 'required|string|max:255',
             'password' => 'required|min:5|max:255',
         ], [
@@ -78,7 +96,18 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:255|regex:/^[\pL\s]+$/u',
             'email' => 'required|email:rfc|unique:users,email,' . $user->id,
-            'nidn_nuptk' => 'required|string|min:10|max:16|unique:users,nidn_nuptk,' . $user->id,
+            'nidn_nuptk' => [
+                'required',
+                'string',
+                'regex:/^[0-9]+$/',  // Hanya angka
+                function ($attribute, $value, $fail) {
+                    $length = strlen($value);
+                    if ($length !== 10 && $length !== 16) {
+                        $fail('NIDN/NUPTK harus tepat 10 digit (NIDN) atau 16 digit (NUPTK).');
+                    }
+                },
+                'unique:users,nidn_nuptk,' . $user->id
+            ],
             'jabatan_fungsional' => 'required|string|max:255',
             'password' => 'nullable|min:5|max:255',
         ], [
