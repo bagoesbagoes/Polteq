@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 
-    {{-- Success Message --}}
+    {{-- Pesan berhasil --}}
     @if(session('success'))
         <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">
             <div class="flex items-center">
@@ -12,22 +12,71 @@
             </div>
         </div>
     @endif
+    
+    {{-- Pesan error --}}
+    @if(session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)" class="mb-6 rounded-md bg-red-900/20 p-4 border border-red-700">
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-red-400 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <p class="text-sm font-medium text-red-400">{{ session('error') }}</p>
+            </div>
+        </div>
+    @endif
 
     {{-- Header with Create Button --}}
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-white">{{ $title }}</h2>
-        
+    
         @if($type === 'laporan_akhir')
-            <a href="{{ route('reports.create-laporan-akhir') }}" 
-               class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Upload Laporan Akhir
-            </a>
+            {{-- Cek apakah ada usulan accepted yang belum punya laporan --}}
+            @php
+                $hasAvailableProposal = \App\Models\Proposal::where('user_id', Auth::id())
+                    ->where('status', 'accepted')
+                    ->whereDoesntHave('reports', function($query) {
+                        $query->where('type', 'laporan_akhir');
+                    })
+                    ->exists();
+            @endphp
+
+            @if($hasAvailableProposal)
+                {{-- Button AKTIF (ada usulan tersedia) --}}
+                <a href="{{ route('reports.create-laporan-akhir') }}" 
+                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Upload Laporan Akhir
+                </a>
+            @else
+                {{-- Button DISABLED (tidak ada usulan tersedia) --}}
+                <div class="relative group">
+                    <button 
+                        disabled
+                        class="inline-flex items-center px-4 py-2 bg-gray-600 text-gray-400 rounded-md cursor-not-allowed opacity-50">
+                        <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        Upload Laporan Akhir
+                    </button>
+                    
+                    {{-- Tooltip --}}
+                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10 shadow-lg border border-gray-700">
+                        <div class="text-center">
+                            <p class="font-semibold mb-1">⚠️ Tidak Ada Usulan Tersedia</p>
+                            <p class="text-gray-300">Semua usulan yang disetujui</p>
+                            <p class="text-gray-300">sudah memiliki laporan akhir</p>
+                        </div>
+                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                            <div class="border-4 border-transparent border-t-gray-900"></div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         @else
+            {{-- Button untuk Luaran (selalu aktif) --}}
             <a href="{{ route('reports.create-luaran') }}" 
-               class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+            class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
                 <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>

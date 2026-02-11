@@ -308,9 +308,9 @@ Route::middleware('auth')->group(function () {
 
     })->name('proposals.by-author');
 
-    // ==========================
+    
     // PUBLISHER ROUTES
-    // ==========================
+    
     Route::middleware('role:publisher')->group(function () {
         Route::get('/publisher/dashboard', [PublisherController::class, 'dashboard']);
         Route::get('/publisher/upload', [PublisherController::class, 'create']);
@@ -319,9 +319,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/publisher/proposal/{proposal}/revisi', [PublisherController::class, 'submitRevision']);
     });
 
-    // ==========================
+    
     // REVIEWER ROUTES
-    // ==========================
+    
     Route::middleware('role:reviewer')->group(function () {
         Route::get('reviewer/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
         Route::get('reviewer/my-reviews', [ReviewerController::class, 'myReviews'])->name('reviewer.my-reviews');
@@ -333,10 +333,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('reviewer/reviews/{review}', [ReviewerController::class, 'deleteReview'])->name('reviewer.delete-review');
     });
 
-    // ==========================
+    
     // PROPOSAL RESOURCE ROUTES
-    // HARUS DI PALING BAWAH!
-    // ==========================
+    // Harus dibawah ya bangcat
+    
     Route::resource('proposals', ProposalController::class);
     Route::post('proposals/{proposal}/submit', [ProposalController::class, 'submit'])
         ->name('proposals.submit');

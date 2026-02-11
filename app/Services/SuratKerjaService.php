@@ -11,41 +11,7 @@ use PhpOffice\PhpWord\Shared\Converter;
 
 class SuratKerjaService
 {
-    /**
-     * Generate PDF Surat Kerja
-     * 
-     * @param Proposal $proposal
-     * @param array $data
-     * @return \Illuminate\Http\Response
-     */
-    public function generatePdf(Proposal $proposal, array $data)
-    {
-        $logoPath = public_path('image/KopPolteq.png');
-        $logoBase64 = '';
-        
-        if (file_exists($logoPath)) {
-            $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
-            $logoData = base64_encode(file_get_contents($logoPath));
-            $logoBase64 = 'data:image/' . $logoType . ';base64,' . $logoData;
-        }
-        
-        $data['logoBase64'] = $logoBase64;
-        
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('proposals.surat-kerja', $data);
-        $pdf->setPaper('A4', 'portrait');
-        
-        $filename = 'Surat_Kerja_' . str_replace(' ', '_', $proposal->judul) . '.pdf';
-        
-        return $pdf->download($filename);
-    }
-
-    /**
-     * Generate DOCX Surat Kerja
-     * 
-     * @param Proposal $proposal
-     * @param array $data
-     * @return \Illuminate\Http\Response
-     */
+    
     public function generateDocx(Proposal $proposal, array $data)
     {
         $phpWord = new PhpWord();
@@ -54,8 +20,9 @@ class SuratKerjaService
         $section = $phpWord->addSection([
             'marginLeft' => Converter::cmToTwip(2),
             'marginRight' => Converter::cmToTwip(2),
-            'marginTop' => Converter::cmToTwip(2),
+            'marginTop' => Converter::cmToTwip(3),
             'marginBottom' => Converter::cmToTwip(2),
+            'headerHeight' => Converter::cmToTwip(2),
         ]);
 
         // Build document sections
@@ -79,14 +46,18 @@ class SuratKerjaService
         $logoPath = public_path('image/KopPolteq.png');
         
         if (file_exists($logoPath)) {
-            $section->addImage($logoPath, [
+            $header = $section->addHeader();
+            
+            $header->addImage($logoPath, [
                 'width' => 500,
-                'height' => 70,
+                'height' => 90,
+                'marginTop' => -20,
                 'alignment' => Jc::CENTER,
             ]);
+
+            $header->addText('', [], ['spaceAfter' => 250]);
+
         }
-        
-        $section->addTextBreak(1);
     }
 
     /**
@@ -158,13 +129,13 @@ class SuratKerjaService
         // Header
         $table->addRow(400);
         $table->addCell(800, ['valign' => 'center'])
-            ->addText('No', ['bold' => true, 'size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+            ->addText('No', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
         $table->addCell(4000, ['valign' => 'center'])
-            ->addText('Nama', ['bold' => true, 'size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+            ->addText('Nama', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
         $table->addCell(3000, ['valign' => 'center'])
-            ->addText('NIDN/NUPTK/NIM', ['bold' => true, 'size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+            ->addText('NIDN/NUPTK/NIM', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
         $table->addCell(3000, ['valign' => 'center'])
-            ->addText('Posisi', ['bold' => true, 'size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+            ->addText('Posisi', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
 
         // Rows
         $rows = [
@@ -194,14 +165,12 @@ class SuratKerjaService
      */
     private function addTugas($section, $judulUsulan)
     {
-        // Pindahkan semua Paragraph Style (alignment, spaceAfter, lineHeight) ke sini
         $textRun = $section->addTextRun([
             'alignment' => Jc::BOTH, 
             'spaceAfter' => 200, 
-            'lineHeight' => 1.5 // lineHeight ditaruh di sini
+            'lineHeight' => 1.5
         ]);
 
-        // Sekarang addText cukup fokus pada isi teks dan Font Style saja
         $textRun->addText(
             'Untuk melaksanakan penelitian dalam rangka memenuhi salah satu tugas Tri Dharma Perguruan Tinggi dengan judul ',
             ['size' => 12, 'name' => 'Times New Roman']
@@ -209,7 +178,7 @@ class SuratKerjaService
 
         $textRun->addText(
             '"' . $judulUsulan . '"',
-            ['bold' => true, 'size' => 12, 'name' => 'Times New Roman']
+            ['bold' => true, 'size' => 12, 'name' => 'Times New Roman','marker' => 'yellow']
         );
 
         $textRun->addText(
@@ -254,7 +223,7 @@ class SuratKerjaService
         $ttdTable->addCell(6000);
         $ttdTable->addCell(5000)->addText(
             'Ketua UPPM,',
-            ['bold' => true, 'size' => 12, 'name' => 'Times New Roman'],
+            ['size' => 12, 'name' => 'Times New Roman'],
             ['alignment' => Jc::LEFT, 'spaceAfter' => 1000]
         );
 
@@ -264,8 +233,11 @@ class SuratKerjaService
         $ttdTable->addCell(6000);
         $ttdTable->addCell(5000)->addText(
             'Fera Maulina, SET., MM., CAP., PMR.',
-            ['bold' => true, 'size' => 12, 'name' => 'Times New Roman'],
-            ['alignment' => Jc::LEFT]
+            ['size' => 12, 'name' => 'Times New Roman'],
+            [   'alignment' => Jc::LEFT,
+                'spacing' => 0 ,
+                'spaceAfter' => 0,
+                'spaceBefore' => 0,]
         );
 
         // NIK
@@ -274,8 +246,11 @@ class SuratKerjaService
         $ttdTable->addCell(6000);
         $ttdTable->addCell(5000)->addText(
             'NIK. 035.1.2908.05',
-            ['size' => 10, 'name' => 'Times New Roman'],
-            ['alignment' => Jc::LEFT]
+            ['size' => 12, 'name' => 'Times New Roman'],
+            ['alignment' => Jc::LEFT,
+                'spacing' => 0,
+                'spaceAfter' => 0,
+                'spaceBefore' => 0,]
         );
     }
 

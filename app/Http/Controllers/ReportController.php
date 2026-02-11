@@ -57,12 +57,11 @@ class ReportController extends Controller
         // HANYA untuk laporan_akhir, wajib ada proposal
         if ($type === 'laporan_akhir' && $proposals->isEmpty()) {
             return redirect()
-                ->route('laporan_penelitian')
-                ->with('error', 'Tidak ada usulan yang disetujui atau semua usulan sudah memiliki laporan akhir.');
+                ->route('reports.laporan-akhir')  // ← GANTI INI dari 'laporan_penelitian'
+                ->with('error', 'Tidak ada usulan yang tersedia untuk upload laporan akhir. Semua usulan yang disetujui sudah memiliki laporan akhir.');
         }
         
         // Untuk luaran, boleh kosong (bisa upload tanpa proposal)
-        
         $title = $type === 'laporan_akhir' ? 'Upload Laporan Akhir' : 'Upload Luaran';
         
         return view('reports.create', [

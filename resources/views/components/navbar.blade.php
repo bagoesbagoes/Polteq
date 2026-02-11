@@ -5,25 +5,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-            <div class="shrink-0 text-white font-TimesNewRoman text-xl">
-                <h1>PRIMA</h1>
-            </div>
-            <div class="hidden md:block">
-                <div class="ml-10 flex items-baseline space-x-4" >
-                <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                <x-nav-link href="/UsulanPenelitian" :active="request()->is('UsulanPenelitian')">Usulan Penelitian</x-nav-link>
-                
-                @if (Auth::check() && in_array(Auth::user()->role, ['admin', 'publisher']))
-                <x-nav-link href="/LaporanPenelitian" :active="request()->is('LaporanPenelitian')">Laporan Penelitian</x-nav-link>
-                @endif
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex items-center">
+                        <div class="shrink-0 text-white font-TimesNewRoman text-xl">
+                            <h1>PRIMA</h1>
+                        </div>
+                            <div class="hidden md:block">
+                                <div class="ml-10 flex items-baseline space-x-4  " >
+                                <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
+                                <x-nav-link href="/UsulanPenelitian" :active="request()->is('UsulanPenelitian')">Usulan Penelitian</x-nav-link>
+                                
+                                @if (Auth::check() && in_array(Auth::user()->role, ['admin', 'publisher']))
+                                <x-nav-link href="/LaporanPenelitian" :active="request()->is('LaporanPenelitian')">Laporan Penelitian</x-nav-link>
+                                @endif
 
-                <x-nav-link href="/UsulanPKM" :active="request()->is('UsulanPKM')">Usulan PKM</x-nav-link>
-                <x-nav-link href="/LaporanPKM" :active="request()->is('LaporanPKM')">Laporan PKM</x-nav-link>
+                                <x-nav-link href="/UsulanPKM" :active="request()->is('UsulanPKM')">Usulan PKM</x-nav-link>
+                                <x-nav-link href="/LaporanPKM" :active="request()->is('LaporanPKM')">Laporan PKM</x-nav-link>
+                            </div>
                 </div>
             </div>
-        </div>
             <div class="hidden md:block">
                 <div class="ml-4 flex items-center md:ml-6">
                     <!-- Profile dropdown -->
