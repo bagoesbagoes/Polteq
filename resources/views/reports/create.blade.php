@@ -225,6 +225,20 @@
                                class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
                         <p class="mt-2 text-sm text-gray-400">Format: PDF. Maksimal: 10MB</p>
                     </div>
+
+                    {{-- UPLOAD SURAT TUGAS AKHIR --}}
+                    <div>
+                        <label for="surat_tugas_upload" class="block text-sm font-medium leading-6 text-white">
+                            Upload Surat Tugas Akhir (PDF) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" 
+                            name="surat_tugas_upload" 
+                            id="surat_tugas_upload" 
+                            accept=".pdf" 
+                            required 
+                            class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700" />
+                        <p class="mt-2 text-sm text-gray-400">📋 File surat tugas penelitian. Format: PDF. Maksimal: 10MB</p>
+                    </div>
                 @endif
 
             </div>

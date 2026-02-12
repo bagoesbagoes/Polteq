@@ -198,9 +198,7 @@ class ProposalController extends Controller
 
     public function downloadSuratKerja(Proposal $proposal, Request $request)
     {
-        // ========================================
         // 1. AUTHORIZATION CHECK
-        // ========================================
         
         if ($proposal->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk mengunduh surat kerja ini.');
@@ -212,9 +210,7 @@ class ProposalController extends Controller
                 ->with('error', 'Surat kerja hanya tersedia untuk usulan yang sudah disetujui.');
         }
         
-        // ========================================
         // 2. PERIOD CHECK
-        // ========================================
         
         $today = Carbon::now('Asia/Jakarta');
         $currentYear = $today->year;
@@ -234,18 +230,14 @@ class ProposalController extends Controller
                 ->with('error', 'Download surat tugas hanya dapat dilakukan pada periode 1 Juli - 1 September. Periode download berikutnya: ' . $nextPeriod);
         }
 
-        // ========================================
         // 3. PREPARE DATA & GENERATE
-        // ========================================
         
         $data = $this->suratKerjaService->prepareData($proposal);
         $format = $request->get('format', 'pdf');
         
         if ($format === 'docx') {
             return $this->suratKerjaService->generateDocx($proposal, $data);
-        } else {
-            return $this->suratKerjaService->generatePdf($proposal, $data);
-        }
+        };
     }
 
 }

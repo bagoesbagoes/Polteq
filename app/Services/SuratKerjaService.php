@@ -84,7 +84,7 @@ class SuratKerjaService
         );
         
         $section->addText(
-            'Nomor: .......................................... ' ,
+            'Nomor: ........................................................ ' ,
             ['size' => 12, 'name' => 'Times New Roman'],
 
             [   'alignment' => Jc::CENTER, 'spaceAfter' => 200,

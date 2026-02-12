@@ -84,7 +84,6 @@ Route::middleware('auth')->group(function () {
     // Delete Reviewer
     Route::delete('/admin/reviewer/{user}/delete', [AdminController::class, 'deleteReviewer'])
         ->name('admin.delete-reviewer');
-
     });
 
     // DASHBOARD
@@ -203,6 +202,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/{type}/{report}/download', [ReportController::class, 'download'])
             ->whereIn('type', ['laporan_akhir', 'luaran'])
             ->name('reports.download');
+
+        Route::get('/reports/{type}/{report}/download-surat-tugas', [ReportController::class, 'downloadSuratTugas'])
+        ->whereIn('type', ['laporan_akhir', 'luaran'])
+        ->name('reports.download-surat-tugas');
     });
     
     

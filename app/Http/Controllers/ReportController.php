@@ -57,7 +57,7 @@ class ReportController extends Controller
         // HANYA untuk laporan_akhir, wajib ada proposal
         if ($type === 'laporan_akhir' && $proposals->isEmpty()) {
             return redirect()
-                ->route('reports.laporan-akhir')  // ← GANTI INI dari 'laporan_penelitian'
+                ->route('reports.laporan-akhir')  // 
                 ->with('error', 'Tidak ada usulan yang tersedia untuk upload laporan akhir. Semua usulan yang disetujui sudah memiliki laporan akhir.');
         }
         
@@ -87,11 +87,15 @@ class ReportController extends Controller
                 'proposal_id' => 'required|exists:proposals,id',
                 'description' => 'nullable|string|max:5000',
                 'file_upload' => 'required|file|mimes:pdf|max:10240',
+                'surat_tugas_upload' => 'required|file|mimes:pdf|max:10240',
             ], [
                 'proposal_id.required' => 'Usulan wajib dipilih untuk laporan akhir',
                 'file_upload.required' => 'File laporan akhir wajib di-upload',
                 'file_upload.mimes' => 'File harus berupa PDF',
                 'file_upload.max' => 'Ukuran file maksimal 10MB',
+                'surat_tugas_upload.required' => 'File surat tugas wajib di-upload',
+                'surat_tugas_upload.mimes' => 'File surat tugas harus berupa PDF',
+                'surat_tugas_upload.max' => 'File surat tugas maksimal berukuran 10MB',
             ]);
         } else {
             // Luaran: proposal_id OPSIONAL
@@ -144,16 +148,40 @@ class ReportController extends Controller
             'user_id' => Auth::id(),
             'type' => $type,
             'title' => $type === 'laporan_akhir' && !empty($validated['proposal_id']) 
-            ? Proposal::find($validated['proposal_id'])->judul 
-            : ($validated['title'] ?? 'Tanpa Judul'),
+                ? Proposal::find($validated['proposal_id'])->judul 
+                : ($validated['title'] ?? 'Tanpa Judul'),
             'description' => $validated['description'],
         ];
         
-        // Handle file upload (untuk laporan_akhir atau luaran tipe file)
-        if ($type === 'laporan_akhir' || ($type === 'luaran' && $validated['luaran_type'] === 'file')) {
+        // UPLOAD FILE LAPORAN AKHIR (2 file)
+        if ($type === 'laporan_akhir') {
+            // File 1: Laporan Akhir
             $file = $request->file('file_upload');
             $filePath = $file->store('reports/' . $type, 'public');
-            $fileSize = round($file->getSize() / 1024, 2); // KB
+            $fileSize = round($file->getSize() / 1024, 2); 
+            $fileType = $file->getClientOriginalExtension();
+            
+            $data['file_path'] = $filePath;
+            $data['file_size'] = $fileSize;
+            $data['file_type'] = $fileType;
+
+            // File 2: Surat Tugas
+            $suratTugasFile = $request->file('surat_tugas_upload');
+            $suratTugasPath = $suratTugasFile->store('reports/surat_tugas', 'public');
+            $suratTugasSize = round($suratTugasFile->getSize() / 1024, 2);
+            $suratTugasType = $suratTugasFile->getClientOriginalExtension();
+
+            $data['surat_tugas_path'] = $suratTugasPath;
+            $data['surat_tugas_size'] = $suratTugasSize;
+            $data['surat_tugas_type'] = $suratTugasType;
+        }
+
+        // UPLOAD FILE LUARAN
+        
+        if ($type === 'luaran' && isset($validated['luaran_type']) && $validated['luaran_type'] === 'file') {
+            $file = $request->file('file_upload');
+            $filePath = $file->store('reports/' . $type, 'public');
+            $fileSize = round($file->getSize() / 1024, 2);
             $fileType = $file->getClientOriginalExtension();
             
             $data['file_path'] = $filePath;
@@ -161,17 +189,19 @@ class ReportController extends Controller
             $data['file_type'] = $fileType;
         }
         
-        // Handle hyperlink (untuk luaran tipe link)
+        // HANDLE DATA LUARAN
+        
         if ($type === 'luaran') {
             $data['jenis_luaran'] = $validated['jenis_luaran'];
             
             // Jika pilih "Lainnya", simpan juga spesifikasi
             if ($validated['jenis_luaran'] === 'Lainnya, sebutkan') {
-                $data['jenis_luaran_lainnya'] = $validated['jenis_luaran_lainnya'];
+                $data['jenis_luaran_lainnya'] = $validated['jenis_luaran_lainnya'] ?? null;
             }
             
             $data['luaran_type'] = $validated['luaran_type'];
             
+            // Jika tipe link, simpan hyperlink
             if ($validated['luaran_type'] === 'link') {
                 $data['hyperlink'] = $validated['hyperlink'];
             }
@@ -187,7 +217,7 @@ class ReportController extends Controller
         return redirect()
             ->route($type === 'laporan_akhir' ? 'reports.laporan-akhir' : 'reports.luaran')
             ->with('success', $successMessage);
-}
+    }
 
 
     /**
@@ -221,6 +251,10 @@ class ReportController extends Controller
         if ($report->file_path) {
             Storage::disk('public')->delete($report->file_path);
         }
+
+        if ($report->surat_tugas_path) {
+        Storage::disk('public')->delete($report->surat_tugas_path);
+        }   
         
         $report->delete();
         
@@ -261,6 +295,27 @@ class ReportController extends Controller
         
         if (!file_exists($filePath)) {
             abort(404, 'File tidak ditemukan di server');
+        }
+        
+        return response()->download($filePath);
+    }
+
+    public function downloadSuratTugas($type, Report $report)
+    {
+        // Authorization
+        if ($report->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+        
+        // Check if file exists
+        if (!$report->surat_tugas_path) {
+            abort(404, 'File surat tugas tidak ditemukan');
+        }
+        
+        $filePath = storage_path('app/public/' . $report->surat_tugas_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File surat tugas tidak ditemukan di server');
         }
         
         return response()->download($filePath);

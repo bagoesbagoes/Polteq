@@ -232,7 +232,7 @@
 
     </div>
 
-    {{-- SECTION 3: Daftar Reviewer dengan Edit & Delete (FIXED) --}}
+    {{-- SECTION 3: Daftar Reviewer  --}}
     <div class="mt-6 bg-gray-800 rounded-lg p-6 shadow-lg">
         <h2 class="text-xl font-bold text-white mb-4 flex items-center">
             <svg class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

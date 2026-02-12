@@ -41,7 +41,7 @@ class DashboardController extends Controller
             ];
         }
         
-        // JIKA REVIEWER: Hitung SEMUA usulan berdasarkan status (global)
+        // JIKA REVIEWER: Hitung SEMUA usulan berdasarkan status
         elseif ($user->role === 'reviewer') {
             $counts = [
                 // Total SEMUA proposal dengan status submitted

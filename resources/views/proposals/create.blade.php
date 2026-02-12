@@ -23,6 +23,23 @@
         </div>
     @endif
 
+    <div class="mb-6  from-blue-900/30 to-indigo-900/30 border border-blue-700 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-base font-semibold text-white mb-1">💡 Butuh Panduan?</h3>
+                <p class="text-sm text-gray-300">Download template dan pedoman penulisan usulan</p>
+            </div>
+            <a href="{{ asset('files/templates/TemplatePenelitianPolteq2026.pdf') }}" 
+               target="_blank"
+               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition whitespace-nowrap">
+                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Lihat Template
+            </a>
+        </div>
+    </div>
+
     <form method="POST" action="{{ route('proposals.store') }}" enctype="multipart/form-data" class="bg-gray-800 shadow sm:rounded-lg p-6">
         @csrf
         <div class="space-y-6">
