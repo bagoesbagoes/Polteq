@@ -72,115 +72,143 @@ class ReportController extends Controller
     }
 
     /**
-     * Store new report
-     */
-    public function store(Request $request, $type)
-    {
-        // Validasi type
-        if (!in_array($type, ['laporan_akhir', 'luaran'])) {
-            abort(404);
+ * Store new report
+ */
+public function store(Request $request, $type)
+{
+    // Validasi type
+    if (!in_array($type, ['laporan_akhir', 'luaran'])) {
+        abort(404);
+    }
+    
+    // Validasi berbeda untuk laporan_akhir vs luaran
+    if ($type === 'laporan_akhir') {
+        $validated = $request->validate([
+            'proposal_id' => 'required|exists:proposals,id',
+            'description' => 'nullable|string|max:5000',
+            'file_upload' => 'required|file|mimes:pdf|max:10240',
+            'surat_tugas_upload' => 'required|file|mimes:pdf|max:10240',
+        ], [
+            'proposal_id.required' => 'Usulan wajib dipilih untuk laporan akhir',
+            'file_upload.required' => 'File laporan akhir wajib di-upload',
+            'file_upload.mimes' => 'File harus berupa PDF',
+            'file_upload.max' => 'Ukuran file maksimal 10MB',
+            'surat_tugas_upload.required' => 'File surat tugas wajib di-upload',
+            'surat_tugas_upload.mimes' => 'File surat tugas harus berupa PDF',
+            'surat_tugas_upload.max' => 'File surat tugas maksimal berukuran 10MB',
+        ]);
+    } else {
+        // ========================================
+        // LUARAN: File dan/atau Hyperlink
+        // ========================================
+        $validated = $request->validate([
+            'proposal_id' => 'nullable|exists:proposals,id',
+            'jenis_luaran' => 'required|in:Artikel Jurnal Nasional Terakreditasi,Jurnal Internasional Bereputasi,Buku Referensi,Buku Ajar,Hak Cipta dan Paten,Lainnya, sebutkan',
+            'jenis_luaran_lainnya' => 'required_if:jenis_luaran,Lainnya, sebutkan|nullable|string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:5000',
+            
+            // File dan Hyperlink: minimal 1 harus diisi
+            'file_upload' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'hyperlink' => 'nullable|url|max:500',
+        ], [
+            'jenis_luaran.required' => 'Jenis luaran wajib dipilih',
+            'jenis_luaran_lainnya.required_if' => 'Mohon sebut jenis luaran lainnya',
+            'title.required' => 'Judul luaran wajib diisi',
+            'file_upload.mimes' => 'File harus berupa PDF, DOC, DOCX, JPG, atau PNG',
+            'file_upload.max' => 'Ukuran file maksimal 10MB',
+            'hyperlink.url' => 'Format URL tidak valid',
+        ]);
+        
+        // ========================================
+        // VALIDASI CUSTOM: Minimal 1 harus diisi
+        // ========================================
+        if (empty($request->file('file_upload')) && empty($validated['hyperlink'])) {
+            return back()
+                ->withErrors(['file_upload' => 'Minimal salah satu harus diisi: File Upload atau Hyperlink URL'])
+                ->withInput();
+        }
+    }
+    
+    // Cek apakah proposal milik user (hanya jika proposal_id ada)
+    if (!empty($validated['proposal_id'])) {
+        $proposal = Proposal::findOrFail($validated['proposal_id']);
+        
+        if ($proposal->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
         }
         
-        // Validasi berbeda untuk laporan_akhir vs luaran
-        if ($type === 'laporan_akhir') {
-            $validated = $request->validate([
-                'proposal_id' => 'required|exists:proposals,id',
-                'description' => 'nullable|string|max:5000',
-                'file_upload' => 'required|file|mimes:pdf|max:10240',
-                'surat_tugas_upload' => 'required|file|mimes:pdf|max:10240',
-            ], [
-                'proposal_id.required' => 'Usulan wajib dipilih untuk laporan akhir',
-                'file_upload.required' => 'File laporan akhir wajib di-upload',
-                'file_upload.mimes' => 'File harus berupa PDF',
-                'file_upload.max' => 'Ukuran file maksimal 10MB',
-                'surat_tugas_upload.required' => 'File surat tugas wajib di-upload',
-                'surat_tugas_upload.mimes' => 'File surat tugas harus berupa PDF',
-                'surat_tugas_upload.max' => 'File surat tugas maksimal berukuran 10MB',
-            ]);
-        } else {
-            // Luaran: proposal_id OPSIONAL
-            $validated = $request->validate([
-                'proposal_id' => 'nullable|exists:proposals,id',
-                'jenis_luaran' => 'required|in:Artikel Jurnal Nasional Terakreditasi,Jurnal Internasional Bereputasi,Buku Referensi,Buku Ajar,Hak Cipta dan Paten,Lainnya, sebutkan',
-                'jenis_luaran_lainnya' => 'required_if:jenis_luaran,Lainnya, sebutkan|nullable|string|max:255',
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string|max:5000',
-                'luaran_type' => 'required|in:file,link',
-                'file_upload' => 'nullable|required_if:luaran_type,file|file|max:10240',
-                'hyperlink' => 'nullable|required_if:luaran_type,link|url|max:500',
-            ], [
-                'jenis_luaran.required' => 'Jenis luaran wajib dipilih',
-                'jenis_luaran_lainnya.required_if' => 'Mohon sebut jenis luaran lainnya',
-                'luaran_type.required' => 'Pilih tipe luaran (File atau Hyperlink)',
-                'file_upload.required_if' => 'File wajib di-upload jika memilih tipe File',
-                'file_upload.max' => 'Ukuran file maksimal 10MB',
-                'hyperlink.required_if' => 'URL wajib diisi jika memilih tipe Hyperlink',
-                'hyperlink.url' => 'Format URL tidak valid',
-            ]);
+        // Cek apakah proposal sudah accepted
+        if ($proposal->status !== 'accepted') {
+            return back()->with('error', 'Hanya usulan yang sudah disetujui yang bisa upload laporan/luaran.');
         }
         
-        // Cek apakah proposal milik user (hanya jika proposal_id ada)
-        if (!empty($validated['proposal_id'])) {
-            $proposal = Proposal::findOrFail($validated['proposal_id']);
-            
-            if ($proposal->user_id !== Auth::id()) {
-                abort(403, 'Unauthorized');
-            }
-            
-            // Cek apakah proposal sudah accepted
-            if ($proposal->status !== 'accepted') {
-                return back()->with('error', 'Hanya usulan yang sudah disetujui yang bisa upload laporan/luaran.');
-            }
-            
-            // Cek apakah sudah ada laporan/luaran untuk proposal ini
-            $existingReport = Report::where('proposal_id', $validated['proposal_id'])
-                ->where('type', $type)
-                ->first();
-            
-            if ($existingReport) {
-                return back()->with('error', 'Proposal ini sudah memiliki ' . ($type === 'laporan_akhir' ? 'laporan akhir' : 'luaran') . '.');
-            }
+        // Cek apakah sudah ada laporan/luaran untuk proposal ini
+        $existingReport = Report::where('proposal_id', $validated['proposal_id'])
+            ->where('type', $type)
+            ->first();
+        
+        if ($existingReport) {
+            return back()->with('error', 'Proposal ini sudah memiliki ' . ($type === 'laporan_akhir' ? 'laporan akhir' : 'luaran') . '.');
+        }
+    }
+    
+    // Prepare data
+    $data = [
+        'proposal_id' => $validated['proposal_id'] ?? null,
+        'user_id' => Auth::id(),
+        'type' => $type,
+        'title' => $type === 'laporan_akhir' && !empty($validated['proposal_id']) 
+            ? Proposal::find($validated['proposal_id'])->judul 
+            : ($validated['title'] ?? 'Tanpa Judul'),
+        'description' => $validated['description'],
+    ];
+    
+    // ========================================
+    // UPLOAD FILE LAPORAN AKHIR (2 file)
+    // ========================================
+    if ($type === 'laporan_akhir') {
+        // File 1: Laporan Akhir
+        $file = $request->file('file_upload');
+        $filePath = $file->store('reports/' . $type, 'public');
+        $fileSize = round($file->getSize() / 1024, 2); 
+        $fileType = $file->getClientOriginalExtension();
+        
+        $data['file_path'] = $filePath;
+        $data['file_size'] = $fileSize;
+        $data['file_type'] = $fileType;
+
+        // File 2: Surat Tugas
+        $suratTugasFile = $request->file('surat_tugas_upload');
+        $suratTugasPath = $suratTugasFile->store('reports/surat_tugas', 'public');
+        $suratTugasSize = round($suratTugasFile->getSize() / 1024, 2);
+        $suratTugasType = $suratTugasFile->getClientOriginalExtension();
+
+        $data['surat_tugas_path'] = $suratTugasPath;
+        $data['surat_tugas_size'] = $suratTugasSize;
+        $data['surat_tugas_type'] = $suratTugasType;
+    }
+
+    // ========================================
+    // HANDLE LUARAN: File dan/atau Hyperlink
+    // ========================================
+    if ($type === 'luaran') {
+        // Simpan jenis luaran
+        $data['jenis_luaran'] = $validated['jenis_luaran'];
+        
+        // Jika pilih "Lainnya", simpan spesifikasi
+        if ($validated['jenis_luaran'] === 'Lainnya, sebutkan') {
+            $data['jenis_luaran_lainnya'] = $validated['jenis_luaran_lainnya'] ?? null;
         }
         
-        // Prepare data
-        $data = [
-            'proposal_id' => $validated['proposal_id'] ?? null,
-            'user_id' => Auth::id(),
-            'type' => $type,
-            'title' => $type === 'laporan_akhir' && !empty($validated['proposal_id']) 
-                ? Proposal::find($validated['proposal_id'])->judul 
-                : ($validated['title'] ?? 'Tanpa Judul'),
-            'description' => $validated['description'],
-        ];
+        // Cek apakah ada file yang diupload
+        $hasFile = $request->hasFile('file_upload');
+        $hasLink = !empty($validated['hyperlink']);
         
-        // UPLOAD FILE LAPORAN AKHIR (2 file)
-        if ($type === 'laporan_akhir') {
-            // File 1: Laporan Akhir
+        // Upload file (jika ada)
+        if ($hasFile) {
             $file = $request->file('file_upload');
-            $filePath = $file->store('reports/' . $type, 'public');
-            $fileSize = round($file->getSize() / 1024, 2); 
-            $fileType = $file->getClientOriginalExtension();
-            
-            $data['file_path'] = $filePath;
-            $data['file_size'] = $fileSize;
-            $data['file_type'] = $fileType;
-
-            // File 2: Surat Tugas
-            $suratTugasFile = $request->file('surat_tugas_upload');
-            $suratTugasPath = $suratTugasFile->store('reports/surat_tugas', 'public');
-            $suratTugasSize = round($suratTugasFile->getSize() / 1024, 2);
-            $suratTugasType = $suratTugasFile->getClientOriginalExtension();
-
-            $data['surat_tugas_path'] = $suratTugasPath;
-            $data['surat_tugas_size'] = $suratTugasSize;
-            $data['surat_tugas_type'] = $suratTugasType;
-        }
-
-        // UPLOAD FILE LUARAN
-        
-        if ($type === 'luaran' && isset($validated['luaran_type']) && $validated['luaran_type'] === 'file') {
-            $file = $request->file('file_upload');
-            $filePath = $file->store('reports/' . $type, 'public');
+            $filePath = $file->store('reports/luaran', 'public');
             $fileSize = round($file->getSize() / 1024, 2);
             $fileType = $file->getClientOriginalExtension();
             
@@ -189,35 +217,34 @@ class ReportController extends Controller
             $data['file_type'] = $fileType;
         }
         
-        // HANDLE DATA LUARAN
-        
-        if ($type === 'luaran') {
-            $data['jenis_luaran'] = $validated['jenis_luaran'];
-            
-            // Jika pilih "Lainnya", simpan juga spesifikasi
-            if ($validated['jenis_luaran'] === 'Lainnya, sebutkan') {
-                $data['jenis_luaran_lainnya'] = $validated['jenis_luaran_lainnya'] ?? null;
-            }
-            
-            $data['luaran_type'] = $validated['luaran_type'];
-            
-            // Jika tipe link, simpan hyperlink
-            if ($validated['luaran_type'] === 'link') {
-                $data['hyperlink'] = $validated['hyperlink'];
-            }
+        // Simpan hyperlink (jika ada)
+        if ($hasLink) {
+            $data['hyperlink'] = $validated['hyperlink'];
         }
         
-        // Create report
-        Report::create($data);
-        
-        $successMessage = $type === 'laporan_akhir' 
-            ? 'Laporan akhir berhasil di-upload!' 
-            : 'Luaran berhasil di-upload!';
-        
-        return redirect()
-            ->route($type === 'laporan_akhir' ? 'reports.laporan-akhir' : 'reports.luaran')
-            ->with('success', $successMessage);
+        // ========================================
+        // TENTUKAN LUARAN_TYPE berdasarkan apa yang diisi
+        // ========================================
+        if ($hasFile && $hasLink) {
+            $data['luaran_type'] = 'both';  // Kedua-duanya
+        } elseif ($hasFile) {
+            $data['luaran_type'] = 'file';  // Hanya file
+        } elseif ($hasLink) {
+            $data['luaran_type'] = 'link';  // Hanya link
+        }
     }
+    
+    // Create report
+    Report::create($data);
+    
+    $successMessage = $type === 'laporan_akhir' 
+        ? 'Laporan akhir berhasil di-upload!' 
+        : 'Luaran berhasil di-upload!';
+    
+    return redirect()
+        ->route($type === 'laporan_akhir' ? 'reports.laporan-akhir' : 'reports.luaran')
+        ->with('success', $successMessage);
+}
 
 
     /**

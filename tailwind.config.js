@@ -12,6 +12,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        'poppins': ['Poppins', 'sans-serif'],
+        'inter': ['Inter', 'sans-serif'],
+        'times': ['Times New Roman', 'serif'],
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
         'body': [
         'Inter', 

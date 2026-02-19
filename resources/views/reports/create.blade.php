@@ -126,7 +126,6 @@
                     </div>
                 @endif
 
-
                 {{-- Judul --}}
                 @if($type === 'luaran')
                     <div>
@@ -149,66 +148,55 @@
                         Deskripsi <span class="text-gray-400">(Opsional)</span>
                     </label>
                     <textarea name="description" 
-                              id="description" 
-                              rows="4" 
-                              class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
-                              placeholder="Deskripsi singkat tentang {{ $type === 'laporan_akhir' ? 'laporan akhir' : 'luaran' }} ini...">{{ old('description') }}</textarea>
+                            id="description" 
+                            rows="4" 
+                            class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="Deskripsi singkat tentang {{ $type === 'laporan_akhir' ? 'laporan akhir' : 'luaran' }} ini...">{{ old('description') }}</textarea>
                 </div>
 
-                @if($type === 'luaran')
-                    {{-- Tipe Luaran (File atau Hyperlink) --}}
+                                @if($type === 'luaran')
+                    {{-- Upload File (OPSIONAL) --}}
                     <div>
-                        <label class="block text-sm font-medium leading-6 text-white mb-3">
-                            Tipe Luaran <span class="text-red-500">*</span>
-                        </label>
-                        
-                        <div class="flex gap-6">
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" 
-                                       name="luaran_type" 
-                                       value="file" 
-                                       x-model="luaranType"
-                                       {{ old('luaran_type', 'file') === 'file' ? 'checked' : '' }}
-                                       class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
-                                <span class="ml-2 text-white">📄 Upload File</span>
-                            </label>
-                            
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" 
-                                       name="luaran_type" 
-                                       value="link" 
-                                       x-model="luaranType"
-                                       {{ old('luaran_type') === 'link' ? 'checked' : '' }}
-                                       class="w-4 h-4 text-green-600 focus:ring-green-500">
-                                <span class="ml-2 text-white">🔗 Hyperlink URL</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    {{-- Upload File (Show if type = file) --}}
-                    <div x-show="luaranType === 'file'" x-transition>
                         <label for="file_upload" class="block text-sm font-medium leading-6 text-white">
-                            Upload File <span class="text-red-500">*</span>
+                            📄 Upload File <span class="text-gray-400">(Opsional)</span>
                         </label>
                         <input type="file" 
-                               name="file_upload" 
-                               id="file_upload" 
-                               class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
-                        <p class="mt-2 text-sm text-gray-400">Format: Semua file. Maksimal: 10MB</p>
+                            name="file_upload" 
+                            id="file_upload" 
+                            class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+                        <p class="mt-2 text-sm text-gray-400">Format: PDF, DOC, DOCX, JPG, PNG. Maksimal: 10MB</p>
                     </div>
 
-                    {{-- Hyperlink URL (Show if type = link) --}}
-                    <div x-show="luaranType === 'link'" x-transition>
+                    {{-- Hyperlink URL (OPSIONAL) --}}
+                    <div>
                         <label for="hyperlink" class="block text-sm font-medium leading-6 text-white">
-                            URL Hyperlink <span class="text-red-500">*</span>
+                            🔗 Hyperlink URL <span class="text-gray-400">(Opsional)</span>
                         </label>
                         <input type="url" 
-                               name="hyperlink" 
-                               id="hyperlink" 
-                               value="{{ old('hyperlink') }}" 
-                               class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" 
-                               placeholder="https://example.com/luaran-penelitian" />
+                            name="hyperlink" 
+                            id="hyperlink" 
+                            value="{{ old('hyperlink') }}" 
+                            class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" 
+                            placeholder="https://example.com/luaran-penelitian" />
                         <p class="mt-2 text-sm text-gray-400">Contoh: Link ke jurnal, repositori, Google Drive, dll.</p>
+                    </div>
+
+                    {{-- Note: Minimal 1 harus diisi --}}
+                    <div class="rounded-md bg-yellow-900/20 p-4 border border-yellow-700">
+                        <div class="flex">
+                            <div class="shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-400">Perhatian</h3>
+                                <div class="mt-2 text-sm text-yellow-300">
+                                    <p><strong>Minimal salah satu harus diisi:</strong> Upload File atau Hyperlink URL</p>
+                                    <p class="mt-1 text-xs text-yellow-200">Anda bisa mengisi keduanya jika diperlukan</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 @else

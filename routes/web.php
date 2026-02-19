@@ -172,9 +172,7 @@ Route::middleware('auth')->group(function () {
             ->name('reports.store-luaran');
     });
 
-    // ==============================
     // ADMIN: Manage All Reports 
-    // ==============================
     Route::middleware(['auth', 'role:admin'])->group(function () {
         
         Route::get('/admin/reports/laporan-akhir', [ReportController::class, 'adminIndex'])
@@ -235,7 +233,6 @@ Route::middleware('auth')->group(function () {
     $user = Auth::user();
     
     if (in_array($user->role, ['admin', 'reviewer'])) {
-        // Query Builder untuk Search & Filter
         $query = Proposal::with('author')
             ->whereNotIn('status', ['draft']); // Tampilkan semua kecuali draft
         

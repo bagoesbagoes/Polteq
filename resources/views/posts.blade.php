@@ -1,7 +1,5 @@
 {{-- resources/views/posts.blade.php --}}
 
-{{-- TAMPILAN DAFTAR USULAN UNTUK REVIEWER --}}
-
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 

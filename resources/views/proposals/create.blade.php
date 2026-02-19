@@ -27,7 +27,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h3 class="text-base font-semibold text-white mb-1">💡 Butuh Panduan?</h3>
-                <p class="text-sm text-gray-300">Download template dan pedoman penulisan usulan</p>
+                <p class="text-sm text-gray-300">Download pedoman penulisan usulan & laporan akhir</p>
             </div>
             <a href="{{ asset('files/templates/TemplatePenelitianPolteq2026.pdf') }}" 
                target="_blank"

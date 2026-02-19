@@ -167,7 +167,7 @@ class SuratKerjaService
     {
         $textRun = $section->addTextRun([
             'alignment' => Jc::BOTH, 
-            'spaceAfter' => 200, 
+            'spaceAfter' => 200,
             'lineHeight' => 1.5
         ]);
 

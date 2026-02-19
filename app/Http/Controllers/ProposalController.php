@@ -160,10 +160,21 @@ class ProposalController extends Controller
     {
         $this->authorize('delete', $proposal);
 
-        Storage::disk('public')->delete($proposal->file_usulan);
+        if ($proposal->file_usulan) {
+            Storage::disk('public')->delete($proposal->file_usulan);
+        }
+
         $proposal->delete();
 
-        return redirect()->route('proposals.index')->with('success', 'usulan berhasil dihapus');
+        if (Auth::user()->role ==='admin') {
+            return redirect()
+            ->route('proposals.browse')
+            ->with('success', 'usulan berhasil dihapus');
+        } else {
+            return redirect()
+            ->route('proposals.index')
+            ->with ('success', 'usulan berhasil dihapus');
+        }
     }
 
     public function submit(Proposal $proposal)
