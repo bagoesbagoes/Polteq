@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class PkmProposalController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display listing (untuk publisher)
      */
     public function index()
     {
@@ -18,58 +18,85 @@ class PkmProposalController extends Controller
 
         if ($user->role === 'admin') {
             $pkms = PkmProposal::with('author')
-                ->whereNotin('status', ['draft'])
+                ->whereNotIn('status', ['draft'])
                 ->latest()
                 ->paginate(12);
-        } elseif ($user->role === 'reviewer'){
+        } elseif ($user->role === 'reviewer') {
             $pkms = PkmProposal::with('author')
                 ->where('status', 'submitted')
-                ->lates()
+                ->latest()
                 ->paginate(12);
         } else {
+            // Publisher
             $pkms = PkmProposal::where('user_id', $user->id)
                 ->latest()
                 ->paginate(12);
         }
-
+        
         return view('pkm.browse', [
-            'tittle' => 'Daftar Usulan PKM',
+            'title' => '',
             'pkms' => $pkms
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Browse PKM (untuk admin & reviewer)
      */
-    public function create()
+    public function browse()
     {
-        return view('pkm.create', [
-            'tittle' => 'Buat PKM baru'
+        $user = Auth::user();
+        
+        if ($user->role === 'admin') {
+            $pkms = PkmProposal::with('author')
+                ->whereNotIn('status', ['draft'])
+                ->latest()
+                ->paginate(12);
+        } else {
+            // Reviewer
+            $pkms = PkmProposal::with('author')
+                ->where('status', 'submitted')
+                ->latest()
+                ->paginate(12);
+        }
+        
+        return view('pkm.browse', [
+            'title' => 'Browse Usulan PKM',
+            'pkms' => $pkms
         ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show create form
+     */
+    public function create()
+    {
+        return view('pkm.create', [
+            'title' => 'Buat Usulan PKM Baru'
+        ]);
+    }
+
+    /**
+     * Store new PKM
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
             'tahun_pelaksanaan' => 'required|integer|min:2020|max:2030',
-            'sumber_dana' => 'required|in:DIPA,Non_DIPA',
+            'sumber_dana' => 'required|in:DIPA,Non-DIPA',
             'kategori_pkm' => 'required|string|max:255',
             'kelompok_riset' => 'nullable|string|max:255',
             'anggota_tim' => 'nullable|array',
             'abstrak' => 'required|string|min:100',
-            'file_usulan' => 'required|file|mimes:pdf|max:102040',
-        ],[
-            'file_usulan.required' => 'File usulan wajib diunggah',
-            'file_usulan.mimes' => 'File harus berfomat PDF',
+            'file_usulan' => 'required|file|mimes:pdf|max:10240',
+        ], [
+            'file_usulan.required' => 'File usulan wajib diupload',
+            'file_usulan.mimes' => 'File harus berformat PDF',
             'file_usulan.max' => 'Ukuran file maksimal 10MB',
             'abstrak.min' => 'Abstrak minimal 100 karakter',
         ]);
 
-        // Logika Upload File
+        // Upload file
         $file = $request->file('file_usulan');
         $filePath = $file->store('pkm_proposals', 'public');
         $fileSize = round($file->getSize() / 1024, 2);
@@ -81,22 +108,23 @@ class PkmProposalController extends Controller
             'tahun_pelaksanaan' => $validated['tahun_pelaksanaan'],
             'sumber_dana' => $validated['sumber_dana'],
             'kategori_pkm' => $validated['kategori_pkm'],
-             'kelompok_riset' => $validated['kelompok_riset'],
+            'kelompok_riset' => $validated['kelompok_riset'],
             'anggota_tim' => $validated['anggota_tim'] ?? [],
             'abstrak' => $validated['abstrak'],
             'file_usulan' => $filePath,
             'file_size' => $fileSize,
             'status' => 'draft',
         ]);
+
         return redirect()
             ->route('pkm.show', $pkm)
-            ->with('success', 'Usulan PKM berhasil dibuat. silahkan finalisasi dengan menekan tombol submit');
+            ->with('success', 'Usulan PKM berhasil dibuat! Jangan lupa submit untuk direview.');
     }
 
     /**
-     * Display the specified resource.
+     * Show PKM detail
      */
-    public function show(string $id)
+    public function show(PkmProposal $pkm)
     {
         $pkm->load('author', 'reviews.reviewer');
         
@@ -107,9 +135,9 @@ class PkmProposalController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show edit form
      */
-    public function edit(string $id)
+    public function edit(PkmProposal $pkm)
     {
         // Only publisher can edit their own draft, or admin can edit any
         if ($pkm->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
@@ -127,11 +155,11 @@ class PkmProposalController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update PKM
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, PkmProposal $pkm)
     {
-         if ($pkm->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+        if ($pkm->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
             abort(403);
         }
 
@@ -166,9 +194,9 @@ class PkmProposalController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete PKM
      */
-    public function destroy(string $id)
+    public function destroy(PkmProposal $pkm)
     {
         if ($pkm->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
             abort(403);
@@ -185,6 +213,9 @@ class PkmProposalController extends Controller
         }
     }
 
+    /**
+     * Submit PKM untuk direview
+     */
     public function submit(PkmProposal $pkm)
     {
         if ($pkm->user_id !== Auth::id()) {
@@ -198,12 +229,15 @@ class PkmProposalController extends Controller
         $pkm->update([
             'status' => 'submitted',
             'submitted_at' => now(),
-            'revision_notes' => null, // Clear previous revision notes
+            'revision_notes' => null,
         ]);
 
         return back()->with('success', 'Usulan PKM berhasil disubmit! Menunggu review dari reviewer.');
     }
 
+    /**
+     * PKM Disetujui (Publisher only)
+     */
     public function accepted()
     {
         $pkms = PkmProposal::where('user_id', Auth::id())
@@ -217,6 +251,9 @@ class PkmProposalController extends Controller
         ]);
     }
 
+    /**
+     * PKM Revisi (Publisher only)
+     */
     public function revisions()
     {
         $pkms = PkmProposal::where('user_id', Auth::id())
@@ -230,4 +267,27 @@ class PkmProposalController extends Controller
         ]);
     }
 
+    /**
+     * Download file PKM
+     */
+    public function download(PkmProposal $pkm)
+    {
+        $filePath = storage_path('app/public/' . $pkm->file_usulan);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan');
+        }
+        
+        return response()->download($filePath);
+    }
+
+    /**
+     * Download Surat Tugas PKM
+     */
+    public function downloadSuratTugas(PkmProposal $pkm)
+    {
+        // TODO: Implement surat tugas generation
+        // Untuk sekarang return error
+        abort(501, 'Fitur download surat tugas belum tersedia');
+    }
 }

@@ -1,4 +1,3 @@
-{{-- resources/views/components/layout.blade.php --}}
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-900">
 <head>
@@ -9,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <title> {{ $title }}</title>
+    <title> {{ $title }} </title>
 </head>
 
 <body class="h-full">

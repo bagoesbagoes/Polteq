@@ -9,7 +9,7 @@
                 <div class="flex items-center">
                     <div class="flex items-center space-x-1">
                         {{-- Logo Image --}}
-                        <img src="{{ asset('image/Logo.png') }}" 
+                        <img src="{{ asset('image/LogoNavbar.png') }}" 
                             alt="PRIMA Logo"
                             class="h-20 w-20 rounded-lg object-cover shadow-md">
                         {{-- Brand Text --}}

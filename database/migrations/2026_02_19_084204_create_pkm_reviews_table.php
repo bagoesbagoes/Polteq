@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pkm_proposal_id')->constrained()->onDelete('cascade');
             $table->foreignId('reviewer_id')->constrained('users')->onDelete('cascade');
-            $table->integer('score')->nullable(); // 0-100
+            $table->integer('score')->nullable();
             $table->text('comments')->nullable();
             $table->enum('recommendation', ['accept', 'revise', 'reject'])->nullable();
             $table->timestamps();
