@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     // ==========================
     Route::get('/UsulanPenelitian', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/LaporanPenelitian', [DashboardController::class, 'IndexLaporanPenelitian'])->name('laporan_penelitian');
+    Route::get('/UsulanPKM', [DashboardController::class, 'indexPkm'])->name('pkm.index');
     
     Route::get('/profile', function () {
         return view('profile', ['title' => 'Profile', 'user' => Auth::user()]);
@@ -133,7 +134,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/proposals/revisions', [ProposalController::class, 'revisions'])->name('proposals.revisions');
 
         // PKM
-        Route::get('/UsulanPKM', [PkmProposalController::class, 'index'])->name('pkm.index');
         Route::get('/pkm/create', [PkmProposalController::class, 'create'])->name('pkm.create');
         Route::post('/pkm', [PkmProposalController::class, 'store'])->name('pkm.store');
         Route::get('/pkm/accepted', [PkmProposalController::class, 'accepted'])->name('pkm.accepted');
@@ -184,7 +184,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // ==========================
-    // PROPOSALS ROUTES (All Authenticated)
+    // PROPOSALS ROUTES
     // ==========================
     Route::get('/proposals/browse', function (Request $request) {
         $user = Auth::user();
@@ -250,7 +250,7 @@ Route::middleware('auth')->group(function () {
     Route::post('proposals/{proposal}/submit', [ProposalController::class, 'submit'])->name('proposals.submit');
 
     // ==========================
-    // PKM ROUTES (All Authenticated)
+    // PKM ROUTES
     // ==========================
     Route::get('/pkm/{pkm}', [PkmProposalController::class, 'show'])->name('pkm.show');
     Route::get('/pkm/{pkm}/edit', [PkmProposalController::class, 'edit'])->name('pkm.edit');
@@ -260,7 +260,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pkm/{pkm}/download-surat-tugas', [PkmProposalController::class, 'downloadSuratTugas'])->name('pkm.download-surat-tugas');
 
     // ==========================
-    // REPORTS ROUTES (All Authenticated)
+    // REPORTS ROUTES
     // ==========================
     Route::get('/reports/{type}/{report}', [ReportController::class, 'show'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.show');
     Route::delete('/reports/{type}/{report}', [ReportController::class, 'destroy'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.destroy');

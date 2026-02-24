@@ -139,7 +139,7 @@ class PkmProposalController extends Controller
      */
     public function edit(PkmProposal $pkm)
     {
-        // Only publisher can edit their own draft, or admin can edit any
+        // hanya publiserh dan admin yang dapat meng-edit usulan PKM
         if ($pkm->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
             abort(403);
         }

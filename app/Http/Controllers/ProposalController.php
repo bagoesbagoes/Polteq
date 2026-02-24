@@ -170,7 +170,7 @@ class ProposalController extends Controller
             return redirect()
             ->route('proposals.browse')
             ->with('success', 'usulan berhasil dihapus');
-        } else {
+        } else { 
             return redirect()
             ->route('proposals.index')
             ->with ('success', 'usulan berhasil dihapus');
@@ -226,7 +226,7 @@ class ProposalController extends Controller
         $today = Carbon::now('Asia/Jakarta');
         $currentYear = $today->year;
         
-        $startDate = Carbon::create($currentYear, 2, 1, 0, 0, 0, 'Asia/Jakarta');
+        $startDate = Carbon::create($currentYear, 7, 1, 0, 0, 0, 'Asia/Jakarta');
         $endDate = Carbon::create($currentYear, 9, 1, 23, 59, 59, 'Asia/Jakarta');
         
         if (!$today->between($startDate, $endDate)) {

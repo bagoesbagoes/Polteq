@@ -13,8 +13,14 @@ class PkmReview extends Model
         'pkm_prposal_id',
         'reviewer_id',
         'score',
+        'scores',
+        'total_score',
         'comments',
         'recommendation',
+    ];
+
+    protected $casts = [
+        'scores' => 'array',
     ];
 
     // Relationships antar table 
