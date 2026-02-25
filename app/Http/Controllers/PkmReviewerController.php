@@ -87,8 +87,6 @@ class PkmReviewerController extends Controller
             'pkm_proposal_id' => $pkm->id,
             'reviewer_id' => Auth::id(),
             'scores' => $scores,
-            'total_score' => round($totalScore, 2),
-            'score' => round($totalScore), // Legacy support
             'comments' => $validated['comment'],
             'recommendation' => $validated['recommendation'],
         ]);

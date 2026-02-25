@@ -16,27 +16,20 @@ class PkmProposalController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role === 'admin') {
-            $pkms = PkmProposal::with('author')
-                ->whereNotIn('status', ['draft'])
-                ->latest()
-                ->paginate(12);
-        } elseif ($user->role === 'reviewer') {
-            $pkms = PkmProposal::with('author')
-                ->where('status', 'submitted')
-                ->latest()
-                ->paginate(12);
-        } else {
-            // Publisher
+        // Publisher: tampilkan semua PKM miliknya
+        if ($user->role === 'publisher') {
             $pkms = PkmProposal::where('user_id', $user->id)
                 ->latest()
                 ->paginate(12);
+            
+            return view('pkm.index', [
+                'title' => 'PKM Saya',
+                'pkms' => $pkms
+            ]);
         }
         
-        return view('pkm.browse', [
-            'title' => '',
-            'pkms' => $pkms
-        ]);
+        // Admin & Reviewer: redirect ke browse
+        return redirect()->route('pkm.browse');
     }
 
     /**

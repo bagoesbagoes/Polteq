@@ -11,7 +11,7 @@
                     @if (isset($counts['all']))
                         <div class="absolute top-4 right-4">
                             <span class="inline-flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full shadow-lg
-                                {{ $counts['all'] > 0 ? 'bg-green-600' : 'bg-gray-600' }}">
+                                {{ $counts['all'] > 0 ? 'bg-blue-600' : 'bg-gray-600' }}">
                                 {{ $counts['all'] }}
                             </span>
                         </div>

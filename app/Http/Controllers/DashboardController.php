@@ -159,7 +159,7 @@ class DashboardController extends Controller
         }
         
         return view('UsulanPKM', [
-            'title' => 'Usulan PKM',
+            'title' => 'Pengusulan PKM',
             'active' => 'usulan_pkm',
             'counts' => $counts,
         ]);
