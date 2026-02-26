@@ -51,15 +51,24 @@ class PkmProposal extends Model
         return round($this->file_size / 1024, 2). 'MB';
     }
 
-    public function getStatusBadgeAtrribute()
+    public function getStatusBadgeAttribute()
     {
-        return match ($this->status) {
-            'draft' => '<span class="px-2 py-1 text-xs rounded-full bg-gray-600 text-white">Draft</span>',
-            'submitted' => '<span class="px-2 py-1 text-xs rounded-full bg-blue-600 text-white">Submitted</span>',
-            'accepted' => '<span class="px-2 py-1 text-xs rounded-full bg-green-600 text-white">Accepted</span>',
-            'need_revision' => '<span class="px-2 py-1 text-xs rounded-full bg-red-600 text-white">Need Revision</span>',
-            default => '<span class="px-2 py-1 text-xs rounded-full bg-gray-600 text-white">Unknown</span>',
-        };
+        $badges = [
+            'draft' => '    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-600 text-gray-200">
+                                Draft
+                            </span>',
+            'submitted' => '<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-600 text-white">
+                                Submitted
+                            </span>',
+            'accepted' => ' <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-green-600 text-white">
+                                Accepted
+                            </span>',
+            'need_revision' => '<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-yellow-600 text-white">
+                                    Need Revision
+                                </span>',
+        ];
+        
+        return $badges[$this->status] ?? '<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-500 text-white">Unknown</span>';
     }
 
 }

@@ -124,6 +124,7 @@ Route::middleware('auth')->group(function () {
     // ==========================
     Route::middleware('role:publisher')->group(function () {
         // Proposals
+        Route::get('/pkm', [PkmProposalController::class, 'index'])->name('pkm.index');
         Route::get('/publisher/dashboard', [PublisherController::class, 'dashboard']);
         Route::get('/publisher/upload', [PublisherController::class, 'create']);
         Route::post('/publisher/upload', [PublisherController::class, 'store']);

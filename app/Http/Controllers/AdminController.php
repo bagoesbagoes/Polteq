@@ -182,4 +182,88 @@ class AdminController extends Controller
             ->route('admin.dashboard')
             ->with('success', 'Akun reviewer "' . $reviewerName . '" berhasil dihapus!');
     }
+
+    public function pkmIndex(Request $request)
+    {
+        $query = \App\Models\PkmProposal::with('author')
+            ->whereNotIn('status', ['draft']);
+
+        // SEARCH: Judul atau Nama Author
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('judul', 'like', '%' . $searchTerm . '%')
+                ->orWhereHas('author', function($q) use ($searchTerm) {
+                    $q->where('name', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        }
+
+        // FILTER: Status
+        if ($request->filled('status')) {
+            $validStatuses = ['submitted', 'accepted', 'need_revision'];
+            if (in_array($request->status, $validStatuses)) {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // FILTER: Author/Publisher
+        if ($request->filled('author')) {
+            $query->where('user_id', $request->author);
+        }
+
+        // FILTER: Tahun
+        if ($request->filled('tahun')) {
+            $query->where('tahun_pelaksanaan', $request->tahun);
+        }
+
+        // FILTER: Kategori
+        if ($request->filled('kategori')) {
+            $query->where('kategori_pkm', $request->kategori);
+        }
+
+        // SORT
+        $sortBy = $request->get('sort', 'latest');
+        if ($sortBy === 'oldest') {
+            $query->oldest('created_at');
+        } else {
+            $query->latest('created_at');
+        }
+
+        $pkms = $query->paginate(15)->withQueryString();
+
+        // Stats
+        $stats = [
+            'total' => \App\Models\PkmProposal::whereNotIn('status', ['draft'])->count(),
+            'submitted' => \App\Models\PkmProposal::where('status', 'submitted')->count(),
+            'accepted' => \App\Models\PkmProposal::where('status', 'accepted')->count(),
+            'revisi' => \App\Models\PkmProposal::where('status', 'need_revision')->count(),
+        ];
+
+        // Get publishers for filter
+        $publishers = \App\Models\User::where('role', 'publisher')
+            ->orderBy('name')
+            ->get();
+
+        // Get unique years
+        $years = \App\Models\PkmProposal::select('tahun_pelaksanaan')
+            ->distinct()
+            ->orderBy('tahun_pelaksanaan', 'desc')
+            ->pluck('tahun_pelaksanaan');
+
+        // Get unique categories
+        $categories = \App\Models\PkmProposal::select('kategori_pkm')
+            ->distinct()
+            ->orderBy('kategori_pkm')
+            ->pluck('kategori_pkm');
+
+        return view('admin.pkm.index', [
+            'title' => 'Kelola Usulan PKM',
+            'pkms' => $pkms,
+            'stats' => $stats,
+            'publishers' => $publishers,
+            'years' => $years,
+            'categories' => $categories,
+        ]);
+    }       
 }

@@ -1,14 +1,15 @@
+{{-- resources/views/pkm/revisions.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
-
+        
     @if ($pkms->count() > 0)
-        <div class="flex justify_between items-center mb-6">
+        <div class="flex justify-between items-center mb-6">
             <a href="{{ route('pkm.create') }}" class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
                 Buat PKM Baru
             </a>
         </div>
     @endif
-
+    
     @if ($pkms->count() > 0)
         <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-700 bg-gray-800">
@@ -18,8 +19,8 @@
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Kategori</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Tahun</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Dibuat</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Aksi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Catatan Revisi</th>
+                        <th scope="col" class="px-6 py-3 text-right text-sm font-semibold text-white">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-700 bg-gray-800">
@@ -41,43 +42,29 @@
                             <td class="px-6 py-4 text-sm text-gray-200">
                                 {!! $pkm->status_badge !!}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">
-                                {{ $pkm->created_at->format('d M Y') }}
+                            <td class="px-6 py-4 text-sm text-gray-400">
+                                <div class="max-w-xs truncate" title="{{ $pkm->revision_notes }}">
+                                    {{ Str::limit($pkm->revision_notes, 50) }}
+                                </div>
                             </td>
                             
                             {{-- Action Buttons --}}
                             <td class="px-6 py-4 text-sm">
                                 <div class="flex items-center justify-end gap-3">
                                     
-                                    {{-- Tombol Lihat (Selalu ada) --}}
+                                    {{-- Tombol Lihat --}}
                                     <a href="{{ route('pkm.show', $pkm) }}" 
                                        class="text-indigo-400 hover:text-indigo-300 font-medium transition">
                                         Lihat
                                     </a>
                                     
-                                    {{-- Tombol Edit & Hapus (Hanya untuk status draft) --}}
-                                    @if($pkm->status === 'draft')
-                                        <span class="text-gray-600">|</span>
-                                        
-                                        <a href="{{ route('pkm.edit', $pkm) }}" 
-                                           class="text-blue-400 hover:text-blue-300 font-medium transition">
-                                            Edit
-                                        </a>
-                                        
-                                        <span class="text-gray-600">|</span>
-                                        
-                                        <form method="POST" 
-                                              action="{{ route('pkm.destroy', $pkm) }}" 
-                                              class="inline-block"
-                                              onsubmit="return confirm('Yakin ingin menghapus PKM ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="text-red-400 hover:text-red-300 font-medium transition">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    @endif 
+                                    <span class="text-gray-600">|</span>
+                                    
+                                    {{-- Tombol Edit/Revisi --}}
+                                    <a href="{{ route('pkm.edit', $pkm) }}" 
+                                       class="text-yellow-400 hover:text-yellow-300 font-medium transition">
+                                        Revisi
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -92,20 +79,16 @@
     @else
         <div class="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
             
-            <h3 class="mt-2 text-lg font-medium text-white">Belum Ada PKM</h3>
-            <p class="mt-1 text-gray-400">Mulai buat usulan PKM untuk program pengabdian kepada masyarakat.</p>
+            <h3 class="mt-2 text-lg font-medium text-white">Belum Ada PKM yang Perlu Perbaikan</h3>
+            <p class="mt-1 text-gray-400">PKM Anda yang membutuhkan perbaikan akan muncul di sini.</p>
             <div class="mt-6">
-                <a href="{{ route('pkm.create') }}" class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
-                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Buat PKM Baru
+                <a href="{{ route('pkm.index') }}" class="text-indigo-400 hover:text-indigo-300">
+                    Lihat Semua PKM →
                 </a>
             </div>
         </div>
     @endif
-
 </x-layout>

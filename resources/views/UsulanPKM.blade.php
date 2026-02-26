@@ -35,7 +35,7 @@
 
                     <a  href="{{ $link }}"
                         class="mb-2 text-xl font-bold dark:text-white hover:underline">
-                        PKM Terkirim
+                        Usulan PKM terkirim
                     </a>
 
                     <p  class="text-gray-500 dark:text-gray-400 text-sm">
@@ -87,7 +87,7 @@
                 @if (Auth::user()->role === 'publisher')
                     <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition relative">
 
-                        {{-- Badge Counter (selalu tampil, pulsa jika > 0) --}}
+                        {{-- Badge Counter (selalu tampil kalo > 0) --}}
                         @if (isset($counts['need_revision']))
                             <div class="absolute top-4 right-4">
                                 <span   class="inline-flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full shadow-lg

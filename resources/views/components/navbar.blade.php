@@ -25,7 +25,10 @@
                         @endif
 
                         <x-nav-link href="/UsulanPKM" :active="request()->is('UsulanPKM')">Usulan PKM</x-nav-link>
-                        <x-nav-link href="/LaporanPKM" :active="request()->is('LaporanPKM')">Laporan PKM</x-nav-link>
+                
+                        @if (Auth::check() && in_array(Auth::user()->role, ['admin', 'publisher']))
+                            <x-nav-link href="/LaporanPKM" :active="request()->is('LaporanPKM')">Laporan PKM</x-nav-link>
+                        @endif
                     </div>
                 </div>
             </div>
