@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -22,12 +23,12 @@ class DatabaseSeeder extends Seeder
         $this->command->info('👥 Seeding Users...');
         
         // Create Admin
-        \App\Models\User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@politeq.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Admin User',
+        //     'email' => 'admin@politeq.com',
+        //     'password' => bcrypt('password'),
+        //     'role' => 'admin',
+        // ]);
 
         // Create Publishers (10 users)
         \App\Models\User::factory()->count(10)->create([
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
         // 2. PROPOSALS & REVIEWS
         // ===================================
         $this->call(ProposalSeeder::class);
+        $this->call(PkmProposalSeeder::class);
         
         // ===================================
         // 3. POSTS (Optional - if you still use it)

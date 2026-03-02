@@ -1,16 +1,18 @@
 <x-layout>
-    <x-slot:title> {{ $title }} </x-slot:title>
+    <x-slot:title>{{ $title }}</x-slot:title>
+
     <div class="mx-auto max-w-5xl px-4 py-6">
+        
         {{-- Back Button --}}
         <div class="mb-6">
-            @if (Auth::user()->role === 'admin')
+            @if(Auth::user()->role === 'admin')
                 <a href="{{ route('pkm.browse') }}" class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
                     <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                     Kembali ke Browse PKM
                 </a>
-            @elseif (Auth::user()->role === 'reviewer')
+            @elseif(Auth::user()->role === 'reviewer')
                 <a href="{{ route('reviewer.pkm') }}" class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
                     <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -27,8 +29,8 @@
             @endif
         </div>
 
-        {{-- Succes Message --}}
-        @if (session('success'))
+        {{-- Success Message --}}
+        @if(session('success'))
             <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" 
                  class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">
                 <div class="flex items-center">
@@ -40,7 +42,7 @@
             </div>
         @endif
 
-        {{-- Main card --}}
+        {{-- Main Card --}}
         <div class="bg-gray-800 shadow-lg rounded-lg overflow-hidden border border-gray-700">
             
             {{-- Header --}}
@@ -52,17 +54,17 @@
                         <p class="text-green-200 mt-2 flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>  
-                            Dibuat : {{ $pkm->created_at->format('d F Y, H:i') }} WIB
+                            </svg>
+                            Dibuat: {{ $pkm->created_at->format('d F Y, H:i') }} WIB
                         </p>
                     </div>
                 </div>
             </div>
 
             {{-- Content --}}
-            <div class="py-6 space-y-6">
+            <div class="p-6 space-y-6">
 
-                {{-- Informasi Penulis --}}
+                {{-- Author Info --}}
                 <div class="bg-gray-900/50 rounded-lg p-5 border border-gray-700">
                     <h3 class="text-sm font-semibold text-gray-300 mb-3 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,11 +76,10 @@
                     <p class="text-gray-400 text-sm mt-1">{{ $pkm->author->email }}</p>
                 </div>
 
-                {{-- Detail Grid --}}
+                {{-- Details Grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
                     <div class="bg-gray-900/50 rounded-lg p-5 border border-gray-700">
-                        <h3 class="text-sm font-semibold text-gray-300 mb-2"> Tahun Pelaksanaan</h3>
+                        <h3 class="text-sm font-semibold text-gray-300 mb-2">Tahun Pelaksanaan</h3>
                         <p class="text-white">{{ $pkm->tahun_pelaksanaan }}</p>
                     </div>
 
@@ -92,7 +93,7 @@
                         <p class="text-white">{{ $pkm->kategori_pkm }}</p>
                     </div>
 
-                     @if($pkm->kelompok_riset)
+                    @if($pkm->kelompok_riset)
                         <div class="bg-gray-900/50 rounded-lg p-5 border border-gray-700">
                             <h3 class="text-sm font-semibold text-gray-300 mb-2">Kelompok Riset</h3>
                             <p class="text-white">{{ $pkm->kelompok_riset }}</p>
@@ -200,8 +201,10 @@
                         @endforeach
                     </div>
                 @endif
+
             </div>
-        {{-- Footer Actions --}}
+
+            {{-- Footer Actions --}}
             <div class="bg-gray-900/50 px-6 py-4 border-t border-gray-700 flex justify-between items-center">
                 
                 <div class="flex gap-3">
@@ -260,5 +263,6 @@
                 @endif
             </div>
         </div>
+
     </div>
 </x-layout>

@@ -75,10 +75,7 @@ class PkmProposalController extends Controller
     {
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
-            'tahun_pelaksanaan' => 'required|integer|min:2020|max:2030',
-            'sumber_dana' => 'required|in:DIPA,Non-DIPA',
-            'kategori_pkm' => 'required|string|max:255',
-            'kelompok_riset' => 'nullable|string|max:255',
+            'tahun_pelaksanaan' => 'required|integer|min:' . date('Y'),
             'anggota_tim' => 'nullable|array',
             'abstrak' => 'required|string|min:100',
             'file_usulan' => 'required|file|mimes:pdf|max:10240',
@@ -99,9 +96,6 @@ class PkmProposalController extends Controller
             'user_id' => Auth::id(),
             'judul' => $validated['judul'],
             'tahun_pelaksanaan' => $validated['tahun_pelaksanaan'],
-            'sumber_dana' => $validated['sumber_dana'],
-            'kategori_pkm' => $validated['kategori_pkm'],
-            'kelompok_riset' => $validated['kelompok_riset'],
             'anggota_tim' => $validated['anggota_tim'] ?? [],
             'abstrak' => $validated['abstrak'],
             'file_usulan' => $filePath,
@@ -158,10 +152,7 @@ class PkmProposalController extends Controller
 
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
-            'tahun_pelaksanaan' => 'required|integer|min:2020|max:2030',
-            'sumber_dana' => 'required|in:DIPA,Non-DIPA',
-            'kategori_pkm' => 'required|string|max:255',
-            'kelompok_riset' => 'nullable|string|max:255',
+            'tahun_pelaksanaan' => 'required|integer|min:' . date('Y'),
             'anggota_tim' => 'nullable|array',
             'abstrak' => 'required|string|min:100',
             'file_usulan' => 'nullable|file|mimes:pdf|max:10240',

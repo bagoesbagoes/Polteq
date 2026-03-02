@@ -28,21 +28,35 @@
                     </div>
 
                     @php
-                        $link = Auth::user()->role === 'publisher'
-                            ? route('pkm.index')
-                            : route('pkm.browse');
+                        // Tentukan link berdasarkan role
+                        if (Auth::user()->role === 'publisher') {
+                            $link = route('pkm.index');
+                        } elseif (Auth::user()->role === 'reviewer') {
+                            $link = route('reviewer.pkm');
+                        } else {
+                            $link = route('admin.pkm'); 
+                        }
                     @endphp
 
                     <a  href="{{ $link }}"
                         class="mb-2 text-xl font-bold dark:text-white hover:underline">
-                        Usulan PKM terkirim
+                        @if (Auth::user()->role === 'publisher')
+                            PKM yang terkirim
+                        @elseif (Auth::user()->role === 'reviewer')
+                            PKM untuk direview
+                        @elseif (Auth::user()->role === 'admin')
+                            Administrasi PKM
+                        @endif
+            
                     </a>
 
-                    <p  class="text-gray-500 dark:text-gray-400 text-sm">
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">
                         @if (Auth::user()->role === 'publisher')
                             PKM yang telah terkirim (draft & submitted)
+                        @elseif (Auth::user()->role === 'reviewer')
+                            PKM yang dapat direview
                         @else
-                            PKM yang telah diupload dosen
+                            Semua PKM yang telah diupload dosen
                         @endif
                     </p>
 
@@ -119,25 +133,7 @@
                     </div>
                 @endif
 
-                {{-- Card 4: Dashboard Admin PKM--}}
-                @if(Auth::user()->role === 'admin')
-                    <div class="border border-gray-700 rounded-xl p-6 hover:shadow-lg transition">
-                        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                            <svg class="w-6 h-6 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-
-                        <a href="{{ route('admin.pkm') }}"
-                           class="mb-2 text-xl font-bold dark:text-white hover:underline">
-                            Dashboard Admin PKM
-                        </a>
-
-                        <p class="text-gray-500 dark:text-gray-400">
-                            Kelola dan pantau semua usulan PKM
-                        </p>
-                    </div>
-                @endif
+                
 
             </div>
         </div>

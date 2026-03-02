@@ -88,7 +88,7 @@
         </div>
            
         {{-- Form Penilaian --}}
-        <form action="POST" action="{{ route('reviewer.pkm-store-review', $pkm) }}" class="space-y-6">
+        <form method="POST" action="{{ route('reviewer.pkm-store-review', $pkm) }}" class="space-y-6">
             @csrf
 
             <h3 class="text-xl font-bold text-white mb-4">Kriteria penilaian PKM</h3>
@@ -261,12 +261,12 @@
             {{-- Catatan reviewer --}}
 
             <div>
-                <label for="comment" class="block text-sm font-medium text-gray-300 mb-2">
-                    catatan/feedback <span class="text-gray-500">(Opsional)</span>
+                <label for="comments" class="block text-sm font-medium text-gray-300 mb-2">
+                    Catatan/Feedback <span class="text-gray-500">(Opsional)</span>
                 </label>
-                <textarea   name="comment" id="comment" rows="6" maxlength="5000"
-                            class="block w-full bg-gray-700 border border-gray-600 text-white rounded-md px-3 py-2"
-                            placeholder="Berikan catatan atau saran perbaikan....">{{ old('comment') }}</textarea>
+                <textarea name="comments" id="comments" rows="6" maxlength="5000"
+                        class="block w-full bg-gray-700 border border-gray-600 text-white rounded-md px-3 py-2"
+                        placeholder="Berikan catatan atau saran perbaikan...">{{ old('comments') }}</textarea>
                 <p class="mt-1 text-xs text-gray-400">Maksimal 5000 karakter</p>
             </div>
 

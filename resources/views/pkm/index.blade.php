@@ -10,12 +10,11 @@
     @endif
 
     @if ($pkms->count() > 0)
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+        <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-700 bg-gray-800">
                 <thead class="bg-gray-900">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Judul</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Kategori</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Tahun</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Dibuat</th>
@@ -30,11 +29,7 @@
                                     {{ $pkm->judul }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-200">
-                                <div class="max-w-xs truncate" title="{{ $pkm->kategori_pkm }}">
-                                    {{ $pkm->kategori_pkm }}
-                                </div>
-                            </td>
+                            
                             <td class="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">
                                 {{ $pkm->tahun_pelaksanaan }}
                             </td>

@@ -10,7 +10,7 @@ class PkmReview extends Model
     use HasFactory;
 
     protected $fillable = [
-        'pkm_prposal_id',
+        'pkm_proposal_id',
         'reviewer_id',
         'score',
         'scores',

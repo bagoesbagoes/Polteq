@@ -227,7 +227,7 @@ class ProposalController extends Controller
         $currentYear = $today->year;
         
         $startDate = Carbon::create($currentYear, 7, 1, 0, 0, 0, 'Asia/Jakarta');
-        $endDate = Carbon::create($currentYear, 9, 1, 23, 59, 59, 'Asia/Jakarta');
+        $endDate = Carbon::create($currentYear, 9, 31, 00, 00, 00, 'Asia/Jakarta');
         
         if (!$today->between($startDate, $endDate)) {
             if ($today->lt($startDate)) {

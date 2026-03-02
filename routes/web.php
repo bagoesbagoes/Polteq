@@ -124,7 +124,6 @@ Route::middleware('auth')->group(function () {
     // ==========================
     Route::middleware('role:publisher')->group(function () {
         // Proposals
-        Route::get('/pkm', [PkmProposalController::class, 'index'])->name('pkm.index');
         Route::get('/publisher/dashboard', [PublisherController::class, 'dashboard']);
         Route::get('/publisher/upload', [PublisherController::class, 'create']);
         Route::post('/publisher/upload', [PublisherController::class, 'store']);
@@ -135,6 +134,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/proposals/revisions', [ProposalController::class, 'revisions'])->name('proposals.revisions');
 
         // PKM
+        Route::get('/pkm', [PkmProposalController::class, 'index'])->name('pkm.index');
         Route::get('/pkm/create', [PkmProposalController::class, 'create'])->name('pkm.create');
         Route::post('/pkm', [PkmProposalController::class, 'store'])->name('pkm.store');
         Route::get('/pkm/accepted', [PkmProposalController::class, 'accepted'])->name('pkm.accepted');

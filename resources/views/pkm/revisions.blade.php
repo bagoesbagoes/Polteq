@@ -11,7 +11,7 @@
     @endif
     
     @if ($pkms->count() > 0)
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+        <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-700 bg-gray-800">
                 <thead class="bg-gray-900">
                     <tr>

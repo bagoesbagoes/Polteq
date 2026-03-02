@@ -54,16 +54,16 @@ class PkmProposal extends Model
     public function getStatusBadgeAttribute()
     {
         $badges = [
-            'draft' => '    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-600 text-gray-200">
+            'draft' => '    <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-gray-600 text-gray-200">
                                 Draft
                             </span>',
-            'submitted' => '<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-600 text-white">
+            'submitted' => '<span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-blue-600 text-white">
                                 Submitted
                             </span>',
-            'accepted' => ' <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-green-600 text-white">
+            'accepted' => ' <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-600 text-white">
                                 Accepted
                             </span>',
-            'need_revision' => '<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-yellow-600 text-white">
+            'need_revision' => '<span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-yellow-600 text-white">
                                     Need Revision
                                 </span>',
         ];

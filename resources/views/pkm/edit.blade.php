@@ -67,43 +67,6 @@
                                value="{{ old('tahun_pelaksanaan', $pkm->tahun_pelaksanaan) }}" min="2020" max="2030" required
                                class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
                     </div>
-
-                    <div>
-                        <label for="sumber_dana" class="block text-sm font-medium text-white">
-                            Sumber Dana <span class="text-red-500">*</span>
-                        </label>
-                        <select name="sumber_dana" id="sumber_dana" required
-                                class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
-                            <option value="">Pilih Sumber Dana</option>
-                            <option value="DIPA" {{ old('sumber_dana', $pkm->sumber_dana) == 'DIPA' ? 'selected' : '' }}>DIPA</option>
-                            <option value="Non-DIPA" {{ old('sumber_dana', $pkm->sumber_dana) == 'Non-DIPA' ? 'selected' : '' }}>Non-DIPA</option>
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Kategori & Kelompok Riset --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="kategori_pkm" class="block text-sm font-medium text-white">
-                            Kategori PKM <span class="text-red-500">*</span>
-                        </label>
-                        <select name="kategori_pkm" id="kategori_pkm" required
-                                class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
-                            <option value="">Pilih Kategori</option>
-                            <option value="PKM-Karya Cipta" {{ old('kategori_pkm', $pkm->kategori_pkm) == 'PKM-Karya Cipta' ? 'selected' : '' }}>PKM-Karya Cipta</option>
-                            <option value="PKM-Pengabdian Masyarakat" {{ old('kategori_pkm', $pkm->kategori_pkm) == 'PKM-Pengabdian Masyarakat' ? 'selected' : '' }}>PKM-Pengabdian Masyarakat</option>
-                            <option value="PKM-Kewirausahaan" {{ old('kategori_pkm', $pkm->kategori_pkm) == 'PKM-Kewirausahaan' ? 'selected' : '' }}>PKM-Kewirausahaan</option>
-                            <option value="PKM-Karsa" {{ old('kategori_pkm', $pkm->kategori_pkm) == 'PKM-Karsa' ? 'selected' : '' }}>PKM-Karsa</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="kelompok_riset" class="block text-sm font-medium text-white">
-                            Kelompok Riset <span class="text-gray-400">(Opsional)</span>
-                        </label>
-                        <input type="text" name="kelompok_riset" id="kelompok_riset" value="{{ old('kelompok_riset', $pkm->kelompok_riset) }}"
-                               class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
-                    </div>
                 </div>
 
                 {{-- Anggota Tim --}}
