@@ -29,8 +29,8 @@
                 
                 {{-- Section: Profile Information --}}
                 <div class="border-b border-white/10 pb-12">
-                    <h2 class="text-base/7 font-semibold text-white">Edit Profile</h2>
-                    <p class="mt-1 text-sm/6 text-gray-400">Update your personal information.</p>
+                    <h2 class="text-base/7 font-semibold text-white">Edit Profil</h2>
+                    <p class="mt-1 text-sm/6 text-gray-400">Lakukan perubahan profil akun yang kamu butuhkan.</p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         

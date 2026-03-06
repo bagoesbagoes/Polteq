@@ -63,12 +63,22 @@ class PkmProposal extends Model
             'accepted' => ' <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-600 text-white">
                                 Accepted
                             </span>',
-            'need_revision' => '<span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-yellow-600 text-white">
+            'need_revision' => '<span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-600 text-white">
                                     Need Revision
                                 </span>',
         ];
         
         return $badges[$this->status] ?? '<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-500 text-white">Unknown</span>';
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Auto delete reviews when PKM is deleted
+        static::deleting(function ($pkm) {
+            $pkm->reviews()->delete();
+        });
     }
 
 }

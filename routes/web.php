@@ -16,12 +16,10 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PkmProposalController;
 use App\Http\Controllers\PkmReviewerController;
 
-
 // ==========================
 // PUBLIC ROUTES (TANPA LOGIN)
 // ==========================
 
-// Halaman Landing -> redirect ke signin
 Route::get('/', function () {
     return redirect()->route('signin');
 })->name('home');
@@ -30,11 +28,10 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/signin', [LoginController::class, 'index'])->name('signin');
     Route::post('/signin', [LoginController::class, 'authenticate'])->name('login');
-
     Route::get('/signup', [RegisterController::class, 'index'])->name('signup');
     Route::post('/signup', [RegisterController::class, 'store'])->name('signup.process');
-
-    // Forgot Password Routes
+    
+    // Forgot Password
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetController::class, 'verifyIdentity'])->name('password.verify');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
@@ -52,25 +49,28 @@ Route::post('/signout', function () {
 })->name('signout');
 
 // ==========================
-// ROUTES YANG WAJIB LOGIN
+// AUTHENTICATED ROUTES
 // ==========================
 Route::middleware('auth')->group(function () {
 
     // ==========================
-    // DASHBOARD & PROFILE
+    // DASHBOARD & PROFILE (ALL ROLES)
     // ==========================
     Route::get('/UsulanPenelitian', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/LaporanPenelitian', [DashboardController::class, 'IndexLaporanPenelitian'])->name('laporan_penelitian');
-    Route::get('/UsulanPKM', [DashboardController::class, 'indexPkm'])->name('pkm.index');
+    Route::get('/UsulanPKM', [DashboardController::class, 'indexPkm'])->name('pkm.dashboard');
+    Route::get('/LaporanPKM', function () {
+        return view('LaporanPKM', ['title' => 'Manajemen Laporan PKM']);
+    });
     
     Route::get('/profile', function () {
         return view('profile', ['title' => 'Profile', 'user' => Auth::user()]);
     });
-
+    
     Route::get('/upload', function () {
         return view('upload', ['title' => 'Edit Profile', 'user' => Auth::user()]);
     })->name('profile.edit');
-
+    
     Route::post('/profile/update', function (Request $request) {
         $user = Auth::user();
         
@@ -96,25 +96,21 @@ Route::middleware('auth')->group(function () {
     })->name('profile.update');
 
     // ==========================
-    // PLACEHOLDER PAGES
-    // ==========================
-    Route::get('/LaporanPKM', function () {
-        return view('LaporanPKM', ['title' => 'Manajemen Laporan PKM']);
-    });
-
-    // ==========================
     // ADMIN ROUTES
     // ==========================
     Route::middleware('role:admin')->group(function () {
+        // Admin Dashboard
         Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        
+        // Reviewer Management
         Route::post('/admin/reviewer/create', [AdminController::class, 'storeReviewer'])->name('admin.store-reviewer');
         Route::put('/admin/reviewer/{user}/update', [AdminController::class, 'updateReviewer'])->name('admin.update-reviewer');
         Route::delete('/admin/reviewer/{user}/delete', [AdminController::class, 'deleteReviewer'])->name('admin.delete-reviewer');
         
-        // Admin PKM
+        // Admin PKM Management
         Route::get('/admin/pkm', [AdminController::class, 'pkmIndex'])->name('admin.pkm');
         
-        // Admin Reports
+        // Admin Reports Management
         Route::get('/admin/reports/laporan-akhir', [ReportController::class, 'adminIndex'])->defaults('type', 'laporan_akhir')->name('admin.reports.laporan-akhir');
         Route::get('/admin/reports/luaran', [ReportController::class, 'adminIndex'])->defaults('type', 'luaran')->name('admin.reports.luaran');
     });
@@ -123,29 +119,37 @@ Route::middleware('auth')->group(function () {
     // PUBLISHER ROUTES
     // ==========================
     Route::middleware('role:publisher')->group(function () {
-        // Proposals
+    
+        // ========== PROPOSALS ==========
         Route::get('/publisher/dashboard', [PublisherController::class, 'dashboard']);
         Route::get('/publisher/upload', [PublisherController::class, 'create']);
         Route::post('/publisher/upload', [PublisherController::class, 'store']);
         Route::get('/publisher/proposal/{proposal}', [PublisherController::class, 'show']);
         Route::post('/publisher/proposal/{proposal}/revisi', [PublisherController::class, 'submitRevision']);
-        
         Route::get('/proposals/accepted', [ProposalController::class, 'accepted'])->name('proposals.accepted');
         Route::get('/proposals/revisions', [ProposalController::class, 'revisions'])->name('proposals.revisions');
 
-        // PKM
+        // ========== PKM PROPOSALS (Publisher Only Actions) ==========
+        // List & Create
         Route::get('/pkm', [PkmProposalController::class, 'index'])->name('pkm.index');
         Route::get('/pkm/create', [PkmProposalController::class, 'create'])->name('pkm.create');
         Route::post('/pkm', [PkmProposalController::class, 'store'])->name('pkm.store');
+        
+        // Special Lists
         Route::get('/pkm/accepted', [PkmProposalController::class, 'accepted'])->name('pkm.accepted');
         Route::get('/pkm/revisions', [PkmProposalController::class, 'revisions'])->name('pkm.revisions');
+        
+        // Publisher-specific Actions
+        Route::get('/pkm/{pkm}/revision', [PkmProposalController::class, 'showRevisionForm'])->name('pkm.revision.form');
         Route::post('/pkm/{pkm}/submit', [PkmProposalController::class, 'submit'])->name('pkm.submit');
 
-        // Reports
+        // ========== REPORTS ==========
+        // Laporan Akhir
         Route::get('/reports/laporan-akhir', [ReportController::class, 'index'])->defaults('type', 'laporan_akhir')->name('reports.laporan-akhir');
         Route::get('/reports/laporan-akhir/create', [ReportController::class, 'create'])->defaults('type', 'laporan_akhir')->name('reports.create-laporan-akhir');
         Route::post('/reports/laporan-akhir', [ReportController::class, 'store'])->defaults('type', 'laporan_akhir')->name('reports.store-laporan-akhir');
         
+        // Luaran
         Route::get('/reports/luaran', [ReportController::class, 'index'])->defaults('type', 'luaran')->name('reports.luaran');
         Route::get('/reports/luaran/create', [ReportController::class, 'create'])->defaults('type', 'luaran')->name('reports.create-luaran');
         Route::post('/reports/luaran', [ReportController::class, 'store'])->defaults('type', 'luaran')->name('reports.store-luaran');
@@ -155,10 +159,11 @@ Route::middleware('auth')->group(function () {
     // REVIEWER ROUTES
     // ==========================
     Route::middleware('role:reviewer')->group(function () {
+        // Reviewer Dashboard
         Route::get('reviewer/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
         Route::get('reviewer/my-reviews', [ReviewerController::class, 'myReviews'])->name('reviewer.my-reviews');
         
-        // Proposal Reviews
+        // ========== PROPOSAL REVIEWS ==========
         Route::get('/reviewer/proposals', [ProposalController::class, 'browseForReviewer'])->name('reviewer.proposals');
         Route::get('reviewer/review/{proposal}', [ReviewerController::class, 'reviewForm'])->name('reviewer.review-form');
         Route::post('reviewer/review/{proposal}', [ReviewerController::class, 'storeReview'])->name('reviewer.store-review');
@@ -167,7 +172,7 @@ Route::middleware('auth')->group(function () {
         Route::put('reviewer/reviews/{review}', [ReviewerController::class, 'updateReview'])->name('reviewer.update-review');
         Route::delete('reviewer/reviews/{review}', [ReviewerController::class, 'deleteReview'])->name('reviewer.delete-review');
 
-        // PKM Reviews
+        // ========== PKM REVIEWS ==========
         Route::get('/reviewer/pkm', [PkmReviewerController::class, 'index'])->name('reviewer.pkm');
         Route::get('/reviewer/pkm/{pkm}', [PkmReviewerController::class, 'reviewForm'])->name('reviewer.pkm-review-form');
         Route::post('/reviewer/pkm/{pkm}', [PkmReviewerController::class, 'storeReview'])->name('reviewer.pkm-store-review');
@@ -178,14 +183,26 @@ Route::middleware('auth')->group(function () {
     });
 
     // ==========================
-    // ADMIN & REVIEWER: Browse
+    // ADMIN & REVIEWER: Browse PKM
     // ==========================
     Route::middleware('role:admin,reviewer')->group(function () {
         Route::get('/pkm/browse', [PkmProposalController::class, 'browse'])->name('pkm.browse');
     });
 
     // ==========================
-    // PROPOSALS ROUTES
+    // PKM ROUTES (ALL AUTHENTICATED - Publisher & Admin can access)
+    // ==========================
+    // IMPORTANT: These routes moved here so Admin can access them
+    // Authorization is handled at controller level
+    Route::get('/pkm/{pkm}', [PkmProposalController::class, 'show'])->name('pkm.show');
+    Route::get('/pkm/{pkm}/edit', [PkmProposalController::class, 'edit'])->name('pkm.edit');
+    Route::put('/pkm/{pkm}', [PkmProposalController::class, 'update'])->name('pkm.update');
+    Route::delete('/pkm/{pkm}', [PkmProposalController::class, 'destroy'])->name('pkm.destroy');
+    Route::get('/pkm/{pkm}/download', [PkmProposalController::class, 'download'])->name('pkm.download');
+    Route::get('/pkm/{pkm}/download-surat-tugas', [PkmProposalController::class, 'downloadSuratTugas'])->name('pkm.download-surat-tugas');
+
+    // ==========================
+    // PROPOSALS ROUTES (ALL AUTHENTICATED USERS)
     // ==========================
     Route::get('/proposals/browse', function (Request $request) {
         $user = Auth::user();
@@ -251,17 +268,7 @@ Route::middleware('auth')->group(function () {
     Route::post('proposals/{proposal}/submit', [ProposalController::class, 'submit'])->name('proposals.submit');
 
     // ==========================
-    // PKM ROUTES
-    // ==========================
-    Route::get('/pkm/{pkm}', [PkmProposalController::class, 'show'])->name('pkm.show');
-    Route::get('/pkm/{pkm}/edit', [PkmProposalController::class, 'edit'])->name('pkm.edit');
-    Route::put('/pkm/{pkm}', [PkmProposalController::class, 'update'])->name('pkm.update');
-    Route::delete('/pkm/{pkm}', [PkmProposalController::class, 'destroy'])->name('pkm.destroy');
-    Route::get('/pkm/{pkm}/download', [PkmProposalController::class, 'download'])->name('pkm.download');
-    Route::get('/pkm/{pkm}/download-surat-tugas', [PkmProposalController::class, 'downloadSuratTugas'])->name('pkm.download-surat-tugas');
-
-    // ==========================
-    // REPORTS ROUTES
+    // REPORTS ROUTES (ALL AUTHENTICATED USERS)
     // ==========================
     Route::get('/reports/{type}/{report}', [ReportController::class, 'show'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.show');
     Route::delete('/reports/{type}/{report}', [ReportController::class, 'destroy'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.destroy');

@@ -32,6 +32,23 @@
                 </div>
             </div>
         @endif
+        
+        <div class="mb-6  from-blue-900/30 to-indigo-900/30 border border-blue-700 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-semibold text-white mb-1">💡 Butuh Panduan?</h3>
+                    <p class="text-sm text-gray-300">Download pedoman penulisan usulan & laporan akhir</p>
+                </div>
+                <a href="{{ asset('files/templates/TemplatePenelitianPolteq2026.pdf') }}" 
+                target="_blank"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition whitespace-nowrap">
+                    <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Lihat Template
+                </a>
+            </div>
+        </div>
 
         {{-- Form --}}
         <form method="POST" action="{{ route('pkm.store') }}" enctype="multipart/form-data" 
@@ -104,7 +121,7 @@
                     </label>
                     <textarea name="abstrak" id="abstrak" rows="6" required
                               class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">{{ old('abstrak') }}</textarea>
-                    <p class="mt-1 text-xs text-gray-400">Minimal 100 karakter</p>
+                    <p class="mt-1 text-xs text-gray-400">Minimal 50 karakter</p>
                 </div>
 
                 {{-- File Upload --}}

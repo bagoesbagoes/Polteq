@@ -33,6 +33,30 @@
             </div>
         @endif
 
+        @if ($pkm->status === 'need_revision' && $pkm->revision_notes)
+            <div class="mb-6 bg-yellow-900/20 border border-yellow-700 rounded-lg p-6">
+                <div class="flex items-start">
+                <svg class="w-6 h-6 text-yellow-400 mr-3 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-yellow-400">Catatan revisi dari reviewer</h3>
+                    <p class="mt-2 text-sm text-yellow-300">
+                        Mohon perhatikan catatan berikut saat melakukan revisi 
+                    </p>
+                    <div class="mt-3 p-4 bg-yellow-900/30 rounded-md border border-yellow-800">
+                        <p class="text-sm text-yellow-200 whitespace-pre-line">{{ $pkm->revision_notes }}</p>
+                    </div>
+                    <div class="mt-3 p-3 bg-blue-900/20 border border-blue-700 rounded-md">
+                        <p class="text-xs text-blue-300">
+                            💡 <strong>Tips:</strong> Setelah Anda menyimpan perubahan, PKM akan otomatis disubmit ulang untuk direview kembali.
+                        </p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Form --}}
         <form method="POST" action="{{ route('pkm.update', $pkm) }}" enctype="multipart/form-data" 
               class="bg-gray-800 shadow sm:rounded-lg p-6" 
@@ -57,7 +81,7 @@
                            class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
                 </div>
 
-                {{-- Tahun & Sumber Dana --}}
+                {{-- Tahun --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="tahun_pelaksanaan" class="block text-sm font-medium text-white">
@@ -139,7 +163,12 @@
                 </a>
                 <button type="submit" 
                         class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition">
-                    💾 Update PKM
+                    @if ($pkm->status === 'need_revision')
+                        📝Simpan revisi & submit ulang 
+                    @else
+                        💾 Update PKM    
+                    @endif
+                    
                 </button>
             </div>
         </form>

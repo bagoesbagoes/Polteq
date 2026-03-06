@@ -16,10 +16,8 @@
                 <thead class="bg-gray-900">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Judul</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Kategori</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Tahun</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Catatan Revisi</th>
                         <th scope="col" class="px-6 py-3 text-right text-sm font-semibold text-white">Aksi</th>
                     </tr>
                 </thead>
@@ -31,21 +29,11 @@
                                     {{ $pkm->judul }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-200">
-                                <div class="max-w-xs truncate" title="{{ $pkm->kategori_pkm }}">
-                                    {{ $pkm->kategori_pkm }}
-                                </div>
-                            </td>
                             <td class="px-6 py-4 text-sm text-gray-200 whitespace-nowrap">
                                 {{ $pkm->tahun_pelaksanaan }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-200">
                                 {!! $pkm->status_badge !!}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-400">
-                                <div class="max-w-xs truncate" title="{{ $pkm->revision_notes }}">
-                                    {{ Str::limit($pkm->revision_notes, 50) }}
-                                </div>
                             </td>
                             
                             {{-- Action Buttons --}}
@@ -54,16 +42,8 @@
                                     
                                     {{-- Tombol Lihat --}}
                                     <a href="{{ route('pkm.show', $pkm) }}" 
-                                       class="text-indigo-400 hover:text-indigo-300 font-medium transition">
+                                       class="text-indigo-400 hover:text-indigo-600 font-medium transition">
                                         Lihat
-                                    </a>
-                                    
-                                    <span class="text-gray-600">|</span>
-                                    
-                                    {{-- Tombol Edit/Revisi --}}
-                                    <a href="{{ route('pkm.edit', $pkm) }}" 
-                                       class="text-yellow-400 hover:text-yellow-300 font-medium transition">
-                                        Revisi
                                     </a>
                                 </div>
                             </td>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PkmProposal;
+use App\Services\SuratKerjaService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -77,13 +79,13 @@ class PkmProposalController extends Controller
             'judul' => 'required|string|max:255',
             'tahun_pelaksanaan' => 'required|integer|min:' . date('Y'),
             'anggota_tim' => 'nullable|array',
-            'abstrak' => 'required|string|min:100',
+            'abstrak' => 'required|string|min:50',
             'file_usulan' => 'required|file|mimes:pdf|max:10240',
         ], [
             'file_usulan.required' => 'File usulan wajib diupload',
             'file_usulan.mimes' => 'File harus berformat PDF',
             'file_usulan.max' => 'Ukuran file maksimal 10MB',
-            'abstrak.min' => 'Abstrak minimal 100 karakter',
+            'abstrak.min' => 'Abstrak minimal 50 karakter',
         ]);
 
         // Upload file
@@ -135,11 +137,40 @@ class PkmProposalController extends Controller
             return back()->with('error', 'Hanya PKM dengan status draft yang bisa diedit');
         }
 
+        $editableStatuses = ['draft', 'need_revision'];
+
+        if (!in_array($pkm->status, $editableStatuses) && Auth::user()->role !== 'admin') {
+            return redirect()
+                ->route('pkm.show', $pkm)
+                ->with('error', 'Hanya PKM dengan status draft atau perlu revisi yang dapat diedit. ');
+        }
+
         return view('pkm.edit', [
-            'title' => 'Edit Usulan PKM',
+            'title' => $pkm->status === 'need_revision' ? 'Revisi usulan PKM' : 'Edit usulan PKM',
             'pkm' => $pkm
         ]);
     }
+
+    public function showRevisionForm(PkmProposal $pkm)
+    {
+        if ($pkm->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses untuk melakukan revisi pkm ini');
+        }
+
+        if ($pkm->status !== 'need_revision') {
+            return redirect()
+                ->route('pkm.show', $pkm)
+                ->with('error', 'Hanya pkm dengan status "need_revision" yang dapat melakukan revisi.');
+        }   
+
+        $pkm->load('reviews.reviewer');
+
+        return view ('pkm.revisi', [
+            'title' => 'Revisi Usulan PKM',
+            'pkm' => $pkm
+        ]);
+    }
+
 
     /**
      * Update PKM
@@ -170,11 +201,34 @@ class PkmProposalController extends Controller
             $validated['file_size'] = $fileSize;
         }
 
+        // AUTO-SUBMIT LOGIC FOR REVISION
+        $wasRevision = $pkm->status === 'need_revision';
+        
+        if ($wasRevision) {
+            // Delete old reviews (optional)
+            $pkm->reviews()->delete();
+            
+            // Change status to submitted
+            $validated['status'] = 'submitted';
+            $validated['submitted_at'] = now();
+            $validated['revision_notes'] = null;
+        }
+
         $pkm->update($validated);
 
-        return redirect()
-            ->route('pkm.show', $pkm)
-            ->with('success', 'Usulan PKM berhasil diupdate');
+        // Success message based on action
+        if ($wasRevision) {
+            $message = 'Revisi berhasil disimpan dan PKM telah disubmit ulang untuk direview!';
+            // ← REDIRECT KE REVISIONS LIST
+            return redirect()
+                ->route('pkm.revisions')
+                ->with('success', $message);
+        } else {
+            $message = 'Usulan PKM berhasil diupdate';
+            return redirect()
+                ->route('pkm.show', $pkm)
+                ->with('success', $message);
+        }
     }
 
     /**
@@ -182,18 +236,38 @@ class PkmProposalController extends Controller
      */
     public function destroy(PkmProposal $pkm)
     {
+        // Authorization: Only owner or admin
         if ($pkm->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
-            abort(403);
+            abort(403, 'Anda tidak memiliki akses untuk menghapus PKM ini.');
         }
 
-        Storage::disk('public')->delete($pkm->file_usulan);
+        // Status restriction: Publisher can ONLY delete draft
+        if (Auth::user()->role === 'publisher' && $pkm->status !== 'draft') {
+            return redirect()
+                ->route('pkm.show', $pkm)
+                ->with('error', 'Hanya PKM dengan status "draft" yang dapat dihapus. PKM yang sudah disubmit tidak dapat dihapus lagi.');
+        }
+
+        // Store info for success message
+        $judulPkm = $pkm->judul;
+
+        // Delete file from storage
+        if ($pkm->file_usulan) {
+            Storage::disk('public')->delete($pkm->file_usulan);
+        }
+
+        // Delete PKM (cascade delete reviews via model relationship)
         $pkm->delete();
 
-        // Redirect berdasarkan role
+        // Redirect based on role
         if (Auth::user()->role === 'admin') {
-            return redirect()->route('pkm.browse')->with('success', 'Usulan PKM berhasil dihapus');
+            return redirect()
+                ->route('admin.pkm')
+                ->with('success', 'Usulan PKM "' . $judulPkm . '" berhasil dihapus.');
         } else {
-            return redirect()->route('pkm.index')->with('success', 'Usulan PKM berhasil dihapus');
+            return redirect()
+                ->route('pkm.index')
+                ->with('success', 'Usulan PKM "' . $judulPkm . '" berhasil dihapus.');
         }
     }
 
@@ -270,8 +344,41 @@ class PkmProposalController extends Controller
      */
     public function downloadSuratTugas(PkmProposal $pkm)
     {
-        // TODO: Implement surat tugas generation
-        // Untuk sekarang return error
-        abort(501, 'Fitur download surat tugas belum tersedia');
+        // Authorization check
+        if ($pkm->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses untuk mengunduh surat tugas ini.');
+        }
+        
+        // Status check
+        if ($pkm->status !== 'accepted') {
+            return redirect()
+                ->route('pkm.show', $pkm)
+                ->with('error', 'Surat tugas hanya tersedia untuk PKM yang sudah disetujui.');
+        }
+        
+        // PERIOD CHECK (OPTIONAL)
+        $today = Carbon::now('Asia/Jakarta');
+        $currentYear = $today->year;
+        
+        $startDate = Carbon::create($currentYear, 7, 1, 0, 0, 0, 'Asia/Jakarta');
+        $endDate = Carbon::create($currentYear, 9, 19, 23, 59, 59, 'Asia/Jakarta');
+        
+        if (!$today->between($startDate, $endDate)) {
+            if ($today->lt($startDate)) {
+                $nextPeriod = '1 Juli - 1 September ' . $currentYear;
+            } else {
+                $nextPeriod = '1 Juli - 1 September ' . ($currentYear + 1);
+            }
+            
+            return redirect()
+                ->route('pkm.show', $pkm)
+                ->with('error', 'Download surat tugas hanya dapat dilakukan pada periode 1 Juli - 1 September. Periode download berikutnya: ' . $nextPeriod);
+        }
+        
+        // Generate
+        $suratKerjaService = app(SuratKerjaService::class);
+        $data = $suratKerjaService->preparePkmData($pkm);
+        
+        return $suratKerjaService->generatePkmDocx($pkm, $data);
     }
 }

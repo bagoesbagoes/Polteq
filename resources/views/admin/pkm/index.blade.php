@@ -8,6 +8,18 @@
             <p class="text-gray-400 text-sm mt-1">Kelola dan pantau semua usulan PKM dari dosen</p>
         </div>
 
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" 
+                 class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-sm text-green-300">{{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {{-- Total PKM --}}
@@ -91,7 +103,7 @@
 
                     {{-- Filter Status --}}
                     <select name="status" 
-                            class="bg-gray-700 border border-gray-600 text-white rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+                            class="bg-gray-700 border border-gray-600 text-white rounded-md px- py-2 text-sm focus:ring-2 focus:ring-indigo-500">
                         <option value="">Semua Status</option>
                         <option value="submitted" {{ request('status') === 'submitted' ? 'selected' : '' }}>📤 Submitted</option>
                         <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>✅ Accepted</option>
@@ -116,17 +128,6 @@
                         @foreach($years as $year)
                             <option value="{{ $year }}" {{ request('tahun') == $year ? 'selected' : '' }}>
                                 {{ $year }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    {{-- Filter Kategori --}}
-                    <select name="kategori" 
-                            class="bg-gray-700 border border-gray-600 text-white rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category }}" {{ request('kategori') === $category ? 'selected' : '' }}>
-                                {{ Str::limit($category, 25) }}
                             </option>
                         @endforeach
                     </select>
@@ -161,7 +162,6 @@
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Judul</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Dosen</th>
-                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Kategori</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Tahun</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
                             <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-white">Dibuat</th>
@@ -179,11 +179,7 @@
                                 <td class="px-3 py-4 text-sm text-gray-200 items-center">
                                     {{ $pkm->author->name }}
                                 </td>
-                                <td class="px-3 py-4 text-sm text-gray-200">
-                                    <div class="max-w-xs truncate" title="{{ $pkm->kategori_pkm }}">
-                                        {{ $pkm->kategori_pkm }}
-                                    </div>
-                                </td>
+                                
                                 <td class="px-7 py-4 text-sm text-gray-200 whitespace-nowrap">
                                     {{ $pkm->tahun_pelaksanaan }}
                                 </td>

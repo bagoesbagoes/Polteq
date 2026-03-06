@@ -9,6 +9,7 @@ use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Shared\Converter;
 
+
 class SuratKerjaService
 {
     
@@ -299,4 +300,197 @@ class SuratKerjaService
             'judulUsulan' => $proposal->judul,
         ];
     }
+
+    
+ 
+//  PKM SURAT TUGAS METHODS
+
+    public function generatePkmDocx(\App\Models\PkmProposal $pkm, array $data)
+    {
+        $phpWord = new PhpWord();
+        
+        // Konfigurasi Section
+        $section = $phpWord->addSection([
+            'marginLeft' => Converter::cmToTwip(2),
+            'marginRight' => Converter::cmToTwip(2),
+            'marginTop' => Converter::cmToTwip(3),
+            'marginBottom' => Converter::cmToTwip(2),
+            'headerHeight' => Converter::cmToTwip(2),
+        ]);
+
+        // Build document sections
+        $this->addHeader($section);
+        $this->addJudul($section, $data['nomorSurat']);
+        $this->addPembukaPkm($section);
+        $this->addTabelTimPkm($section, $phpWord, $pkm);
+        $this->addTugasPkm($section, $data['judulUsulan']);
+        $this->addPenutup($section);
+        $this->addTandaTangan($section, $data['tanggalSurat']);
+
+        // Save and return
+        return $this->saveTempFilePkm($phpWord, $pkm);
+    }
+
+/**
+ * Add opening paragraph for PKM
+ */
+    private function addPembukaPkm($section)
+    {
+        $section->addText(
+            'Ketua Unit Penelitian dan Pengabdian pada Masyarakat (UPPM) Politeknik Tonggak Equator Pontianak dengan ini memberikan tugas kepada:',
+            
+            ['size' => 12, 'name' => 'Times New Roman'],
+            
+            [
+                'alignment' => Jc::BOTH, 
+                'spaceAfter' => 200,
+                'lineHeight' => 1.5,
+            ]
+        );
+    }
+
+/**
+ * Add team table for PKM
+ */
+    private function addTabelTimPkm($section, $phpWord, $pkm)
+    {
+        $tableStyle = [
+            'borderSize' => 6,
+            'borderColor' => '000000',
+            'cellMargin' => 80,
+            'alignment' => Jc::CENTER,
+        ];
+        
+        $phpWord->addTableStyle('TimPKM', $tableStyle);
+        $table = $section->addTable('TimPKM');
+
+        // Header
+        $table->addRow(400);
+        $table->addCell(800, ['valign' => 'center'])
+            ->addText('No', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+        $table->addCell(4000, ['valign' => 'center'])
+            ->addText('Nama', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+        $table->addCell(3000, ['valign' => 'center'])
+            ->addText('NIDN/NUPTK', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+        $table->addCell(3000, ['valign' => 'center'])
+            ->addText('Posisi', ['size' => 12, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+
+        // Row 1: Ketua (Author)
+        $table->addRow(400);
+        $table->addCell(800, ['valign' => 'center'])
+            ->addText('1', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+        $table->addCell(4000, ['valign' => 'center'])
+            ->addText($pkm->author->name, ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::LEFT]);
+        $table->addCell(3000, ['valign' => 'center'])
+            ->addText($pkm->author->nidn_nuptk ?? '-', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+        $table->addCell(3000, ['valign' => 'center'])
+            ->addText('Ketua PKM', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+
+        // Rows for Anggota Tim (if exists)
+        if (!empty($pkm->anggota_tim) && is_array($pkm->anggota_tim)) {
+            $no = 2;
+            foreach ($pkm->anggota_tim as $anggota) {
+                $table->addRow(400);
+                $table->addCell(800, ['valign' => 'center'])
+                    ->addText($no, ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+                $table->addCell(4000, ['valign' => 'center'])
+                    ->addText($anggota['nama'] ?? $anggota, ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::LEFT]);
+                $table->addCell(3000, ['valign' => 'center'])
+                    ->addText($anggota['nidn'] ?? '-', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+                $table->addCell(3000, ['valign' => 'center'])
+                    ->addText($anggota['peran'] ?? 'Anggota PKM', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+                $no++;
+            }
+        } else {
+            // Empty rows if no anggota
+            for ($i = 2; $i <= 3; $i++) {
+                $table->addRow(400);
+                $table->addCell(800, ['valign' => 'center'])
+                    ->addText($i, ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+                $table->addCell(4000, ['valign' => 'center'])
+                    ->addText('', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::LEFT]);
+                $table->addCell(3000, ['valign' => 'center'])
+                    ->addText('', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+                $table->addCell(3000, ['valign' => 'center'])
+                    ->addText('Anggota PKM', ['size' => 11, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
+            }
+        }
+
+        $section->addTextBreak(1);
+    }
+
+/**
+ * Add task description for PKM
+ */
+    private function addTugasPkm($section, $judulUsulan)
+    {
+        $textRun = $section->addTextRun([
+            'alignment' => Jc::BOTH, 
+            'spaceAfter' => 200,
+            'lineHeight' => 1.5
+        ]);
+
+        $textRun->addText(
+            'Untuk melaksanakan Program Kreativitas Mahasiswa (PKM) dalam rangka memenuhi salah satu tugas Tri Dharma Perguruan Tinggi dengan judul ',
+            ['size' => 12, 'name' => 'Times New Roman']
+        );
+
+        $textRun->addText(
+            '"' . $judulUsulan . '"',
+            ['bold' => true, 'size' => 12, 'name' => 'Times New Roman', 'bgColor' => 'FFFF00']
+        );
+
+        $textRun->addText(
+            ' dan diwajibkan untuk memberikan laporan akhir PKM kepada Ketua UPPM Politeknik Tonggak Equator Pontianak.',
+            ['size' => 12, 'name' => 'Times New Roman']
+        );
+    }
+
+/**
+ * Save temp file for PKM and return download response
+ */
+    private function saveTempFilePkm($phpWord, $pkm)
+    {
+        $filename = 'Surat_Tugas_PKM_' . str_replace(' ', '_', substr($pkm->judul, 0, 50)) . '.docx';
+        $tempFile = storage_path('app/temp/' . $filename);
+        
+        // Create temp directory if not exists
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($tempFile);
+
+        return response()->download($tempFile)->deleteFileAfterSend(true);
+    }
+
+/**
+ * Prepare data for PKM surat tugas
+ * 
+ * @param \App\Models\PkmProposal $pkm
+ * @return array
+ */
+    public function preparePkmData($pkm)
+    {
+        $nomorSurat = sprintf(
+            '%03d/ST-PKM/POLTEQ/%s/%04d',
+            $pkm->id,
+            strtoupper(Carbon::now()->translatedFormat('F')),
+            Carbon::now()->year
+        );
+        
+        return [
+            'pkm' => $pkm,
+            'nomorSurat' => $nomorSurat,
+            'tanggalSurat' => Carbon::now()->translatedFormat('d F Y'),
+            'namaDosen' => $pkm->author->name,
+            'nidnNuptk' => $pkm->author->nidn_nuptk ?? '-',
+            'jabatan' => $pkm->author->jabatan_fungsional ?? '-',
+            'prodi' => $pkm->author->prodi ?? '-',
+            'judulUsulan' => $pkm->judul,
+            'tahunPelaksanaan' => $pkm->tahun_pelaksanaan,
+        ];
+    }
+
 }
