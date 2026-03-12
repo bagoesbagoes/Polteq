@@ -23,6 +23,30 @@
         </div>
     @endif
 
+    {{-- Back Button --}}
+    <div class="mb-3">
+        @if(Auth::user()->role === 'admin')
+            {{-- Admin kembali ke halaman admin --}}
+            <a href="{{ route('laporan_penelitian') }}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke laporan penelitian
+            </a>
+        @else
+            {{-- Publisher kembali ke halaman publisher --}}
+            <a href="{{ route('proposals.index')}}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke Upload usulan baru
+            </a>
+        @endif
+    </div>
+
+    {{-- Download buku paduan penulisan  --}}
     <div class="mb-6  from-blue-900/30 to-indigo-900/30 border border-blue-700 rounded-lg p-4">
         <div class="flex items-center justify-between">
             <div>

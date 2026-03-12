@@ -9,9 +9,9 @@
                 <div class="flex items-center">
                     <div class="flex items-center space-x-1">
                         {{-- Logo Image --}}
-                        <img src="{{ asset('image/LogoNavbar.png') }}" 
+                        <img src="{{ asset('image/LOGO.png') }}" 
                             alt="PRIMA Logo"
-                            class="h-20 w-20 rounded-lg object-cover shadow-md">
+                            class="h-15 w-15 rounded-lg object-cover shadow-md">
                         {{-- Brand Text --}}
                         <h1 class="text-white font-TimesNewRoman text-xl font-bold">PRIMA</h1>
                     </div>

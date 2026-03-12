@@ -41,6 +41,11 @@ class PkmProposal extends Model
         return $this->hasMany(PkmReview::class);
     }
 
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'pkm_proposal_id');
+    }
+
     public function getFileSizeHumanAttribute()
     {
         if (!$this->file_size) return 'N/A';

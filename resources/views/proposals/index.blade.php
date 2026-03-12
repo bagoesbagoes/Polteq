@@ -1,6 +1,29 @@
 {{-- resources/views/proposals/index.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
+
+    {{-- Back Button --}}
+    <div class="mb-3">
+        @if(Auth::user()->role === 'admin')
+            {{-- Admin kembali ke halaman admin --}}
+            <a href="{{ route('laporan_penelitian') }}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke laporan penelitian
+            </a>
+        @else
+            {{-- Publisher kembali ke halaman publisher --}}
+            <a href="{{ route('dashboard')}}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke Pengusulan
+            </a>
+        @endif
+    </div>
         
     @if ($proposals->count() > 0)
         <div class="flex justify-between items-center mb-6">
@@ -83,6 +106,9 @@
             {{ $proposals->links() }}
         </div>
     @else
+
+        
+    
         <div class="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

@@ -2,12 +2,36 @@
     <x-slot:title>{{ $title }}</x-slot:title>
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+
+        {{-- Back Button --}}
+        <div class="mb-1">
+            @if(Auth::user()->role === 'admin')
+                {{-- Admin kembali ke halaman admin --}}
+                <a href="{{ route('pkm.dashboard') }}" 
+                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali ke Pengusulan PKM
+                </a>
+            @else
+                {{-- Publisher kembali ke halaman publisher --}}
+                <a href="{{ $type === 'laporan_akhir' ? route('reports.laporan-akhir') : route('reports.luaran') }}" 
+                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali ke Daftar {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}
+                </a>
+            @endif
+        </div>
         
         {{-- Header --}}
         <div class="mb-6">
             <p class="text-gray-400 text-sm mt-1">Kelola dan pantau semua usulan PKM dari dosen</p>
         </div>
 
+        {{-- Success Message --}}
         @if(session('success'))
             <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" 
                  class="mb-6 rounded-md bg-green-900/20 p-4 border border-green-700">

@@ -12,6 +12,7 @@ class Report extends Model
 
     protected $fillable = [
         'proposal_id',
+        'pkm_proposal_id',
         'user_id',
         'type',
         'title',
@@ -34,6 +35,14 @@ class Report extends Model
     public function proposal(): BelongsTo
     {
         return $this->belongsTo(Proposal::class);
+    }
+    /**
+     * Report belongs to PKM Proposal
+    */
+
+    public function pkmProposal(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\PkmProposal::class, 'pkm_proposal_id');
     }
 
     /**

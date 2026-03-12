@@ -3,25 +3,13 @@
 
     {{-- Back Button --}}
     <div class="mb-1">
-        @if(Auth::user()->role === 'admin')
-            {{-- Admin kembali ke halaman admin --}}
-            <a href="{{ route('laporan_penelitian') }}" 
-            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
-                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Kembali ke laporan penelitian
-            </a>
-        @else
-            {{-- Publisher kembali ke halaman publisher --}}
-            <a href="{{ $type === 'laporan_akhir' ? route('reports.laporan-akhir') : route('reports.luaran') }}" 
-            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
-                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Kembali ke Daftar {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}
-            </a>
-        @endif
+        <a href="{{ route('laporan_pkm') }}" 
+           class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali ke Laporan PKM
+        </a>
     </div>
 
     <div class="mx-auto max-w-7xl px-4 py-2">
@@ -31,13 +19,13 @@
             {{-- Tab Navigation --}}
             <div class="border-b border-gray-700">
                 <nav class="-mb-px flex space-x-8">
-                    <a href="{{ route('admin.reports.laporan-akhir') }}" 
+                    <a href="{{ route('admin.pkm-reports.laporan-akhir') }}" 
                        class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium {{ $type === 'laporan_akhir' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-gray-400 hover:border-gray-500 hover:text-gray-300' }}">
-                        📄 Laporan Akhir ({{ \App\Models\Report::where('type', 'laporan_akhir')->count() }})
+                        📄 Laporan Akhir PKM ({{ \App\Models\Report::whereNotNull('pkm_proposal_id')->where('type', 'laporan_akhir')->count() }})
                     </a>
-                    <a href="{{ route('admin.reports.luaran') }}" 
+                    <a href="{{ route('admin.pkm-reports.luaran') }}" 
                        class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium {{ $type === 'luaran' ? 'border-green-500 text-green-400' : 'border-transparent text-gray-400 hover:border-gray-500 hover:text-gray-300' }}">
-                        🎯 Luaran ({{ \App\Models\Report::where('type', 'luaran')->count() }})
+                        🎯 Luaran PKM ({{ \App\Models\Report::whereNotNull('pkm_proposal_id')->where('type', 'luaran')->count() }})
                     </a>
                 </nav>
             </div>
@@ -45,7 +33,7 @@
 
         {{-- Filters --}}
         <div class="bg-gray-800 rounded-lg shadow p-4 mb-6 border border-gray-700">
-            <form method="GET" action="{{ $type === 'laporan_akhir' ? route('admin.reports.laporan-akhir') : route('admin.reports.luaran') }}">
+            <form method="GET" action="{{ $type === 'laporan_akhir' ? route('admin.pkm-reports.laporan-akhir') : route('admin.pkm-reports.luaran') }}">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     
                     {{-- Search by Title --}}
@@ -80,7 +68,7 @@
                                 class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">
                             🔍 Filter
                         </button>
-                        <a href="{{ $type === 'laporan_akhir' ? route('admin.reports.laporan-akhir') : route('admin.reports.luaran') }}" 
+                        <a href="{{ $type === 'laporan_akhir' ? route('admin.pkm-reports.laporan-akhir') : route('admin.pkm-reports.luaran') }}" 
                            class="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">
                             Reset
                         </a>
@@ -94,7 +82,7 @@
             <div class="bg-gray-900 rounded-lg p-6 border border-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-200 text-sm font-medium">Total {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}</p>
+                        <p class="text-blue-200 text-sm font-medium">Total {{ $type === 'laporan_akhir' ? 'Laporan Akhir PKM' : 'Luaran PKM' }}</p>
                         <p class="text-white text-3xl font-bold mt-1">{{ $reports->total() }}</p>
                     </div>
                     <div class="bg-gray-800 rounded-full p-3">
@@ -111,7 +99,7 @@
                         <div>
                             <p class="text-green-200 text-sm font-medium">Luaran File</p>
                             <p class="text-white text-3xl font-bold mt-1">
-                                {{ \App\Models\Report::where('type', 'luaran')->where('luaran_type', 'file')->count() }}
+                                {{ \App\Models\Report::whereNotNull('pkm_proposal_id')->where('type', 'luaran')->where('luaran_type', 'file')->count() }}
                             </p>
                         </div>
                         <div class="bg-gray-800 rounded-full p-3">
@@ -127,7 +115,7 @@
                         <div>
                             <p class="text-purple-200 text-sm font-medium">Luaran Link</p>
                             <p class="text-white text-3xl font-bold mt-1">
-                                {{ \App\Models\Report::where('type', 'luaran')->where('luaran_type', 'link')->count() }}
+                                {{ \App\Models\Report::whereNotNull('pkm_proposal_id')->where('type', 'luaran')->where('luaran_type', 'link')->count() }}
                             </p>
                         </div>
                         <div class="bg-gray-800 rounded-full p-3">
@@ -161,7 +149,7 @@
                     <thead class="bg-gray-900">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                Judul & Usulan
+                                Judul & PKM
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
                                 Publisher
@@ -188,10 +176,10 @@
                                     </div>
 
                                     <div class="text-sm text-gray-400 mt-1"> 
-                                        @if($report->proposal)
-                                            {{ Str::limit($report->proposal->judul, 35) }}
+                                        @if($report->pkmProposal)
+                                            {{ Str::limit($report->pkmProposal->judul, 35) }}
                                         @else
-                                            <span class="text-gray-500 italic">Tidak terkait usulan</span>
+                                            <span class="text-gray-500 italic">Tidak terkait PKM</span>
                                         @endif
                                     </div>
                                 </td>
@@ -205,9 +193,13 @@
                                             <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-900/30 text-blue-300 rounded">
                                                 {{ $report->file_icon }} File
                                             </span>
-                                        @else
+                                        @elseif($report->luaran_type === 'link')
                                             <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-900/30 text-green-300 rounded">
                                                 🔗 Link
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-900/30 text-purple-300 rounded">
+                                                📦 Both
                                             </span>
                                         @endif
                                     </td>
@@ -218,14 +210,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-right">
                                     <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('reports.show', ['type' => $type, 'report' => $report]) }}" 
+                                        <a href="{{ route('pkm-reports.show', ['type' => $type, 'report' => $report]) }}" 
                                            class="text-indigo-400 hover:text-indigo-300">
                                             Detail
                                         </a>
                                         
                                         @if($report->file_path)
                                             <span class="text-gray-600">|</span>
-                                            <a href="{{ route('reports.download', ['type' => $type, 'report' => $report]) }}" 
+                                            <a href="{{ route('pkm-reports.download', ['type' => $type, 'report' => $report]) }}" 
                                                class="text-blue-400 hover:text-blue-300">
                                                 Download
                                             </a>
@@ -234,9 +226,9 @@
                                         <span class="text-gray-600">|</span>
                                         
                                         <form method="POST" 
-                                              action="{{ route('reports.destroy', ['type' => $type, 'report' => $report]) }}" 
+                                              action="{{ route('pkm-reports.destroy', ['type' => $type, 'report' => $report]) }}" 
                                               class="inline-block"
-                                              onsubmit="return confirm('⚠️ Yakin ingin menghapus {{ $type === 'laporan_akhir' ? 'laporan akhir' : 'luaran' }} ini?')">
+                                              onsubmit="return confirm('⚠️ Yakin ingin menghapus {{ $type === 'laporan_akhir' ? 'laporan akhir PKM' : 'luaran PKM' }} ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-400 hover:text-red-300">
@@ -265,12 +257,12 @@
                 <p class="mt-1 text-gray-400">
                     {{ request()->has('search') || request()->has('publisher') 
                         ? 'Tidak ada hasil dengan filter yang dipilih.' 
-                        : 'Belum ada ' . ($type === 'laporan_akhir' ? 'laporan akhir' : 'luaran') . ' yang diupload.'
+                        : 'Belum ada ' . ($type === 'laporan_akhir' ? 'laporan akhir PKM' : 'luaran PKM') . ' yang diupload.'
                     }}
                 </p>
                 @if(request()->has('search') || request()->has('publisher'))
                     <div class="mt-6">
-                        <a href="{{ $type === 'laporan_akhir' ? route('admin.reports.laporan-akhir') : route('admin.reports.luaran') }}" 
+                        <a href="{{ $type === 'laporan_akhir' ? route('admin.pkm-reports.laporan-akhir') : route('admin.pkm-reports.luaran') }}" 
                            class="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600">
                             Reset Filter
                         </a>

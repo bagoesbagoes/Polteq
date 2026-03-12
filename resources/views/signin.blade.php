@@ -28,8 +28,8 @@
 
                 {{-- Logo --}}
                 <div class="flex justify-center mb-1">
-                        <img src="{{ asset('image/Logo4.png') }}"  
-                            class="h-64 w-64 object-contain mb-1 rounded-lg">
+                        <img src="{{ asset('image/LOGO.png') }}"  
+                            class="h-32 w-32 object-contain mb-1 rounded-lg">
                 </div>
 
                 {{-- PRIMA Brand --}}

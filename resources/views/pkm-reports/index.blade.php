@@ -26,35 +26,23 @@
     @endif
 
     {{-- Back Button --}}
-        <div class="mb-3">
-            @if(Auth::user()->role === 'admin')
-                {{-- Admin kembali ke halaman admin --}}
-                <a href="{{ route('laporan_penelitian') }}" 
-                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
-                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Kembali ke laporan penelitian
-                </a>
-            @else
-                {{-- Publisher kembali ke halaman publisher --}}
-                <a href="{{ route('laporan_penelitian')}}" 
-                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
-                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Kembali ke Pengusulan
-                </a>
-            @endif
-        </div>
+    <div class="mb-3">
+        <a href="{{ route('laporan_pkm') }}" 
+           class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali ke Laporan PKM
+        </a>
+    </div>
 
     {{-- Header with Create Button --}}
     <div class="flex justify-between items-center mb-6">
     
         @if($type === 'laporan_akhir')
-            {{-- Cek apakah ada usulan accepted yang belum punya laporan --}}
+            {{-- Cek apakah ada PKM accepted yang belum punya laporan --}}
             @php
-                $hasAvailableProposal = \App\Models\Proposal::where('user_id', Auth::id())
+                $hasAvailablePkm = \App\Models\PkmProposal::where('user_id', Auth::id())
                     ->where('status', 'accepted')
                     ->whereDoesntHave('reports', function($query) {
                         $query->where('type', 'laporan_akhir');
@@ -62,17 +50,17 @@
                     ->exists();
             @endphp
 
-            @if($hasAvailableProposal)
-                {{-- Button AKTIF (ada usulan tersedia) --}}
-                <a href="{{ route('reports.create-laporan-akhir') }}" 
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+            @if($hasAvailablePkm)
+                {{-- Button AKTIF (ada PKM tersedia) --}}
+                <a href="{{ route('pkm-reports.create-laporan-akhir') }}" 
+                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
                     <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    Upload Laporan Akhir
+                    Upload Laporan Akhir PKM
                 </a>
             @else
-                {{-- Button DISABLED (tidak ada usulan tersedia) --}}
+                {{-- Button DISABLED (tidak ada PKM tersedia) --}}
                 <div class="relative group">
                     <button 
                         disabled
@@ -80,14 +68,14 @@
                         <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
-                        Upload Laporan Akhir
+                        Upload Laporan Akhir PKM
                     </button>
                     
                     {{-- Tooltip --}}
                     <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10 shadow-lg border border-gray-700">
                         <div class="text-center">
-                            <p class="font-semibold mb-1">⚠️ Tidak Ada Usulan Tersedia</p>
-                            <p class="text-gray-300">Semua usulan yang disetujui</p>
+                            <p class="font-semibold mb-1">⚠️ Tidak Ada PKM Tersedia</p>
+                            <p class="text-gray-300">Semua PKM yang disetujui</p>
                             <p class="text-gray-300">sudah memiliki laporan akhir</p>
                         </div>
                         <div class="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
@@ -97,13 +85,13 @@
                 </div>
             @endif
         @else
-            {{-- Button untuk Luaran (selalu aktif) --}}
-            <a href="{{ route('reports.create-luaran') }}" 
-            class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+            {{-- Button untuk Luaran PKM (selalu aktif) --}}
+            <a href="{{ route('pkm-reports.create-luaran') }}" 
+               class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
                 <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                Upload Luaran
+                Upload Luaran PKM
             </a>
         @endif
     </div>
@@ -115,7 +103,7 @@
                 <thead class="bg-gray-900">
                     <tr>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-white">Judul</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-white">Usulan Terkait</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-white">PKM Terkait</th>
                         @if($type === 'luaran')
                             <th class="px-6 py-3 text-left text-sm font-semibold text-white">Tipe</th>
                         @endif
@@ -130,10 +118,10 @@
                                 {{ Str::limit($report->title, 50) }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-300">
-                                @if($report->proposal)
-                                    {{ Str::limit($report->proposal->judul, 40) }}
+                                @if($report->pkmProposal)
+                                    {{ Str::limit($report->pkmProposal->judul, 40) }}
                                 @else
-                                    <span class="text-gray-500 italic">Tidak terkait usulan</span>
+                                    <span class="text-gray-500 italic">Tidak terkait PKM</span>
                                 @endif
                             </td>
                             @if($type === 'luaran')
@@ -142,9 +130,13 @@
                                         <span class="inline-flex items-center px-2 py-1 text-xs bg-blue-900/30 text-blue-300 rounded">
                                             {{ $report->file_icon }} File
                                         </span>
-                                    @else
+                                    @elseif($report->luaran_type === 'link')
                                         <span class="inline-flex items-center px-2 py-1 text-xs bg-green-900/30 text-green-300 rounded">
                                             🔗 Link
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 text-xs bg-purple-900/30 text-purple-300 rounded">
+                                            📦 Both
                                         </span>
                                     @endif
                                 </td>
@@ -154,7 +146,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-right">
                                 <div class="flex items-center justify-end gap-3">
-                                    <a href="{{ route('reports.show', ['type' => $type, 'report' => $report->id]) }}" 
+                                    <a href="{{ route('pkm-reports.show', ['type' => $type, 'report' => $report->id]) }}" 
                                        class="text-indigo-400 hover:text-indigo-300">
                                         Lihat
                                     </a>
@@ -162,9 +154,9 @@
                                     <span class="text-gray-600">|</span>
                                     
                                     <form method="POST" 
-                                          action="{{ route('reports.destroy', ['type' => $type, 'report' => $report]) }}" 
+                                          action="{{ route('pkm-reports.destroy', ['type' => $type, 'report' => $report]) }}" 
                                           class="inline-block"
-                                          onsubmit="return confirm('Yakin ingin menghapus {{ $type === 'laporan_akhir' ? 'laporan akhir' : 'luaran' }} ini?')">
+                                          onsubmit="return confirm('Yakin ingin menghapus {{ $type === 'laporan_akhir' ? 'laporan akhir PKM' : 'luaran PKM' }} ini?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-400 hover:text-red-300">
@@ -188,24 +180,24 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-lg font-medium text-white">Belum Ada {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}</h3>
-            <p class="mt-1 text-gray-400">Mulai upload {{ $type === 'laporan_akhir' ? 'laporan akhir' : 'luaran' }} penelitian Anda.</p>
+            <h3 class="mt-2 text-lg font-medium text-white">Belum Ada {{ $type === 'laporan_akhir' ? 'Laporan Akhir PKM' : 'Luaran PKM' }}</h3>
+            <p class="mt-1 text-gray-400">Mulai upload {{ $type === 'laporan_akhir' ? 'laporan akhir' : 'luaran' }} PKM Anda.</p>
             <div class="mt-6">
                 @if($type === 'laporan_akhir')
-                    <a href="{{ route('reports.create-laporan-akhir') }}" 
+                    <a href="{{ route('pkm-reports.create-laporan-akhir') }}" 
                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
                         <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Upload Laporan Akhir
+                        Upload Laporan Akhir PKM
                     </a>
                 @else
-                    <a href="{{ route('reports.create-luaran') }}" 
+                    <a href="{{ route('pkm-reports.create-luaran') }}" 
                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                         <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Upload Luaran
+                        Upload Luaran PKM
                     </a>
                 @endif
             </div>

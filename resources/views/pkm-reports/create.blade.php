@@ -1,0 +1,247 @@
+<x-layout>
+    <x-slot:title>{{ $title }}</x-slot:title>
+
+    <div class="mx-auto max-w-4xl px-4 py-6">
+        
+        {{-- Error Messages --}}
+        @if($errors->any())
+            <div class="mb-6 rounded-md bg-red-900/20 p-4 border border-red-700">
+                <div class="flex">
+                    <div class="shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-400">Ada kesalahan:</h3>
+                        <ul class="mt-2 text-sm text-red-300 list-disc list-inside">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+        
+        <form method="POST" 
+              action="{{ $type === 'laporan_akhir' ? route('pkm-reports.store-laporan-akhir') : route('pkm-reports.store-luaran') }}" 
+              enctype="multipart/form-data" 
+              class="bg-gray-800 shadow sm:rounded-lg p-6"
+              @if($type === 'luaran') x-data="{ luaranType: '{{ old('luaran_type', 'file') }}' }" @endif>
+            @csrf
+            
+            <div class="space-y-6">
+                
+                {{-- Header --}}
+                <div class="border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-semibold text-white">{{ $title }}</h2>
+                    <p class="mt-1 text-sm text-gray-400">
+                        Upload {{ $type === 'laporan_akhir' ? 'laporan akhir PKM' : 'luaran PKM' }} Anda
+                    </p>
+                </div>
+
+                {{-- Pilih PKM --}}
+                <div>
+                    <label for="pkm_proposal_id" class="block text-sm font-medium leading-6 text-white">
+                        Pilih Usulan PKM 
+                        @if($type === 'laporan_akhir')
+                            <span class="text-red-500">*</span>
+                        @else
+                            <span class="text-gray-400">(Opsional)</span>
+                        @endif
+                    </label>
+                    <select name="pkm_proposal_id" id="pkm_proposal_id" 
+                            {{ $type === 'laporan_akhir' ? 'required' : '' }}
+                            class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
+                        
+                        @if($type === 'luaran')
+                            <option value="">-- Tidak Terkait PKM --</option>
+                        @else
+                            <option value="">-- Pilih PKM yang Sudah Disetujui --</option>
+                        @endif
+                        
+                        @foreach($pkmProposals as $pkm)
+                            <option value="{{ $pkm->id }}" {{ old('pkm_proposal_id') == $pkm->id ? 'selected' : '' }}>
+                                {{ $pkm->judul }}
+                            </option>
+                        @endforeach
+                    </select>
+                    
+                    @if($type === 'laporan_akhir')
+                        <p class="mt-1 text-xs text-gray-400">Pilih PKM dengan status "Accepted"</p>
+                    @else
+                        <p class="mt-1 text-xs text-gray-400">Kosongkan jika luaran tidak terkait dengan PKM tertentu</p>
+                    @endif
+                </div>
+
+                {{-- Jenis Luaran --}}
+                @if($type === 'luaran')
+                    <div x-data="{ jenisLuaran: '{{ old('jenis_luaran', '') }}' }">
+                        <label for="jenis_luaran" class="block text-sm font-medium leading-6 text-white">
+                            Jenis Luaran <span class="text-red-500">*</span>
+                        </label>
+                        <select name="jenis_luaran" 
+                                id="jenis_luaran" 
+                                x-model="jenisLuaran"
+                                required
+                                class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-indigo-500 sm:text-sm">
+                            <option value="">-- Pilih Jenis Luaran --</option>
+                            <option value="Artikel Jurnal Nasional Terakreditasi" {{ old('jenis_luaran') == 'Artikel Jurnal Nasional Terakreditasi' ? 'selected' : '' }}>
+                                Artikel Jurnal Nasional Terakreditasi
+                            </option>
+                            <option value="Jurnal Internasional Bereputasi" {{ old('jenis_luaran') == 'Jurnal Internasional Bereputasi' ? 'selected' : '' }}>
+                                Jurnal Internasional Bereputasi
+                            </option>
+                            <option value="Buku Referensi" {{ old('jenis_luaran') == 'Buku Referensi' ? 'selected' : '' }}>
+                                Buku Referensi
+                            </option>
+                            <option value="Buku Ajar" {{ old('jenis_luaran') == 'Buku Ajar' ? 'selected' : '' }}>
+                                Buku Ajar
+                            </option>
+                            <option value="Hak Cipta dan Paten" {{ old('jenis_luaran') == 'Hak Cipta dan Paten' ? 'selected' : '' }}>
+                                Hak Cipta dan Paten
+                            </option>
+                            <option value="Lainnya, sebutkan" {{ old('jenis_luaran') == 'Lainnya, sebutkan' ? 'selected' : '' }}>
+                                Lainnya, sebutkan
+                            </option>
+                        </select>
+                        
+                        {{-- Input tambahan jika pilih "Lainnya, sebutkan" --}}
+                        <div x-show="jenisLuaran === 'Lainnya, sebutkan'" 
+                             x-transition
+                             class="mt-3">
+                            <label for="jenis_luaran_lainnya" class="block text-sm font-medium leading-6 text-white">
+                                Sebutkan Jenis Luaran Lainnya <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="jenis_luaran_lainnya" 
+                                   id="jenis_luaran_lainnya" 
+                                   value="{{ old('jenis_luaran_lainnya') }}"
+                                   placeholder="Contoh: Jurnal Seminar Internasional"
+                                   class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" />
+                        </div>
+                        
+                        <p class="mt-1 text-xs text-gray-400">Pilih kategori luaran PKM Anda</p>
+                    </div>
+                @endif
+
+                {{-- Judul --}}
+                @if($type === 'luaran')
+                    <div>
+                        <label for="title" class="block text-sm font-medium leading-6 text-white">
+                            Judul Luaran <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               name="title" 
+                               id="title" 
+                               value="{{ old('title') }}" 
+                               required 
+                               class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" 
+                               placeholder="Contoh: Publikasi Jurnal Internasional Scopus" />
+                    </div>
+                @endif
+
+                {{-- Deskripsi --}}
+                <div>
+                    <label for="description" class="block text-sm font-medium leading-6 text-white">
+                        Deskripsi <span class="text-gray-400">(Opsional)</span>
+                    </label>
+                    <textarea name="description" 
+                              id="description" 
+                              rows="4" 
+                              class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                              placeholder="Deskripsi singkat tentang {{ $type === 'laporan_akhir' ? 'laporan akhir PKM' : 'luaran PKM' }} ini...">{{ old('description') }}</textarea>
+                </div>
+
+                @if($type === 'luaran')
+                    {{-- Upload File (OPSIONAL) --}}
+                    <div>
+                        <label for="file_upload" class="block text-sm font-medium leading-6 text-white">
+                            📄 Upload File <span class="text-gray-400">(Opsional)</span>
+                        </label>
+                        <input type="file" 
+                               name="file_upload" 
+                               id="file_upload" 
+                               class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+                        <p class="mt-2 text-sm text-gray-400">Format: PDF, DOC, DOCX, JPG, PNG. Maksimal: 10MB</p>
+                    </div>
+
+                    {{-- Hyperlink URL (OPSIONAL) --}}
+                    <div>
+                        <label for="hyperlink" class="block text-sm font-medium leading-6 text-white">
+                            🔗 Hyperlink URL <span class="text-gray-400">(Opsional)</span>
+                        </label>
+                        <input type="url" 
+                               name="hyperlink" 
+                               id="hyperlink" 
+                               value="{{ old('hyperlink') }}" 
+                               class="mt-2 block w-full rounded-md border-0 bg-gray-700 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm" 
+                               placeholder="https://example.com/luaran-pkm" />
+                        <p class="mt-2 text-sm text-gray-400">Contoh: Link ke jurnal, repositori, Google Drive, dll.</p>
+                    </div>
+
+                    {{-- Note: Minimal 1 harus diisi --}}
+                    <div class="rounded-md bg-yellow-900/20 p-4 border border-yellow-700">
+                        <div class="flex">
+                            <div class="shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-400">Perhatian</h3>
+                                <div class="mt-2 text-sm text-yellow-300">
+                                    <p><strong>Minimal salah satu harus diisi:</strong> Upload File atau Hyperlink URL</p>
+                                    <p class="mt-1 text-xs text-yellow-200">Anda bisa mengisi keduanya jika diperlukan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                @else
+                    {{-- Upload File PDF (Laporan Akhir) --}}
+                    <div>
+                        <label for="file_upload" class="block text-sm font-medium leading-6 text-white">
+                            Upload File PDF <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" 
+                               name="file_upload" 
+                               id="file_upload" 
+                               accept=".pdf" 
+                               required 
+                               class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+                        <p class="mt-2 text-sm text-gray-400">Format: PDF. Maksimal: 10MB</p>
+                    </div>
+
+                    {{-- UPLOAD SURAT TUGAS PKM --}}
+                    <div>
+                        <label for="surat_tugas_upload" class="block text-sm font-medium leading-6 text-white">
+                            Upload Surat Tugas PKM (PDF) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" 
+                               name="surat_tugas_upload" 
+                               id="surat_tugas_upload" 
+                               accept=".pdf" 
+                               required 
+                               class="mt-2 block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700" />
+                        <p class="mt-2 text-sm text-gray-400">📋 File surat tugas PKM. Format: PDF. Maksimal: 10MB</p>
+                    </div>
+                @endif
+
+            </div>
+
+            {{-- Action Buttons --}}
+            <div class="mt-6 flex justify-end gap-3">
+                <a href="{{ route('laporan_pkm') }}" 
+                   class="rounded-md bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition">
+                    Batal
+                </a>
+                <button type="submit" 
+                        class="rounded-md {{ $type === 'laporan_akhir' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-green-600 hover:bg-green-700' }} px-4 py-2 text-sm font-medium text-white transition focus:outline-none focus:ring-2 focus:ring-offset-2 {{ $type === 'laporan_akhir' ? 'focus:ring-indigo-500' : 'focus:ring-green-500' }}">
+                    💾 Upload {{ $type === 'laporan_akhir' ? 'Laporan Akhir PKM' : 'Luaran PKM' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</x-layout>

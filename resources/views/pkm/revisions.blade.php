@@ -1,6 +1,29 @@
 {{-- resources/views/pkm/revisions.blade.php --}}
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
+
+    {{-- Back Button --}}
+        <div class="mb-3">
+            @if(Auth::user()->role === 'admin')
+                {{-- Admin kembali ke halaman admin --}}
+                <a href="{{ route('laporan_penelitian') }}" 
+                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali ke laporan penelitian
+                </a>
+            @else
+                {{-- Publisher kembali ke halaman publisher --}}
+                <a href="{{ route('pkm.dashboard')}}" 
+                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Kembali ke Pengusulan PKM
+                </a>
+            @endif
+        </div>
         
     @if ($pkms->count() > 0)
         <div class="flex justify-between items-center mb-6">

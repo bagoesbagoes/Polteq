@@ -165,4 +165,53 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function indexLaporanPkm()
+    {
+        $user = Auth::user();
+        
+        // Initialize counts
+        $counts = [
+            'laporan_akhir' => 0,
+            'luaran' => 0,
+            'accepted_pkm' => 0,
+        ];
+        
+        // Jika Publisher
+        if ($user->role === 'publisher') {
+            // Hitung jumlah PKM proposals yang accepted
+            $counts['accepted_pkm'] = PkmProposal::where('user_id', $user->id)
+                ->where('status', 'accepted')
+                ->count();
+            
+            // Hitung jumlah laporan akhir PKM yang sudah diupload
+            $counts['laporan_akhir'] = Report::where('user_id', $user->id)
+                ->where('type', 'laporan_akhir')
+                ->whereNotNull('pkm_proposal_id')  // ← Only PKM reports
+                ->count();
+            
+            // Hitung jumlah luaran PKM yang sudah diupload
+            $counts['luaran'] = Report::where('user_id', $user->id)
+                ->where('type', 'luaran')
+                ->whereNotNull('pkm_proposal_id')  // ← Only PKM reports
+                ->count();
+        }
+        
+        // Jika Admin
+        elseif ($user->role === 'admin') {
+            $counts['accepted_pkm'] = PkmProposal::where('status', 'accepted')->count();
+            $counts['laporan_akhir'] = Report::where('type', 'laporan_akhir')
+                ->whereNotNull('pkm_proposal_id')
+                ->count();
+            $counts['luaran'] = Report::where('type', 'luaran')
+                ->whereNotNull('pkm_proposal_id')
+                ->count();
+        }
+        
+        return view('LaporanPKM', [
+            'title' => 'Laporan PKM',
+            'active' => 'laporan_pkm',
+            'counts' => $counts,
+        ]);
+    }
+
 }

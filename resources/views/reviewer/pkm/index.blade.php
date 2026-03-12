@@ -42,6 +42,29 @@
         </div>
     @endif
 
+    {{-- Back Button --}}
+    <div class="mb-6">
+        @if(Auth::user()->role === 'admin')
+            {{-- Admin kembali ke halaman admin --}}
+            <a href="{{ route('dashboard') }}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke halaman utama usulan penelitian
+            </a>
+        @elseif (Auth::user()->role === 'reviewer')
+            {{-- Publisher kembali ke halaman publisher --}}
+            <a href="{{ route('pkm.dashboard') }}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke Pengusulan PKM
+            </a>
+        @endif
+    </div>
+
     {{-- SEARCH & FILTER SECTION --}}
     <div class="mb-6 bg-gray-800 rounded-lg p-6 shadow">
         <form method="GET" action="{{ route('reviewer.pkm') }}" class="space-y-4">

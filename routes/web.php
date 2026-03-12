@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PkmProposalController;
+use App\Http\Controllers\PkmReportController;
 use App\Http\Controllers\PkmReviewerController;
 
 // ==========================
@@ -54,14 +55,15 @@ Route::post('/signout', function () {
 Route::middleware('auth')->group(function () {
 
     // ==========================
-    // DASHBOARD & PROFILE (ALL ROLES)
+    // DASHBOARD & PROFILE (ALL ROLES)          
     // ==========================
     Route::get('/UsulanPenelitian', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/LaporanPenelitian', [DashboardController::class, 'IndexLaporanPenelitian'])->name('laporan_penelitian');
     Route::get('/UsulanPKM', [DashboardController::class, 'indexPkm'])->name('pkm.dashboard');
     Route::get('/LaporanPKM', function () {
-        return view('LaporanPKM', ['title' => 'Manajemen Laporan PKM']);
+        return view('LaporanPKM');
     });
+    Route::get('/LaporanPKM', [DashboardController::class, 'indexLaporanPkm'])->name('laporan_pkm');
     
     Route::get('/profile', function () {
         return view('profile', ['title' => 'Profile', 'user' => Auth::user()]);
@@ -113,6 +115,14 @@ Route::middleware('auth')->group(function () {
         // Admin Reports Management
         Route::get('/admin/reports/laporan-akhir', [ReportController::class, 'adminIndex'])->defaults('type', 'laporan_akhir')->name('admin.reports.laporan-akhir');
         Route::get('/admin/reports/luaran', [ReportController::class, 'adminIndex'])->defaults('type', 'luaran')->name('admin.reports.luaran');
+
+        // Admin PKM reports management
+        Route::get ('/admin/pkm-reports/laporan-akhir', [PkmReportController::class, 'adminIndex'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('admin.pkm-reports.laporan-akhir');
+        Route::get('/admin/pkm-reports/luaran', [PkmReportController::class, 'adminIndex'])
+            ->defaults('type', 'luaran')
+            ->name('admin.pkm-reports.luaran');
     });
 
     // ==========================
@@ -150,9 +160,32 @@ Route::middleware('auth')->group(function () {
         Route::post('/reports/laporan-akhir', [ReportController::class, 'store'])->defaults('type', 'laporan_akhir')->name('reports.store-laporan-akhir');
         
         // Luaran
-        Route::get('/reports/luaran', [ReportController::class, 'index'])->defaults('type', 'luaran')->name('reports.luaran');
         Route::get('/reports/luaran/create', [ReportController::class, 'create'])->defaults('type', 'luaran')->name('reports.create-luaran');
+        Route::get('/reports/luaran', [ReportController::class, 'index'])->defaults('type', 'luaran')->name('reports.luaran');
         Route::post('/reports/luaran', [ReportController::class, 'store'])->defaults('type', 'luaran')->name('reports.store-luaran');
+
+        // ========== PKM REPORTS ==========
+        // Laporan Akhir PKM
+        Route::get('/pkm-reports/laporan-akhir', [PkmReportController::class, 'index'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('pkm-reports.laporan-akhir');
+        Route::get('/pkm-reports/laporan-akhir/create', [PkmReportController::class, 'create'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('pkm-reports.create-laporan-akhir');
+        Route::post('/pkm-reports/laporan-akhir', [PkmReportController::class, 'store'])
+            ->defaults('type', 'laporan_akhir')
+            ->name('pkm-reports.store-laporan-akhir');
+
+        // Luaran PKM
+        Route::get('/pkm-reports/luaran', [PkmReportController::class, 'index'])
+            ->defaults('type', 'luaran')
+            ->name('pkm-reports.luaran');
+        Route::get('/pkm-reports/luaran/create', [PkmReportController::class, 'create'])
+            ->defaults('type', 'luaran')
+            ->name('pkm-reports.create-luaran');
+        Route::post('/pkm-reports/luaran', [PkmReportController::class, 'store'])
+            ->defaults('type', 'luaran')
+            ->name('pkm-reports.store-luaran');
     });
 
     // ==========================
@@ -274,5 +307,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reports/{type}/{report}', [ReportController::class, 'destroy'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.destroy');
     Route::get('/reports/{type}/{report}/download', [ReportController::class, 'download'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.download');
     Route::get('/reports/{type}/{report}/download-surat-tugas', [ReportController::class, 'downloadSuratTugas'])->whereIn('type', ['laporan_akhir', 'luaran'])->name('reports.download-surat-tugas');
+    Route::get('/pkm-reports/{type}/{report}', [PkmReportController::class, 'show'])
+        ->whereIn('type', ['laporan_akhir', 'luaran'])
+        ->name('pkm-reports.show');
+    Route::delete('/pkm-reports/{type}/{report}', [PkmReportController::class, 'destroy'])
+        ->whereIn('type', ['laporan_akhir', 'luaran'])
+        ->name('pkm-reports.destroy');
+    Route::get('/pkm-reports/{type}/{report}/download', [PkmReportController::class, 'download'])
+        ->whereIn('type', ['laporan_akhir', 'luaran'])
+        ->name('pkm-reports.download');
+    Route::get('/pkm-reports/{type}/{report}/download-surat-tugas', [PkmReportController::class, 'downloadSuratTugas'])
+        ->whereIn('type', ['laporan_akhir', 'luaran'])
+        ->name('pkm-reports.download-surat-tugas');
 
 }); // END: Auth Middleware Group

@@ -36,6 +36,29 @@
         </div>
     @endif
 
+    {{-- Back Button --}}
+    <div class="mb-6">
+        @if(Auth::user()->role === 'admin')
+            {{-- Admin kembali ke halaman admin --}}
+            <a href="{{ route('dashboard') }}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke halaman utama usulan penelitian
+            </a>
+        @else
+            {{-- Publisher kembali ke halaman publisher --}}
+            <a href="{{ $type === 'laporan_akhir' ? route('reports.laporan-akhir') : route('reports.luaran') }}" 
+            class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke Daftar {{ $type === 'laporan_akhir' ? 'Laporan Akhir' : 'Luaran' }}
+            </a>
+        @endif
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {{-- SECTION 1: Statistik Usulan --}}
