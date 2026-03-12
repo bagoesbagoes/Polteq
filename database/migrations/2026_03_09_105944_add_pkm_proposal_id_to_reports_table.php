@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('reports', function (Blueprint $table) {
@@ -16,17 +13,20 @@ return new class extends Migration
                 ->nullable()
                 ->after('proposal_id')
                 ->constrained('pkm_proposals')
-                ->onDelete('set null');
+                ->onDelete('cascade');
+            
+            // Add index for faster queries
+            $table->index(['type', 'pkm_proposal_id']);
+            $table->index(['user_id', 'type', 'pkm_proposal_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('reports', function (Blueprint $table) {
-            $table->dropForeign('pkm_proposal_id');
+            $table->dropForeign(['pkm_proposal_id']);
+            $table->dropIndex(['type', 'pkm_proposal_id']);
+            $table->dropIndex(['user_id', 'type', 'pkm_proposal_id']);
             $table->dropColumn('pkm_proposal_id');
         });
     }

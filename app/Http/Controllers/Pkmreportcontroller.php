@@ -23,7 +23,11 @@ class PkmReportController extends Controller
         // Publisher hanya lihat laporan PKM sendiri
         $reports = Report::where('user_id', Auth::id())
             ->where('type', $type)
-            ->whereNotNull('pkm_proposal_id')  
+            ->where(function($query) {
+                // Show PKM reports: either has pkm_proposal_id OR standalone (no proposal_id)
+                $query->whereNotNull('pkm_proposal_id')
+                    ->orWhereNull('proposal_id');
+            })  
             ->with('pkmProposal:id,judul')     
             ->latest()
             ->paginate(10);
